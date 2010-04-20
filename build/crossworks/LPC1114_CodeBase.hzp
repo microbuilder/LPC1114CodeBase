@@ -1,0 +1,81 @@
+<!DOCTYPE CrossStudio_Project_File>
+<solution Name="LPC1114_CodeBase" version="2">
+  <project Name="LPC1114_CodeBase">
+    <configuration Name="Common" Target="LPC1114" arm_architecture="v6M" arm_core_type="Cortex-M0" arm_linker_heap_size="128" arm_linker_process_stack_size="0" arm_linker_stack_size="128" arm_simulator_memory_simulation_filename="$(TargetsDir)/LPC1000/LPC1000SimulatorMemory.dll" arm_simulator_memory_simulation_parameter="LPC11;0x8000;0x2000;0x0" arm_target_debug_interface_type="ADIv5" arm_target_loader_parameter="12000000" build_intermediate_directory="$(Configuration)" c_preprocessor_definitions="USE_PROCESS_STACK" c_user_include_directories="$(TargetsDir)/LPC1000/include;$(ProjectDir)/../../" link_include_startup_code="No" linker_additional_files="$(TargetsDir)/LPC1000/lib/liblpc1000$(LibExt)$(LIB);$(TargetsDir)/LPC1000/lib/cmsis$(LibExt)$(LIB)" linker_memory_map_file="$(TargetsDir)/LPC1000/LPC1114_MemoryMap.xml" linker_output_format="hex" oscillator_frequency="12MHz" project_directory="" project_type="Executable" property_groups_file_path="$(TargetsDir)/LPC1000/propertyGroups11xx.xml"/>
+    <configuration Name="Flash" Placement="Flash" arm_target_flash_loader_file_path="$(TargetsDir)/LPC1000/Release/Loader_lpc1100.elf" arm_target_flash_loader_type="LIBMEM RPC Loader" linker_patch_build_command="&quot;$(StudioDir)/bin/crossscript&quot; &quot;load(\&quot;$(TargetsDir)/LPC1000/LPC1000_LinkPatch.js\&quot;);patch(\&quot;$(TargetPath)\&quot;);&quot;" linker_section_placement_file="$(StudioDir)/targets/Cortex_M/flash_placement.xml" target_reset_script="FLASHReset()"/>
+    <configuration Name="RAM" Placement="RAM" linker_section_placement_file="$(StudioDir)/targets/Cortex_M/ram_placement.xml" target_reset_script="SRAMReset()"/>
+    <folder Name="Source Files">
+      <configuration Name="Common" filter="c;cpp;cxx;cc;h;s;asm;inc"/>
+      <folder Name="core">
+        <folder Name="adc">
+          <file file_name="../../core/adc/adc.c"/>
+        </folder>
+        <folder Name="cpu">
+          <file file_name="../../core/cpu/cpu.c"/>
+        </folder>
+        <folder Name="gpio">
+          <file file_name="../../core/gpio/gpio.c"/>
+        </folder>
+        <folder Name="i2c">
+          <file file_name="../../core/i2c/i2c.c"/>
+        </folder>
+        <folder Name="pmu">
+          <file file_name="../../core/pmu/pmu.c"/>
+        </folder>
+        <folder Name="ssp">
+          <file file_name="../../core/ssp/ssp.c"/>
+        </folder>
+        <folder Name="systick">
+          <file file_name="../../core/systick/systick.c"/>
+        </folder>
+        <folder Name="timer16">
+          <file file_name="../../core/timer16/timer16.c"/>
+        </folder>
+        <folder Name="timer32">
+          <file file_name="../../core/timer32/timer32.c"/>
+        </folder>
+        <folder Name="uart">
+          <file file_name="../../core/uart/uart.c"/>
+        </folder>
+        <folder Name="wdt">
+          <file file_name="../../core/wdt/wdt.c"/>
+        </folder>
+      </folder>
+      <folder Name="drivers">
+        <folder Name="eeprom">
+          <folder Name="mcp24aa">
+            <file file_name="../../drivers/eeprom/mcp24aa/mcp24aa.c"/>
+          </folder>
+        </folder>
+        <folder Name="chibi">
+          <file file_name="../../drivers/chibi/chb.c"/>
+          <file file_name="../../drivers/chibi/chb_buf.c"/>
+          <file file_name="../../drivers/chibi/chb_eeprom.c"/>
+          <file file_name="../../drivers/chibi/chb_drvr.c"/>
+          <file file_name="../../drivers/chibi/chb_spi.c"/>
+        </folder>
+      </folder>
+      <file file_name="../../sysdefs.h"/>
+      <file file_name="../../lpc111x.h"/>
+      <file file_name="../../main.c"/>
+      <file file_name="../../projectconfig.h"/>
+    </folder>
+    <folder Name="System Files">
+      <file file_name="$(StudioDir)/source/thumb_crt0.s"/>
+      <file file_name="$(TargetsDir)/LPC1000/LPC1100_Startup.s"/>
+      <file file_name="$(TargetsDir)/LPC1000/LPC1100_Target.js">
+        <configuration Name="Common" file_type="Reset Script"/>
+      </file>
+    </folder>
+    <configuration Name="Release" build_remove_unused_symbols="Yes" c_preprocessor_definitions="STARTUP_FROM_RESET"/>
+  </project>
+  <configuration Name="THUMB RAM Debug" inherited_configurations="THUMB;RAM;Debug"/>
+  <configuration Name="THUMB" Platform="ARM" arm_instruction_set="THUMB" arm_library_instruction_set="THUMB" c_preprocessor_definitions="__THUMB" hidden="Yes"/>
+  <configuration Name="RAM" c_preprocessor_definitions="__RAM_BUILD" hidden="Yes"/>
+  <configuration Name="Debug" build_debug_information="Yes" c_preprocessor_definitions="DEBUG" gcc_optimization_level="None" hidden="Yes" link_include_startup_code="No"/>
+  <configuration Name="THUMB RAM Release" inherited_configurations="THUMB;RAM;Release"/>
+  <configuration Name="Release" build_debug_information="No" c_additional_options="-g1" c_preprocessor_definitions="NDEBUG" gcc_optimization_level="Level 1" hidden="Yes" link_include_startup_code="No"/>
+  <configuration Name="THUMB Flash Debug" inherited_configurations="THUMB;Flash;Debug"/>
+  <configuration Name="Flash" c_preprocessor_definitions="__FLASH_BUILD" hidden="Yes"/>
+  <configuration Name="THUMB Flash Release" inherited_configurations="THUMB;Flash;Release"/>
+</solution>

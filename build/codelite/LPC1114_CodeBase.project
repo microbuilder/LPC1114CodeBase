@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="utf-8"?>
+<CodeLite_Project Name="LPC1114_CodeBase" InternalType="">
+  <Plugins>
+    <Plugin Name="qmake">
+      <![CDATA[00010001N0005Debug000000000000]]>
+    </Plugin>
+  </Plugins>
+  <Description/>
+  <Dependencies/>
+  <VirtualDirectory Name="core">
+    <VirtualDirectory Name="adc">
+      <File Name="../../core/adc/adc.c"/>
+      <File Name="../../core/adc/adc.h"/>
+    </VirtualDirectory>
+    <VirtualDirectory Name="cpu">
+      <File Name="../../core/cpu/cpu.c"/>
+      <File Name="../../core/cpu/cpu.h"/>
+    </VirtualDirectory>
+    <VirtualDirectory Name="gpio">
+      <File Name="../../core/gpio/gpio.c"/>
+      <File Name="../../core/gpio/gpio.h"/>
+    </VirtualDirectory>
+    <VirtualDirectory Name="i2c">
+      <File Name="../../core/i2c/i2c.c"/>
+      <File Name="../../core/i2c/i2c.h"/>
+    </VirtualDirectory>
+    <VirtualDirectory Name="libc">
+      <File Name="../../core/libc/stdio.c"/>
+      <File Name="../../core/libc/string.c"/>
+    </VirtualDirectory>
+    <VirtualDirectory Name="pmu">
+      <File Name="../../core/pmu/pmu.c"/>
+      <File Name="../../core/pmu/pmu.h"/>
+    </VirtualDirectory>
+    <VirtualDirectory Name="ssp">
+      <File Name="../../core/ssp/ssp.c"/>
+      <File Name="../../core/ssp/ssp.h"/>
+    </VirtualDirectory>
+    <VirtualDirectory Name="systick">
+      <File Name="../../core/systick/systick.c"/>
+      <File Name="../../core/systick/systick.h"/>
+    </VirtualDirectory>
+    <VirtualDirectory Name="timer16">
+      <File Name="../../core/timer16/timer16.c"/>
+      <File Name="../../core/timer16/timer16.h"/>
+    </VirtualDirectory>
+    <VirtualDirectory Name="timer32">
+      <File Name="../../core/timer32/timer32.c"/>
+      <File Name="../../core/timer32/timer32.h"/>
+    </VirtualDirectory>
+    <VirtualDirectory Name="uart">
+      <File Name="../../core/uart/uart.c"/>
+      <File Name="../../core/uart/uart.h"/>
+    </VirtualDirectory>
+    <VirtualDirectory Name="wdt">
+      <File Name="../../core/wdt/wdt.c"/>
+      <File Name="../../core/wdt/wdt.h"/>
+    </VirtualDirectory>
+  </VirtualDirectory>
+  <VirtualDirectory Name="drivers">
+    <VirtualDirectory Name="eeprom">
+      <VirtualDirectory Name="mcp24aa">
+        <File Name="../../drivers/eeprom/mcp24aa/mcp24aa.c"/>
+        <File Name="../../drivers/eeprom/mcp24aa/mcp24aa.h"/>
+      </VirtualDirectory>
+    </VirtualDirectory>
+    <VirtualDirectory Name="chibi">
+      <File Name="../../drivers/chibi/chb.c"/>
+      <File Name="../../drivers/chibi/chb.h"/>
+      <File Name="../../drivers/chibi/chb_buf.c"/>
+      <File Name="../../drivers/chibi/chb_buf.h"/>
+      <File Name="../../drivers/chibi/chb_drvr_at86rf212.c"/>
+      <File Name="../../drivers/chibi/chb_drvr_at86rf212.h"/>
+      <File Name="../../drivers/chibi/chb_eeprom.c"/>
+      <File Name="../../drivers/chibi/chb_eeprom.h"/>
+      <File Name="../../drivers/chibi/chb_spi.c"/>
+      <File Name="../../drivers/chibi/chb_spi.h"/>
+    </VirtualDirectory>
+  </VirtualDirectory>
+  <VirtualDirectory Name="lpc1xxx">
+    <File Name="../../lpc1xxx/linkscript.ld"/>
+    <File Name="../../lpc1xxx/LPC1xxx_startup.c"/>
+    <File Name="../../lpc1xxx/LPC11xx_handlers.c"/>
+  </VirtualDirectory>
+  <VirtualDirectory Name="root">
+    <File Name="../../lpc111x.h"/>
+    <File Name="../../main.c"/>
+    <File Name="../../Makefile"/>
+    <File Name="../../projectconfig.h"/>
+    <File Name="../../sysdefs.h"/>
+  </VirtualDirectory>
+  <Settings Type="Dynamic Library">
+    <Configuration Name="Debug" CompilerType="gnu gcc" DebuggerType="GNU gdb debugger" Type="Dynamic Library" BuildCmpWithGlobalSettings="append" BuildLnkWithGlobalSettings="append" BuildResWithGlobalSettings="append">
+      <Compiler Options="-g" Required="yes" PreCompiledHeader="">
+        <IncludePath Value="."/>
+      </Compiler>
+      <Linker Options="" Required="yes"/>
+      <ResourceCompiler Options="" Required="no"/>
+      <General OutputFile="" IntermediateDirectory="./Debug" Command="" CommandArguments="" WorkingDirectory="$(IntermediateDirectory)" PauseExecWhenProcTerminates="yes"/>
+      <Debugger IsRemote="no" RemoteHostName="" RemoteHostPort="" DebuggerPath="">
+        <PostConnectCommands/>
+        <StartupCommands/>
+      </Debugger>
+      <PreBuild/>
+      <PostBuild/>
+      <CustomBuild Enabled="yes">
+        <RebuildCommand/>
+        <CleanCommand>make clean</CleanCommand>
+        <BuildCommand>make</BuildCommand>
+        <PreprocessFileCommand/>
+        <SingleFileCommand/>
+        <MakefileGenerationCommand/>
+        <ThirdPartyToolName>None</ThirdPartyToolName>
+        <WorkingDirectory>$(WorkspacePath)\..\..\</WorkingDirectory>
+      </CustomBuild>
+      <AdditionalRules>
+        <CustomPostBuild/>
+        <CustomPreBuild/>
+      </AdditionalRules>
+    </Configuration>
+    <Configuration Name="Release" CompilerType="gnu gcc" DebuggerType="GNU gdb debugger" Type="Dynamic Library" BuildCmpWithGlobalSettings="append" BuildLnkWithGlobalSettings="append" BuildResWithGlobalSettings="append">
+      <Compiler Options="" Required="yes" PreCompiledHeader="">
+        <IncludePath Value="."/>
+      </Compiler>
+      <Linker Options="-O2" Required="yes"/>
+      <ResourceCompiler Options="" Required="no"/>
+      <General OutputFile="" IntermediateDirectory="./Release" Command="" CommandArguments="" WorkingDirectory="$(IntermediateDirectory)" PauseExecWhenProcTerminates="yes"/>
+      <Debugger IsRemote="no" RemoteHostName="" RemoteHostPort="" DebuggerPath="">
+        <PostConnectCommands/>
+        <StartupCommands/>
+      </Debugger>
+      <PreBuild/>
+      <PostBuild/>
+      <CustomBuild Enabled="yes">
+        <RebuildCommand/>
+        <CleanCommand>make clean</CleanCommand>
+        <BuildCommand>make</BuildCommand>
+        <PreprocessFileCommand/>
+        <SingleFileCommand/>
+        <MakefileGenerationCommand/>
+        <ThirdPartyToolName>None</ThirdPartyToolName>
+        <WorkingDirectory>$(WorkspacePath)</WorkingDirectory>
+      </CustomBuild>
+      <AdditionalRules>
+        <CustomPostBuild/>
+        <CustomPreBuild/>
+      </AdditionalRules>
+    </Configuration>
+    <GlobalSettings>
+      <Compiler Options="">
+        <IncludePath Value="."/>
+      </Compiler>
+      <Linker Options="">
+        <LibraryPath Value="."/>
+      </Linker>
+      <ResourceCompiler Options=""/>
+    </GlobalSettings>
+  </Settings>
+</CodeLite_Project>
