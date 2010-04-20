@@ -60,7 +60,7 @@ int main (void)
   printf("Done...\n");
   #endif
 
-  // Wait 10 second before going into deep sleep
+/*  // Wait 10 second before going into deep sleep
   printf("10 second delay before deep sleep...\r\n");
   timer32Delay(0, TIMER32_DELAY_1S * 10);
 
@@ -79,7 +79,7 @@ int main (void)
   // Enter deep sleep mode (wakeup after 5 seconds)
   printf("Entering deep sleep (wakeup after 10 seconds)...\r\n");
   pmuDeepSleep(pmuRegVal, 10);
-  printf("Wakeup successful...\r\n");
+  printf("Wakeup successful...\r\n"); */
 
   while (1)
   {
