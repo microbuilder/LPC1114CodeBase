@@ -16,7 +16,7 @@ VPATH =
 OBJS = main.o
 
 VPATH += drivers/chibi
-OBJS += chb.o chb_buf.o chb_drvr_at86rf212.o chb_eeprom.o chb_spi.o
+OBJS += chb.o chb_buf.o chb_drvr.o chb_eeprom.o chb_spi.o
 
 VPATH += drivers/eeprom/mcp24aa
 OBJS += mcp24aa.o
@@ -33,7 +33,7 @@ OBJS += timer32.o uart.o stdio.o string.o wdt.o
 ##########################################################################
 # GNU GCC compiler prefix and location
 ##########################################################################
-CROSS_COMPILE = arm-elf-
+CROSS_COMPILE = arm-none-eabi-
 AS = $(CROSS_COMPILE)gcc
 CC = $(CROSS_COMPILE)gcc
 LD = $(CROSS_COMPILE)gcc
