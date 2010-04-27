@@ -20,6 +20,8 @@
 
 #define CFG_LED_PORT            (3)
 #define CFG_LED_PIN             (5)
+// #define CFG_LED_PORT            (0)
+// #define CFG_LED_PIN             (3)
 
 // #define CFG_CHIBI
 // #define CFG_CHIBI_TRANSMITTER

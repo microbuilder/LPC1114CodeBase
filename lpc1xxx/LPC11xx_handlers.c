@@ -48,12 +48,14 @@ void irq_undefined() {
   while(1);
 }
 
+void CAN_IRQHandler(void)       WEAK_ALIAS(irq_undefined);
+void SSP1_IRQHandler(void)      WEAK_ALIAS(irq_undefined);
 void I2C_IRQHandler(void)       WEAK_ALIAS(irq_undefined);
 void TIMER16_0_IRQHandler(void) WEAK_ALIAS(irq_undefined);
 void TIMER16_1_IRQHandler(void) WEAK_ALIAS(irq_undefined);
 void TIMER32_0_IRQHandler(void) WEAK_ALIAS(irq_undefined);
 void TIMER32_1_IRQHandler(void) WEAK_ALIAS(irq_undefined);
-void SSP_IRQHandler(void)       WEAK_ALIAS(irq_undefined);
+void SSP0_IRQHandler(void)      WEAK_ALIAS(irq_undefined);
 void UART_IRQHandler(void)      WEAK_ALIAS(irq_undefined);
 void USB_IRQHandler(void)       WEAK_ALIAS(irq_undefined);
 void USB_FIQHandler(void)       WEAK_ALIAS(irq_undefined);
@@ -79,7 +81,11 @@ void fault_undefined() {
 
 void NMI_Handler(void)          WEAK_ALIAS(fault_undefined);
 void HardFault_Handler(void)    WEAK_ALIAS(fault_undefined);
+void MemManage_Handler(void)    WEAK_ALIAS(fault_undefined);
+void BusFault_Handler(void)     WEAK_ALIAS(fault_undefined);
+void UsageFault_Handler(void)   WEAK_ALIAS(fault_undefined);
 void SVCall_Handler(void)       WEAK_ALIAS(fault_undefined);
+void DebugMon_Handler(void)     WEAK_ALIAS(fault_undefined);
 void PendSV_Handler(void)       WEAK_ALIAS(fault_undefined);
 void SysTick_Handler(void)      WEAK_ALIAS(fault_undefined);
 
@@ -104,15 +110,15 @@ const void *vectors[] SECTION(".irq_vectors") =
   // Various fault handlers
   NMI_Handler,           // The NMI handler
   HardFault_Handler,     // The hard fault handler
-  0,                  	 // Reserved
-  0,                  	 // Reserved
-  0,                     // Reserved
+  MemManage_Handler,     // MemManage_Handler
+  BusFault_Handler,      // BusFault_Handler
+  UsageFault_Handler,    // UsageFault_Handler
   0,                     // Reserved
   0,                     // Reserved
   0,                     // Reserved
   0,                     // Reserved
   SVCall_Handler,        // SVCall handler
-  0,                   	 // Reserved
+  DebugMon_Handler,      // DebugMon_Handler
   0,                     // Reserved
   PendSV_Handler,        // The PendSV handler
   SysTick_Handler,       // The SysTick handler
@@ -131,16 +137,16 @@ const void *vectors[] SECTION(".irq_vectors") =
   WAKEUP_IRQHandler,     // PIO0_10 Wakeup
   WAKEUP_IRQHandler,     // PIO0_11 Wakeup
   WAKEUP_IRQHandler,     // PIO1_0  Wakeup
-  WAKEUP_IRQHandler,     // PIO1_1  Wakeup
-  WAKEUP_IRQHandler,     // PIO1_2  Wakeup
   
   // Specific peripheral irq handlers
+  CAN_IRQHandler,        // CAN
+  SSP1_IRQHandler,       // SSP1
   I2C_IRQHandler,        // I2C0
   TIMER16_0_IRQHandler,  // CT16B0 (16-bit Timer 0)
   TIMER16_1_IRQHandler,  // CT16B1 (16-bit Timer 1)
   TIMER32_0_IRQHandler,  // CT32B0 (32-bit Timer 0)
   TIMER32_1_IRQHandler,  // CT32B1 (32-bit Timer 1)
-  SSP_IRQHandler,        // SSP0
+  SSP0_IRQHandler,       // SSP0
   UART_IRQHandler,       // UART0
   USB_IRQHandler,        // USB IRQ
   USB_FIQHandler,        // USB FIQ
