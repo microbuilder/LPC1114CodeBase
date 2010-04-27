@@ -97,8 +97,26 @@
       <Linker Options="" Required="yes"/>
       <ResourceCompiler Options="" Required="no"/>
       <General OutputFile="" IntermediateDirectory="./Debug" Command="" CommandArguments="" WorkingDirectory="$(IntermediateDirectory)" PauseExecWhenProcTerminates="yes"/>
-      <Debugger IsRemote="no" RemoteHostName="" RemoteHostPort="" DebuggerPath="">
-        <PostConnectCommands/>
+      <Debugger IsRemote="yes" RemoteHostName="localhost" RemoteHostPort="2331" DebuggerPath="arm-none-eabi-gdb.exe">
+        <PostConnectCommands># Make sure that we are using SWD
+monitor interface SWD
+# Set monitor speed
+monitor speed 1000
+# Set device ID to LPC1114
+monitor flash device = LPC1114
+# Enable unlimited flash break points (may require license)
+monitor flash breakpoints = 1
+# Enable flash download
+monitor flash download = 1
+# Transfer the firmware to the device
+load "../../firmware.elf"
+# Initialise PC and stack pointer
+monitor reg r13 = (0x00000000)
+monitor reg pc = (0x00000004)
+
+# Reset device to start execution
+monitor reset
+</PostConnectCommands>
         <StartupCommands/>
       </Debugger>
       <PreBuild/>

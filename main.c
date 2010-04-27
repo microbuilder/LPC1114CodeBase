@@ -60,26 +60,26 @@ int main (void)
   printf("Done...\n");
   #endif
 
-/*  // Wait 10 second before going into deep sleep
-  printf("10 second delay before deep sleep...\r\n");
-  timer32Delay(0, TIMER32_DELAY_1S * 10);
-
-  // Put peripherals into sleep mode
-  uint32_t pmuRegVal = SCB_PDSLEEPCFG_IRCOUT_PD |
-    SCB_PDSLEEPCFG_IRC_PD |
-    SCB_PDSLEEPCFG_FLASH_PD |
-    SCB_PDSLEEPCFG_BOD_PD |
-    SCB_PDSLEEPCFG_ADC_PD |
-    SCB_PDSLEEPCFG_SYSPLL_PD | 
-    SCB_PDSLEEPCFG_SYSOSC_PD;
-
-  // If the wakeup timer is not used, WDTOSC can also be stopped (saves ~2uA)
-  // pmuRegVal |= SCB_PDSLEEPCFG_WDTOSC_PD;
-
-  // Enter deep sleep mode (wakeup after 5 seconds)
-  printf("Entering deep sleep (wakeup after 10 seconds)...\r\n");
-  pmuDeepSleep(pmuRegVal, 10);
-  printf("Wakeup successful...\r\n"); */
+//  // Wait 10 second before going into deep sleep
+//  printf("10 second delay before deep sleep...\r\n");
+//  timer32Delay(0, TIMER32_DELAY_1S * 10);
+//
+//  // Put peripherals into sleep mode
+//  uint32_t pmuRegVal = SCB_PDSLEEPCFG_IRCOUT_PD |
+//    SCB_PDSLEEPCFG_IRC_PD |
+//    SCB_PDSLEEPCFG_FLASH_PD |
+//    SCB_PDSLEEPCFG_BOD_PD |
+//    SCB_PDSLEEPCFG_ADC_PD |
+//    SCB_PDSLEEPCFG_SYSPLL_PD | 
+//    SCB_PDSLEEPCFG_SYSOSC_PD;
+//
+//  // If the wakeup timer is not used, WDTOSC can also be stopped (saves ~2uA)
+//  // pmuRegVal |= SCB_PDSLEEPCFG_WDTOSC_PD;
+//
+//  // Enter deep sleep mode (wakeup after 5 seconds)
+//  printf("Entering deep sleep (wakeup after 10 seconds)...\r\n");
+//  pmuDeepSleep(pmuRegVal, 10);
+//  printf("Wakeup successful...\r\n");
 
   while (1)
   {
