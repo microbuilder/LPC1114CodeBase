@@ -64,6 +64,7 @@ enum
     CHB_INVALID                 = 7
 };
 
+// Chibi protocol control block
 typedef struct
 {
     U16 src_addr;
@@ -80,7 +81,7 @@ typedef struct
     U8 battlow;
     U8 ed;
     U8 crc;
-} pcb_t;
+} chb_pcb_t;
 
 typedef struct
 {
@@ -91,7 +92,7 @@ typedef struct
 } chb_rx_data_t;
 
 void chb_init();
-pcb_t *chb_get_pcb();
+chb_pcb_t *chb_get_pcb();
 U8 chb_write(U16 addr, U8 *data, U8 len);
 U8 chb_read(chb_rx_data_t *rx);
 

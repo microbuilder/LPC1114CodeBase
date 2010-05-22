@@ -38,7 +38,7 @@
 #include "chb_spi.h"
 #include "chb_eeprom.h"
 
-#include "core/timer32/timer32.h"
+#include "core/systick/systick.h"
 
 /**************************************************************************/
 /*!
@@ -561,7 +561,7 @@ void chb_get_ieee_addr(U8 *addr)
 void chb_set_short_addr(U16 addr)
 {
     U8 *addr_ptr = (U8 *)&addr;
-    pcb_t *pcb = chb_get_pcb();
+    chb_pcb_t *pcb = chb_get_pcb();
 
     chb_eeprom_write(CHB_EEPROM_SHORT_ADDR, addr_ptr, 2);
     chb_reg_write16(SHORT_ADDR_0, addr);
@@ -575,10 +575,10 @@ void chb_set_short_addr(U16 addr)
 /**************************************************************************/
 U16 chb_get_short_addr()
 {
-    U8 addr[2];
+    int16_t addr;
 
-    chb_eeprom_read(CHB_EEPROM_SHORT_ADDR, addr, 2);
-    return *(U16 *)addr;
+    chb_eeprom_read(CHB_EEPROM_SHORT_ADDR, (uint8_t*)&addr, 2);
+    return addr;	
 }
 
 /**************************************************************************/
@@ -590,7 +590,7 @@ U16 chb_get_short_addr()
 U8 chb_tx(U8 *hdr, U8 *data, U8 len)
 {
     U8 state = chb_get_state();
-    pcb_t *pcb = chb_get_pcb();
+    chb_pcb_t *pcb = chb_get_pcb();
 
     if ((state == BUSY_TX) || (state == BUSY_TX_ARET))
     {
@@ -788,7 +788,7 @@ U8 chb_radio_sleep(void)
 void chb_ISR_Handler (void)
 {
     U8 dummy, state, intp_src = 0;
-    pcb_t *pcb = chb_get_pcb();
+    chb_pcb_t *pcb = chb_get_pcb();
 
     CHB_ENTER_CRIT();
 

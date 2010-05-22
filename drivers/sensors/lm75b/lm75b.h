@@ -1,6 +1,6 @@
 /**************************************************************************/
 /*! 
-    @file     timer16.h
+    @file     lm75b.h
     @author   K. Townsend (microBuilder.eu)
     @date     22 March 2010
     @version  0.10
@@ -36,24 +36,35 @@
 */
 /**************************************************************************/
 
-#ifndef __TIMER16_H__
-#define __TIMER16_H__
+#ifndef _LM75B_H_
+#define _LM75B_H_
 
 #include "projectconfig.h"
+#include "core/i2c/i2c.h"
 
-#define TIMER16_DEFAULTINTERVAL	(0xFFFF)    // ~5.46mS @ 12MHz, ~1.37mS @ 48MHz
+#define LM75B_ADDRESS (0x90) // 100 1000 shifted left 1 bit = 0x90
+#define LM75B_READBIT (0x01)
 
-#define TIMER16_CCLK_100US      ((CFG_CPU_CCLK/SCB_SYSAHBCLKDIV) / 10000)
-#define TIMER16_CCLK_1MS        ((CFG_CPU_CCLK/SCB_SYSAHBCLKDIV) / 1000)
+#define LM75B_REGISTER_TEMPERATURE      (0x00)
+#define LM75B_REGISTER_CONFIGURATION    (0x01)
 
-void TIMER16_0_IRQHandler(void);
-void TIMER16_1_IRQHandler(void);
+#define LM75B_CONFIG_SHUTDOWN_MASK      (0x01)
+#define LM75B_CONFIG_SHUTDOWN_POWERON   (0x00)
+#define LM75B_CONFIG_SHUTDOWN_SHUTDOWN  (0x01)
 
-void timer16DelayTicks(uint8_t timerNum, uint16_t delayInTicks);
-void timer16DelayUS(uint8_t timerNum, uint16_t delayInUS);
-void timer16Enable(uint8_t timerNum);
-void timer16Disable(uint8_t timerNum);
-void timer16Reset(uint8_t timerNum);
-void timer16Init(uint8_t timerNum, uint16_t timerInterval);
+typedef enum
+{
+  LM75B_ERROR_OK = 0,               // Everything executed normally
+  LM75B_ERROR_I2CINIT,              // Unable to initialise I2C
+  LM75B_ERROR_I2CBUSY,              // I2C already in use
+  LM75B_ERROR_LAST
+}
+lm75bError_e;
+
+lm75bError_e lm75bInit(void);
+lm75bError_e lm75bGetTemperature (int32_t *temp);
+lm75bError_e lm75bConfigWrite (uint8_t configValue);
 
 #endif
+
+

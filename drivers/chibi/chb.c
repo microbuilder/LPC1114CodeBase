@@ -38,7 +38,7 @@
 #include "chb_drvr.h"
 #include "chb_buf.h"
 
-static pcb_t pcb;
+static chb_pcb_t pcb;
 
 /**************************************************************************/
 /*!
@@ -47,7 +47,7 @@ static pcb_t pcb;
 /**************************************************************************/
 void chb_init()
 {
-    memset(&pcb, 0, sizeof(pcb_t));
+    memset(&pcb, 0, sizeof(chb_pcb_t));
     pcb.src_addr = chb_get_short_addr();
     chb_drvr_init();
 }
@@ -57,7 +57,7 @@ void chb_init()
 
 */
 /**************************************************************************/
-pcb_t *chb_get_pcb()
+chb_pcb_t *chb_get_pcb()
 {
     return &pcb;
 }

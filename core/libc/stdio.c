@@ -50,8 +50,8 @@
 //------------------------------------------------------------------------------
 
 // Required for proper compilation.
-struct _reent r = {0, (FILE *) 0, (FILE *) 1, (FILE *) 0};
-struct _reent *_impure_ptr = &r;
+//struct _reent r = {0, (FILE*) 0, (FILE*) 1, (FILE*) 0};
+//struct _reent *_impure_ptr = &r;
 
 //------------------------------------------------------------------------------
 //         Local Functions
@@ -62,7 +62,7 @@ struct _reent *_impure_ptr = &r;
 // \param pStr  Storage string.
 // \param c  Character to write.
 //------------------------------------------------------------------------------
-signed int PutChar(char *pStr, char c)
+signed int append_char(char *pStr, char c)
 {
     *pStr = c;
     return 1;
@@ -119,7 +119,7 @@ signed int PutUnsignedInt(
 
         while (width > 0) {
 
-            PutChar(pStr, fill);
+            append_char(pStr, fill);
             pStr++;
             num++;
             width--;
@@ -127,7 +127,7 @@ signed int PutUnsignedInt(
     }
 
     // Write lower digit
-    num += PutChar(pStr, (value % 10) + '0');
+    num += append_char(pStr, (value % 10) + '0');
 
     return num;
 }
@@ -187,7 +187,7 @@ signed int PutSignedInt(
         // Write filler characters
         while (width > 0) {
 
-            PutChar(pStr, fill);
+            append_char(pStr, fill);
             pStr++;
             num++;
             width--;
@@ -196,13 +196,13 @@ signed int PutSignedInt(
         // Write sign
         if (value < 0) {
 
-            num += PutChar(pStr, '-');
+            num += append_char(pStr, '-');
             pStr++;
         }
     }
 
     // Write lower digit
-    num += PutChar(pStr, (absolute % 10) + '0');
+    num += append_char(pStr, (absolute % 10) + '0');
 
     return num;
 }
@@ -240,7 +240,7 @@ signed int PutHexa(
 
         while (width > 0) {
 
-            PutChar(pStr, fill);
+            append_char(pStr, fill);
             pStr++;
             num++;
             width--;
@@ -250,15 +250,15 @@ signed int PutHexa(
     // Write current digit
     if ((value & 0xF) < 10) {
 
-        PutChar(pStr, (value & 0xF) + '0');
+        append_char(pStr, (value & 0xF) + '0');
     }
     else if (maj) {
 
-        PutChar(pStr, (value & 0xF) - 10 + 'A');
+        append_char(pStr, (value & 0xF) - 10 + 'A');
     }
     else {
 
-        PutChar(pStr, (value & 0xF) - 10 + 'a');
+        append_char(pStr, (value & 0xF) - 10 + 'a');
     }
     num++;
 
@@ -342,7 +342,7 @@ signed int vsnprintf(char *pStr, size_t length, const char *pFormat, va_list ap)
             case 'x': num = PutHexa(pStr, fill, width, 0, va_arg(ap, unsigned int)); break;
             case 'X': num = PutHexa(pStr, fill, width, 1, va_arg(ap, unsigned int)); break;
             case 's': num = PutString(pStr, va_arg(ap, char *)); break;
-            case 'c': num = PutChar(pStr, va_arg(ap, unsigned int)); break;
+            case 'c': num = append_char(pStr, va_arg(ap, unsigned int)); break;
             default:
                 return EOF;
             }

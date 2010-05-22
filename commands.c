@@ -1,9 +1,16 @@
 /**************************************************************************/
 /*! 
-    @file     timer16.h
+    @file     commands.c
     @author   K. Townsend (microBuilder.eu)
     @date     22 March 2010
     @version  0.10
+
+    @brief    Entry point for all commands in the 'core/cmd' command-line
+              interpretter.  Every menu item defined in cmd_tbl.h points
+              to a method that should be located here for convenience
+              sake.  (The only exception is the 'help', which exists in
+              any project and is handled directly by core/cmd/cmd.c). All
+              methods have exactly the same signature (argc + argv).
 
     @section LICENSE
 
@@ -36,24 +43,48 @@
 */
 /**************************************************************************/
 
-#ifndef __TIMER16_H__
-#define __TIMER16_H__
+#include <stdio.h>
 
-#include "projectconfig.h"
+#include "core/cmd/cmd.h"
 
-#define TIMER16_DEFAULTINTERVAL	(0xFFFF)    // ~5.46mS @ 12MHz, ~1.37mS @ 48MHz
-
-#define TIMER16_CCLK_100US      ((CFG_CPU_CCLK/SCB_SYSAHBCLKDIV) / 10000)
-#define TIMER16_CCLK_1MS        ((CFG_CPU_CCLK/SCB_SYSAHBCLKDIV) / 1000)
-
-void TIMER16_0_IRQHandler(void);
-void TIMER16_1_IRQHandler(void);
-
-void timer16DelayTicks(uint8_t timerNum, uint16_t delayInTicks);
-void timer16DelayUS(uint8_t timerNum, uint16_t delayInUS);
-void timer16Enable(uint8_t timerNum);
-void timer16Disable(uint8_t timerNum);
-void timer16Reset(uint8_t timerNum);
-void timer16Init(uint8_t timerNum, uint16_t timerInterval);
-
+#ifdef CFG_CHIBI
+  #include "drivers/chibi/chb.h"
 #endif
+
+/**************************************************************************/
+/*! 
+    'hello' command handler
+*/
+/**************************************************************************/
+void cmd_hello(uint8_t argc, char **argv)
+{
+  if (argc > 0)
+  {
+    printf("Hello %s", argv[0]);
+  }
+  else
+  {
+    printf("Hello World!%s", CFG_INTERFACE_NEWLINE);
+  }
+}
+
+/**************************************************************************/
+/*! 
+    'sysinfo' command handler
+*/
+/**************************************************************************/
+void cmd_sysinfo(uint8_t argc, char **argv)
+{
+  printf("%-30s : %d Hz %s", "Core System Clock", CFG_CPU_CCLK, CFG_INTERFACE_NEWLINE);
+  printf("%-30s : %d mS %s", "Systick Timer Delay", CFG_SYSTICK_DELAY_IN_MS, CFG_INTERFACE_NEWLINE);
+  printf("%-30s : %d BPS %s", "UART Baud Rate", CFG_UART_BAUDRATE, CFG_INTERFACE_NEWLINE);
+
+  #ifdef CFG_CHIBI
+    chb_pcb_t *pcb = chb_get_pcb();
+    printf("%-30s : %s%s", "Wireless Frequency", "868 MHz", CFG_INTERFACE_NEWLINE);
+    printf("%-30s : 0x%04X%s", "Wireless Node Address", pcb->src_addr, CFG_INTERFACE_NEWLINE);
+  #endif
+
+  // printf("%-30s : %s", "<Property Name>", CFG_INTERFACE_NEWLINE);
+}
+

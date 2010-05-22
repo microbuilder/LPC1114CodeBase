@@ -101,7 +101,7 @@
 /**************************************************************************/
 
 #include "mcp24aa.h"
-#include "core/timer32/timer32.h"
+#include "core/systick/systick.h"
 #include "core/i2c/i2c.h"
 
 extern volatile uint8_t   I2CMasterBuffer[I2C_BUFSIZE];
@@ -234,8 +234,8 @@ mcp24aaError_e mcp24aaWriteBuffer (uint16_t address, uint8_t *buffer, uint32_t b
   // Transmit command
   i2cEngine();
 
-  // Wait at least 3ms
-  timer32Delay(0, (uint32_t)TIMER32_DELAY_1MS * 3);
+  // Wait at least 10ms
+  systickDelay (10 / CFG_SYSTICK_DELAY_IN_MS);
   
   return MCP24AA_ERROR_OK;
 }

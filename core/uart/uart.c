@@ -7,9 +7,10 @@
 
     @section DESCRIPTION
 
-    Generic code for UART-based communication.
+    Generic code for UART-based communication.  Incoming text is stored
+    in a FIFO Queue for safer processing.
 
-    @section Example
+    @section Example: Sending text via UART
 
     @code 
     #include "core/cpu/cpu.h"
@@ -25,6 +26,39 @@
     // Send contents of uartBuffer
     uartSend((uint8_t *)uartBuffer, UARTBUFFERSIZE);
     @endcode
+
+    @section Example: Reading from UART
+
+    @code
+
+    #include "core/cpu/cpu.h"
+    #include "core/uart/uart.h"
+
+    cpuInit();
+    uartInit(57600);
+
+    // Get a reference to the UART control block
+    uart_pcb_t *pcb = uartGetPCB();
+
+    // Read any text available in the queue
+    while (uartRxBufferDataPending())
+    {
+      // Read the first available character
+      uint8_t c = uartRxBufferRead();
+
+      // read out the data in the buffer and echo it back to the host. 
+      switch (c)
+      {
+        case '\r':
+            printf("\n\r");
+            break;        
+        default:
+            printf("%c", c);
+            break;
+      }
+    }
+
+    #endcode
 	
     @section LICENSE
 
@@ -57,13 +91,28 @@
 */
 /**************************************************************************/
 
+#include <string.h>
+
 #include "uart.h"
 
-volatile uint32_t UARTStatus;
-volatile uint8_t  UARTTxEmpty = 1;
-volatile uint8_t  UARTBuffer[BUFSIZE];
-volatile uint32_t UARTCount = 0;
+#ifdef CFG_INTERFACE_UART
+  #include "core/cmd/cmd.h"
+#endif
 
+/**************************************************************************/
+/*!
+    UART protocol control block, which is used to safely access the
+    RX FIFO buffer from elsewhere in the code.  This should be accessed
+    through 'uartGetPCB()'.
+*/
+/**************************************************************************/
+static uart_pcb_t pcb;
+
+/**************************************************************************/
+/*!
+    IRQ to handle incoming data, etc.
+*/
+/**************************************************************************/
 void UART_IRQHandler(void)
 {
   uint8_t IIRValue, LSRValue;
@@ -82,7 +131,7 @@ void UART_IRQHandler(void)
     {
       /* There are errors or break interrupt */
       /* Read LSR will clear the interrupt */
-      UARTStatus = LSRValue;
+      pcb.status = LSRValue;
       Dummy = UART_U0RBR;	/* Dummy read on RX to clear interrupt, then bail out */
       return;
     }
@@ -91,29 +140,22 @@ void UART_IRQHandler(void)
     {
       /* If no error on RLS, normal ready, save into the data buffer. */
       /* Note: read RBR will clear the interrupt */
-      UARTBuffer[UARTCount++] = UART_U0RBR;
-      if (UARTCount == BUFSIZE)
-      {
-        UARTCount = 0;		/* buffer overflow */
-      }	
+      uartRxBufferWrite(UART_U0RBR);
     }
   }
 
   // 2.) Check receive data available
   else if (IIRValue == UART_U0IIR_IntId_RDA)
   {
-    UARTBuffer[UARTCount++] = UART_U0RBR;
-    if (UARTCount == BUFSIZE)
-    {
-      UARTCount = 0;		/* buffer overflow */
-    }
+    // Add incoming text to UART buffer
+    uartRxBufferWrite(UART_U0RBR);
   }
 
   // 3.) Check character timeout indicator
   else if (IIRValue == UART_U0IIR_IntId_CTI)
   {
     /* Bit 9 as the CTI error */
-    UARTStatus |= 0x100;
+    pcb.status |= 0x100;
   }
 
   // 4.) Check THRE (transmit holding register empty)
@@ -123,14 +165,38 @@ void UART_IRQHandler(void)
     LSRValue = UART_U0LSR;
     if (LSRValue & UART_U0LSR_THRE)
     {
-      UARTTxEmpty = 1;
+      pcb.pending_tx_data = 0;
     }
     else
     {
-      UARTTxEmpty = 0;
+      pcb.pending_tx_data= 1;
     }
   }
   return;
+}
+
+/**************************************************************************/
+/*!
+    @brief  Get a pointer to the UART's protocol control block, which can
+            be used to control the RX FIFO buffer and check whether UART
+            has already been initialised or not.
+
+    @section Example
+
+    @code 
+    // Make sure that UART is initialised
+    uart_pcb_t *pcb = uartGetPCB();
+    if (!pcb->initialised)
+    {
+      uartInit(CFG_UART_BAUDRATE);
+    }
+    @endcode
+
+*/
+/**************************************************************************/
+uart_pcb_t *uartGetPCB()
+{
+    return &pcb;
 }
 
 /**************************************************************************/
@@ -146,10 +212,12 @@ void uartInit(uint32_t baudrate)
   uint32_t fDiv;
   uint32_t regVal;
 
-  UARTTxEmpty = 1;
-  UARTCount = 0;
-  
   NVIC_DisableIRQ(UART_IRQn);
+
+  // Clear protocol control blocks
+  memset(&pcb, 0, sizeof(uart_pcb_t));
+  pcb.pending_tx_data = 0;
+  uartRxBufferInit();
 
   /* Set 1.6 UART RXD */
   IOCON_PIO1_6 &= ~IOCON_PIO1_6_FUNC_MASK;
@@ -201,7 +269,10 @@ void uartInit(uint32_t baudrate)
     /* Dump data from RX FIFO */
     regVal = UART_U0RBR;
   }
- 
+
+  /* Set the initialised flag in the protocol control block */
+  pcb.initialised = 1;
+
   /* Enable the UART Interrupt */
   NVIC_EnableIRQ(UART_IRQn);
   UART_U0IER = UART_U0IER_RBR_Interrupt_Enabled | UART_U0IER_RLS_Interrupt_Enabled;
@@ -211,12 +282,22 @@ void uartInit(uint32_t baudrate)
 
 /**************************************************************************/
 /*! 
-    @brief Sends the contents of the buffer over UART.
+    @brief Sends the contents of supplied text buffer over UART.
 
     @param[in]  bufferPtr
                 Pointer to the text buffer
     @param[in]  bufferPtr
                 The size of the text buffer
+
+    @section Example
+
+    @code 
+    // Set 5-character text buffer
+    uint8_t uartBuffer[5] = { 'T', 'e', 's', 't', '\n' };
+    // Send contents of uartBuffer
+    uartSend((uint8_t *)uartBuffer, 5);
+    @endcode
+
 */
 /**************************************************************************/
 void uartSend (uint8_t *bufferPtr, uint32_t length)
@@ -230,6 +311,7 @@ void uartSend (uint8_t *bufferPtr, uint32_t length)
     bufferPtr++;
     length--;
   }
+
   return;
 }
 
@@ -239,6 +321,16 @@ void uartSend (uint8_t *bufferPtr, uint32_t length)
 
     @param[in]  byte
                 Byte value to send
+
+    @section Example
+
+    @code 
+    // Send 0xFF over UART
+    uartSendByte(0xFF);
+    // Send 'B' over UART (note single quotes)
+    uartSendByte('B');
+    @endcode
+
 */
 /**************************************************************************/
 void uartSendByte (uint8_t byte)
@@ -249,3 +341,6 @@ void uartSendByte (uint8_t byte)
 
   return;
 }
+
+
+

@@ -1,6 +1,6 @@
 /**************************************************************************/
 /*! 
-    @file     timer16.h
+    @file     cmd_tbl.h
     @author   K. Townsend (microBuilder.eu)
     @date     22 March 2010
     @version  0.10
@@ -36,24 +36,33 @@
 */
 /**************************************************************************/
 
-#ifndef __TIMER16_H__
-#define __TIMER16_H__
+#ifndef __CMD_TBL_H__ 
+#define __CMD_TBL_H__
 
-#include "projectconfig.h"
+#include <stdio.h>
+#include <stdlib.h>
 
-#define TIMER16_DEFAULTINTERVAL	(0xFFFF)    // ~5.46mS @ 12MHz, ~1.37mS @ 48MHz
+#ifdef CFG_INTERFACE_UART
+#include "core/uart/uart.h"
+#endif
 
-#define TIMER16_CCLK_100US      ((CFG_CPU_CCLK/SCB_SYSAHBCLKDIV) / 10000)
-#define TIMER16_CCLK_1MS        ((CFG_CPU_CCLK/SCB_SYSAHBCLKDIV) / 1000)
+// A full list of function prototypes for the command table
+void cmd_help(uint8_t argc, char **argv);         // Mandatory - handled by cmd.c
+void cmd_hello(uint8_t argc, char **argv);
+void cmd_sysinfo(uint8_t argc, char **argv);
 
-void TIMER16_0_IRQHandler(void);
-void TIMER16_1_IRQHandler(void);
-
-void timer16DelayTicks(uint8_t timerNum, uint16_t delayInTicks);
-void timer16DelayUS(uint8_t timerNum, uint16_t delayInUS);
-void timer16Enable(uint8_t timerNum);
-void timer16Disable(uint8_t timerNum);
-void timer16Reset(uint8_t timerNum);
-void timer16Init(uint8_t timerNum, uint16_t timerInterval);
+/**************************************************************************/
+/*! 
+    Command list for the command-line interpreter and the name of the
+    corresponding method that handles the command
+*/
+/**************************************************************************/
+cmd_t cmd_tbl[] = 
+{
+  { "help",        0, 0, cmd_help        , "Displays a list of all available commands",       "'help' has no parameters" },
+  { "hello",       0, 1, cmd_hello       , "Displays 'Hello World!'",                         "'hello [<name>]'" },
+  { "sysinfo",     0, 0, cmd_sysinfo     , "Displays current system configuration settings",  "'sysinfo' has no parameters" },
+  { NULL,          0, 0, NULL            , NULL,                                              NULL }
+};
 
 #endif

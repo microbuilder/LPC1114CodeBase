@@ -199,8 +199,12 @@ void pmuSleep()
                 SCB_PDSLEEPCFG_FLASH_PD |
                 SCB_PDSLEEPCFG_BOD_PD |
                 SCB_PDSLEEPCFG_ADC_PD |
-                SCB_PDSLEEPCFG_SYSPLL_PD;
+                SCB_PDSLEEPCFG_SYSPLL_PD |
+                SCB_PDSLEEPCFG_SYSOSC_PD;
   
+    // If the wakeup timer is not used, WDTOSC can also be stopped (saves ~2uA)
+    // pmuRegVal |= SCB_PDSLEEPCFG_WDTOSC_PD;
+
     // Enter deep sleep mode (wakeup after 5 seconds)
     pmuDeepSleep(pmuRegVal, 5);
     @endcode

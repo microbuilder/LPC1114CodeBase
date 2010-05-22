@@ -39,16 +39,23 @@
 */
 /**************************************************************************/
 #include "chb_eeprom.h"
+#include "drivers/eeprom/mcp24aa/mcp24aa.h"
 
 /**************************************************************************/
 /*!
 
 */
 /**************************************************************************/
-void chb_eeprom_write(U16 addr, U8 *buf, U16 size)
+void chb_eeprom_write(uint16_t addr, uint8_t *buf, uint16_t size)
 {
-  // while(!eeprom_is_ready());
-  // eeprom_write_block(buf, (U16 *)addr, size);
+  // Instantiate error message placeholder
+  mcp24aaError_e error = MCP24AA_ERROR_OK;
+
+  error = mcp24aaWriteBuffer(addr, buf, size);
+  if (error)
+  {
+    // ToDo: Handle any errors
+  }
 }
 
 /**************************************************************************/
@@ -56,22 +63,16 @@ void chb_eeprom_write(U16 addr, U8 *buf, U16 size)
 
 */
 /**************************************************************************/
-void chb_eeprom_read(U16 addr, U8 *buf, U16 size)
+void chb_eeprom_read(uint16_t addr, uint8_t *buf, uint16_t size)
 {
-  if (size == 2)
+  // Instantiate error message placeholder
+  mcp24aaError_e error = MCP24AA_ERROR_OK;
+  
+  // Read the contents of address 0x0125
+  error = mcp24aaReadBuffer(addr, buf, size);
+  if (error)
   {
-    buf[0] = 0xAB;
-    buf[1] = 0xAB;
-  }
-  else if (size == 8)
-  {
-    buf[0] = 0xAB;
-    buf[1] = 0xAB;
-    buf[2] = 0xAB;
-    buf[3] = 0xAB;
-    buf[4] = 0xAB;
-    buf[5] = 0xAB;
-    buf[6] = 0xAB;
-    buf[7] = 0xAB;
+    // ToDo: Handle any errors
   }
 }
+

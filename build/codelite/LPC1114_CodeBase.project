@@ -69,12 +69,18 @@
       <File Name="../../drivers/chibi/chb.h"/>
       <File Name="../../drivers/chibi/chb_buf.c"/>
       <File Name="../../drivers/chibi/chb_buf.h"/>
-      <File Name="../../drivers/chibi/chb_drvr_at86rf212.c"/>
-      <File Name="../../drivers/chibi/chb_drvr_at86rf212.h"/>
       <File Name="../../drivers/chibi/chb_eeprom.c"/>
       <File Name="../../drivers/chibi/chb_eeprom.h"/>
       <File Name="../../drivers/chibi/chb_spi.c"/>
       <File Name="../../drivers/chibi/chb_spi.h"/>
+      <File Name="../../drivers/chibi/chb_drvr.c"/>
+      <File Name="../../drivers/chibi/chb_drvr.h"/>
+    </VirtualDirectory>
+    <VirtualDirectory Name="sensors">
+      <VirtualDirectory Name="lm75b">
+        <File Name="../../drivers/sensors/lm75b/lm75b.c"/>
+        <File Name="../../drivers/sensors/lm75b/lm75b.h"/>
+      </VirtualDirectory>
     </VirtualDirectory>
   </VirtualDirectory>
   <VirtualDirectory Name="lpc1xxx">
@@ -100,31 +106,49 @@
       <Debugger IsRemote="yes" RemoteHostName="localhost" RemoteHostPort="2331" DebuggerPath="arm-none-eabi-gdb.exe">
         <PostConnectCommands># Make sure that we are using SWD
 monitor interface SWD
+
 # Set monitor speed
 monitor speed 1000
+
 # Set device ID to LPC1114
 monitor flash device = LPC1114
+
 # Enable unlimited flash break points (may require license)
 monitor flash breakpoints = 1
+
 # Enable flash download
 monitor flash download = 1
+
+# Set gdb server to little endian
+monitor endian little
+
+# Reset the chip to get to a known state.
+monitor reset
+monitor sleep 10
+
 # Transfer the firmware to the device
 load "../../firmware.elf"
-# Initialise PC and stack pointer
+
+# Initialise stack pointer (R13) and program counter (PC, R15)
 monitor reg r13 = (0x00000000)
 monitor reg pc = (0x00000004)
 
+break main
+continue 
+
 # Reset device to start execution
-monitor reset
-</PostConnectCommands>
+# monitor reset
+
+# Start the device
+# monitor go</PostConnectCommands>
         <StartupCommands/>
       </Debugger>
       <PreBuild/>
       <PostBuild/>
       <CustomBuild Enabled="yes">
         <RebuildCommand/>
-        <CleanCommand>make clean</CleanCommand>
-        <BuildCommand>make</BuildCommand>
+        <CleanCommand>cs-make clean</CleanCommand>
+        <BuildCommand>cs-make</BuildCommand>
         <PreprocessFileCommand/>
         <SingleFileCommand/>
         <MakefileGenerationCommand/>

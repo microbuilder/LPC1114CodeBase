@@ -21,14 +21,18 @@ OBJS += chb.o chb_buf.o chb_drvr.o chb_eeprom.o chb_spi.o
 VPATH += drivers/eeprom/mcp24aa
 OBJS += mcp24aa.o
 
+VPATH += drivers/sensors/lm75b
+OBJS += lm75b.o
+
 ##########################################################################
 # Library files 
 ##########################################################################
-VPATH += core core/adc core/cpu core/gpio core/i2c core/pmu
+VPATH += core core/adc core/cmd core/cpu core/gpio core/i2c core/pmu
 VPATH += core/ssp core/systick core/timer16 core/timer32 core/uart
 VPATH += core/libc core/wdt
-OBJS += adc.o cpu.o gpio.o i2c.o pmu.o ssp.o systick.o timer16.o
-OBJS += timer32.o uart.o stdio.o string.o wdt.o
+OBJS += adc.o cpu.o cmd.o gpio.o i2c.o pmu.o ssp.o systick.o timer16.o
+OBJS += timer32.o uart.o uart_buf.o stdio.o string.o wdt.o
+OBJS += commands.o
 
 ##########################################################################
 # GNU GCC compiler prefix and location
@@ -63,10 +67,10 @@ OBJS += $(TARGET)_handlers.o LPC1xxx_startup.o
 ##########################################################################
 # Compiler settings, parameters and flags
 ##########################################################################
-CFLAGS  = -c -Os -I. -Wall -mthumb -ffunction-sections -fdata-sections -fmessage-length=0 -mcpu=$(CPU_TYPE) -DTARGET=$(TARGET)
+CFLAGS  = -c -Os -I. -Wall -mthumb -ffunction-sections -fdata-sections -fmessage-length=0 -mcpu=$(CPU_TYPE) -DTARGET=$(TARGET) -fno-builtin
 ASFLAGS = -c -Os -I. -Wall -mthumb -ffunction-sections -fdata-sections -fmessage-length=0 -mcpu=$(CPU_TYPE) -D__ASSEMBLY__ -x assembler-with-cpp
 LDFLAGS = -nostartfiles -mcpu=$(CPU_TYPE) -mthumb -Wl,--gc-sections
-OCFLAGS = --strip-debug --strip-unneeded
+OCFLAGS = --strip-unneeded
 
 all: firmware
 

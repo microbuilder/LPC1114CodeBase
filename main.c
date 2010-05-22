@@ -1,5 +1,4 @@
 #include <stdio.h>
-#include <stdlib.h>
 
 #include "projectconfig.h"
 #include "core/cpu/cpu.h"
@@ -9,120 +8,167 @@
 #include "core/timer32/timer32.h"
 #include "core/pmu/pmu.h"
 
-#ifdef CFG_CHIBI
-#include "drivers/chibi/chb.h"
-static chb_rx_data_t rx_data;
+#ifdef CFG_INTERFACE_UART
+  #include "core/cmd/cmd.h"
 #endif
 
+#ifdef CFG_I2CEEPROM
+  #include "drivers/eeprom/mcp24aa/mcp24aa.h"
+#endif
+
+#ifdef CFG_CHIBI
+  #include "drivers/chibi/chb.h"
+#endif
+
+/**************************************************************************/
+/*! 
+    @brief Toggles the LED at the specified port and pin
+
+    @param[in]  portNum
+                GPIO port number
+    @param[in]  pinNum
+                GPIO pin number
+*/
+/**************************************************************************/
 static void toggleLED(uint8_t portNum, uint8_t pinNum)
 {
   if (gpioGetValue(portNum, pinNum))
   {
-    // Enable LED (set low)
+    // Set LED low
     gpioSetValue (portNum, pinNum, 0);
   }
   else
   {
-    // Disable LED (set high)
+    // Set LED high
     gpioSetValue (portNum, pinNum, 1);
-  }
-}
-
-int main (void)
-{
-  cpuInit();
-  systickInit(CFG_SYSTICK_DELAY_MS);
-  uartInit(CFG_UART_BAUDRATE);
-
-  printf("LPC1114 initialised @ 12MHz\n");
-  printf("UART enabled at %d\r\n", CFG_UART_BAUDRATE);
-  printf("SysTick timer set with %d mS delay\r\n", CFG_SYSTICK_DELAY_MS);
-
-  // Set LED pin as output and turn off
-  gpioInit();
-  gpioSetDir(CFG_LED_PORT, CFG_LED_PIN, 1);
-  gpioSetValue(CFG_LED_PORT, CFG_LED_PIN, 1);
-
-  // Initialise 32-bit timer 0 with default delay 
-  printf("Initialising 32-bit Timer 0 with 100 uS delay...\r\n");
-  timer32Init(0, TIMER32_DEFAULTINTERVAL);
-  timer32Enable(0);
-
-  // Initialise power management unit
-  printf("Initialising power-management unit...\r\n");
-  pmuInit();
-
-  // Initialise Chibi (AT86RF212)
-  #ifdef CFG_CHIBI
-  printf("Initialising Chibi (868MHz)...\n");
-  pcb_t *pcb = chb_get_pcb();
-  chb_init();
-  printf("Done...\n");
-  #endif
-
-//  // Wait 10 second before going into deep sleep
-//  printf("10 second delay before deep sleep...\r\n");
-//  timer32Delay(0, TIMER32_DELAY_1S * 10);
-//
-//  // Put peripherals into sleep mode
-//  uint32_t pmuRegVal = SCB_PDSLEEPCFG_IRCOUT_PD |
-//    SCB_PDSLEEPCFG_IRC_PD |
-//    SCB_PDSLEEPCFG_FLASH_PD |
-//    SCB_PDSLEEPCFG_BOD_PD |
-//    SCB_PDSLEEPCFG_ADC_PD |
-//    SCB_PDSLEEPCFG_SYSPLL_PD | 
-//    SCB_PDSLEEPCFG_SYSOSC_PD;
-//
-//  // If the wakeup timer is not used, WDTOSC can also be stopped (saves ~2uA)
-//  // pmuRegVal |= SCB_PDSLEEPCFG_WDTOSC_PD;
-//
-//  // Enter deep sleep mode (wakeup after 5 seconds)
-//  printf("Entering deep sleep (wakeup after 10 seconds)...\r\n");
-//  pmuDeepSleep(pmuRegVal, 10);
-//  printf("Wakeup successful...\r\n");
-
-  while (1)
-  {
-    #ifdef CFG_CHIBI
-      #ifdef CFG_CHIBI_TRANSMITTER
-        i++;
-        sprintf(buf,"%ld",i);
-        gpioSetValue (2, 10, 0);
-        chb_write(0xFFFF, (uint8_t *)buf, 11);
-        gpioSetValue (2, 10, 1);
-        timer32Delay(0, TIMER32_DELAY_1S);
-      #endif
-      #ifdef CFG_CHIBI_RECEIVER
-        if (pcb->data_rcv)
-        {
-          rx_data.len = chb_read(&rx_data);
-          // Enable LED to indicate message reception (set low)
-          gpioSetValue (CFG_LED_PORT, CFG_LED_PIN, 0);
-          // Output message to UART
-          printf("Message received from node %02X: %s (rssi=%d)\n", rx_data.src_addr, rx_data.data, pcb->ed);
-          // Disable LED (set high)
-          gpioSetValue (CFG_LED_PORT, CFG_LED_PIN, 1);
-          pcb->data_rcv = FALSE;
-        }
-      #endif
-    #else
-      // Toggle LED @ 1 Hz
-      timer32Delay(0, TIMER32_DELAY_1S * 1);
-      toggleLED(CFG_LED_PORT, CFG_LED_PIN);  
-    #endif
   }
 }
 
 /**************************************************************************/
 /*! 
-    Redirect printf output to UART0
+    Configures the core system clock and sets up any mandatory
+    peripherals like the systick timer, UART for printf, etc.
+
+    This function should set the HW to the default state you wish to be
+    in coming out of reset/startup, such as disabling or enabling LEDs,
+    setting specific pin states, etc.
+*/
+/**************************************************************************/
+static void systemInit()
+{
+  // Setup the cpu and core clock
+  cpuInit();
+
+  // Initialise the systick timer (delay set in projectconfig.h)
+  systickInit(CFG_SYSTICK_DELAY_IN_MS);
+
+  // Initialise UART with the default baud rate (set in projectconfig.h)
+  uartInit(CFG_UART_BAUDRATE);
+
+  // Note: Printf can now be used
+
+  // Initialise GPIO
+  gpioInit();
+
+  // Initialise power management unit
+  pmuInit();
+
+  // Set LED pin as output and turn LED off
+  gpioSetDir(CFG_LED_PORT, CFG_LED_PIN, 1);
+  gpioSetPullup(&IOCON_PIO3_5, gpioPullupMode_Inactive);
+  gpioSetValue(CFG_LED_PORT, CFG_LED_PIN, CFG_LED_OFF);
+
+  // Initialise EEPROM (if requested)
+  #ifdef CFG_I2CEEPROM
+    mcp24aaInit();
+  #endif
+
+  // Initialise Chibi (if requested)
+  #ifdef CFG_CHIBI
+    // // Write addresses to EEPROM for the first time
+    // uint16_t addr_short = 0x0000;
+    // uint64_t addr_ieee =  0x0000000000000000;
+    // mcp24aaWriteBuffer(CFG_CHIBI_EEPROM_SHORTADDR, (uint8_t *)&addr_short, 2);
+    // mcp24aaWriteBuffer(CFG_CHIBI_EEPROM_IEEEADDR, (uint8_t *)&addr_ieee, 8);
+    chb_init();
+    chb_pcb_t *pcb = chb_get_pcb();
+    printf("%-40s : 0x%04X%s", "Chibi Initialised", pcb->src_addr, CFG_INTERFACE_NEWLINE);
+  #endif
+}
+
+int main (void)
+{
+  // Configure cpu and mandatory peripherals
+  systemInit();
+
+  // Start the command line (if requested)
+  #ifdef CFG_INTERFACE
+  printf("%sType 'help' for a list of available commands%s", CFG_INTERFACE_NEWLINE, CFG_INTERFACE_NEWLINE);
+  cmdInit();
+  #endif
+
+  while (1)
+  {
+//    #ifdef CFG_CHIBI
+//      #ifdef CFG_CHIBI_TRANSMITTER
+//        i++;
+//        sprintf(buf,"%ld",i);
+//        gpioSetValue (2, 10, 0);
+//        chb_write(0xFFFF, (uint8_t *)buf, 11);
+//        gpioSetValue (2, 10, 1);
+//        timer32Delay(0, TIMER32_DELAY_1S);
+//      #endif
+//      #ifdef CFG_CHIBI_RECEIVER
+//        if (pcb->data_rcv)
+//        {
+//          rx_data.len = chb_read(&rx_data);
+//          // Enable LED to indicate message reception (set low)
+//          gpioSetValue (CFG_LED_PORT, CFG_LED_PIN, CFG_LED_ON);
+//          // Output message to UART
+//          printf("Message received from node %02X: %s (rssi=%d)%s", rx_data.src_addr, rx_data.data, pcb->ed, CFG_INTERFACE_NEWLINE);
+//          // Disable LED (set high)
+//          gpioSetValue (CFG_LED_PORT, CFG_LED_PIN, CFG_LED_OFF);
+//          pcb->data_rcv = FALSE;
+//        }
+//      #endif
+//    #endif
+
+      #ifdef CFG_INTERFACE
+        // Handle any incoming command line input
+        cmdPoll();
+      #endif
+
+       // Toggle LED @ 1 Hz
+       systickDelay(500);
+       toggleLED(CFG_LED_PORT, CFG_LED_PIN);
+  }
+}
+
+/**************************************************************************/
+/*! 
+    @brief Sends a single byte over UART.
+
+    @param[in]  byte
+                Byte value to send
 */
 /**************************************************************************/
 void __putchar(char c) 
 {
-  uartSendByte(c);
+  #ifdef CFG_INTERFACE_UART
+    uartSendByte(c);
+  #else
+    // Send printf output to another endpoint
+  #endif
 }
 
+/**************************************************************************/
+/*! 
+    @brief Sends a single byte over UART.
+
+    @param[in]  byte
+                Byte value to send
+*/
+/**************************************************************************/
 int puts ( const char * str )
 {
   while(*str++) __putchar(*str);
