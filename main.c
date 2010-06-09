@@ -16,33 +16,14 @@
   #include "drivers/eeprom/mcp24aa/mcp24aa.h"
 #endif
 
-#ifdef CFG_CHIBI
-  #include "drivers/chibi/chb.h"
+#ifdef CFG_LM75B
+  #include "drivers/sensors/lm75b/lm75b.h"
 #endif
 
-/**************************************************************************/
-/*! 
-    @brief Toggles the LED at the specified port and pin
-
-    @param[in]  portNum
-                GPIO port number
-    @param[in]  pinNum
-                GPIO pin number
-*/
-/**************************************************************************/
-static void toggleLED(uint8_t portNum, uint8_t pinNum)
-{
-  if (gpioGetValue(portNum, pinNum))
-  {
-    // Set LED low
-    gpioSetValue (portNum, pinNum, 0);
-  }
-  else
-  {
-    // Set LED high
-    gpioSetValue (portNum, pinNum, 1);
-  }
-}
+#ifdef CFG_CHIBI
+  #include "drivers/chibi/chb.h"
+  static chb_rx_data_t rx_data;
+#endif
 
 /**************************************************************************/
 /*! 
@@ -83,6 +64,11 @@ static void systemInit()
     mcp24aaInit();
   #endif
 
+  // Initialie LM75B (if requested)
+  #ifdef CFG_LM75B
+    lm75bInit();
+  #endif
+
   // Initialise Chibi (if requested)
   #ifdef CFG_CHIBI
     // // Write addresses to EEPROM for the first time
@@ -94,6 +80,12 @@ static void systemInit()
     chb_pcb_t *pcb = chb_get_pcb();
     printf("%-40s : 0x%04X%s", "Chibi Initialised", pcb->src_addr, CFG_INTERFACE_NEWLINE);
   #endif
+  
+  // Start the command line (if requested)
+  #ifdef CFG_INTERFACE
+    printf("%sType 'help' for a list of available commands%s", CFG_INTERFACE_NEWLINE, CFG_INTERFACE_NEWLINE);
+    cmdInit();
+  #endif  
 }
 
 int main (void)
@@ -101,46 +93,19 @@ int main (void)
   // Configure cpu and mandatory peripherals
   systemInit();
 
-  // Start the command line (if requested)
-  #ifdef CFG_INTERFACE
-  printf("%sType 'help' for a list of available commands%s", CFG_INTERFACE_NEWLINE, CFG_INTERFACE_NEWLINE);
-  cmdInit();
-  #endif
-
   while (1)
   {
-//    #ifdef CFG_CHIBI
-//      #ifdef CFG_CHIBI_TRANSMITTER
-//        i++;
-//        sprintf(buf,"%ld",i);
-//        gpioSetValue (2, 10, 0);
-//        chb_write(0xFFFF, (uint8_t *)buf, 11);
-//        gpioSetValue (2, 10, 1);
-//        timer32Delay(0, TIMER32_DELAY_1S);
-//      #endif
-//      #ifdef CFG_CHIBI_RECEIVER
-//        if (pcb->data_rcv)
-//        {
-//          rx_data.len = chb_read(&rx_data);
-//          // Enable LED to indicate message reception (set low)
-//          gpioSetValue (CFG_LED_PORT, CFG_LED_PIN, CFG_LED_ON);
-//          // Output message to UART
-//          printf("Message received from node %02X: %s (rssi=%d)%s", rx_data.src_addr, rx_data.data, pcb->ed, CFG_INTERFACE_NEWLINE);
-//          // Disable LED (set high)
-//          gpioSetValue (CFG_LED_PORT, CFG_LED_PIN, CFG_LED_OFF);
-//          pcb->data_rcv = FALSE;
-//        }
-//      #endif
-//    #endif
-
-      #ifdef CFG_INTERFACE
-        // Handle any incoming command line input
-        cmdPoll();
-      #endif
-
-       // Toggle LED @ 1 Hz
-       systickDelay(500);
-       toggleLED(CFG_LED_PORT, CFG_LED_PIN);
+    #ifdef CFG_INTERFACE
+      // Handle any incoming command line input
+      cmdPoll();
+    #else
+      // Toggle LED @ 1 Hz
+      systickDelay(1000);
+      if (gpioGetValue(CFG_LED_PORT, CFG_LED_PIN))  
+        gpioSetValue (CFG_LED_PORT, CFG_LED_PIN, CFG_LED_ON);
+      else 
+        gpioSetValue (CFG_LED_PORT, CFG_LED_PIN, CFG_LED_OFF);
+    #endif
   }
 }
 
@@ -152,12 +117,13 @@ int main (void)
                 Byte value to send
 */
 /**************************************************************************/
-void __putchar(char c) 
+void __putchar(const char c)
 {
   #ifdef CFG_INTERFACE_UART
+    // Redirect printf to UART
     uartSendByte(c);
   #else
-    // Send printf output to another endpoint
+    // Redirect printf to another endpoint
   #endif
 }
 
@@ -169,8 +135,35 @@ void __putchar(char c)
                 Byte value to send
 */
 /**************************************************************************/
-int puts ( const char * str )
+int puts(const char * str)
 {
-  while(*str++) __putchar(*str);
+  while(*str) __putchar(*str++);
   return 0;
 }
+
+// ToDo: Cleanup
+
+/*    #ifdef CFG_CHIBI
+      chb_pcb_t *pcb = chb_get_pcb();
+
+      // Send message over Chibi every 500mS
+      // systickDelay(500 / CFG_SYSTICK_DELAY_IN_MS);
+      // gpioSetValue (CFG_LED_PORT, CFG_LED_PIN, CFG_LED_ON);
+      // char *text = "Test";
+      // chb_write(0xFFFF, text, sizeof(text));
+      // gpioSetValue (CFG_LED_PORT, CFG_LED_PIN, CFG_LED_OFF);
+
+      // Check for incoming messages
+      if (pcb->data_rcv)
+      {
+        rx_data.len = chb_read(&rx_data);
+        // Enable LED to indicate message reception (set low)
+        gpioSetValue (CFG_LED_PORT, CFG_LED_PIN, CFG_LED_ON);
+        // Output message to UART
+        printf("Message received from node %02X: %s (rssi=%d)%s", rx_data.src_addr, rx_data.data, pcb->ed, CFG_INTERFACE_NEWLINE);
+        // Disable LED (set high)
+        gpioSetValue (CFG_LED_PORT, CFG_LED_PIN, CFG_LED_OFF);
+        pcb->data_rcv = FALSE;
+      }
+    #endif
+*/

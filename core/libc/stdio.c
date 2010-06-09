@@ -37,6 +37,7 @@
 
 #include <stdio.h>
 #include <stdarg.h>
+#include <stdint.h>
 
 //------------------------------------------------------------------------------
 //         Local Definitions
@@ -75,7 +76,7 @@ signed int append_char(char *pStr, char c)
 // \param pStr  Storage string.
 // \param pSource  Source string.
 //------------------------------------------------------------------------------
-signed int PutString(char *pStr, const char *pSource)
+signed int PutString(char *pStr, char fill, signed int width, const char *pSource)
 {
     signed int num = 0;
 
@@ -84,6 +85,13 @@ signed int PutString(char *pStr, const char *pSource)
         *pStr++ = *pSource++;
         num++;
     }
+	
+	width -= num;
+	while (width > 0) {
+		*pStr++ = fill;
+		num++;
+		width--;
+	}
 
     return num;
 }
@@ -321,6 +329,11 @@ signed int vsnprintf(char *pStr, size_t length, const char *pFormat, va_list ap)
                 pFormat++;
             }
 
+		    // Ignore justifier
+			if (*pFormat == '-') {
+				pFormat++;
+			}
+
             // Parse width
             while ((*pFormat >= '0') && (*pFormat <= '9')) {
         
@@ -341,7 +354,7 @@ signed int vsnprintf(char *pStr, size_t length, const char *pFormat, va_list ap)
             case 'u': num = PutUnsignedInt(pStr, fill, width, va_arg(ap, unsigned int)); break;
             case 'x': num = PutHexa(pStr, fill, width, 0, va_arg(ap, unsigned int)); break;
             case 'X': num = PutHexa(pStr, fill, width, 1, va_arg(ap, unsigned int)); break;
-            case 's': num = PutString(pStr, va_arg(ap, char *)); break;
+            case 's': num = PutString(pStr, fill, width, va_arg(ap, char *)); break;
             case 'c': num = append_char(pStr, va_arg(ap, unsigned int)); break;
             default:
                 return EOF;
@@ -410,7 +423,7 @@ signed int vsprintf(char *pString, const char *pFormat, va_list ap)
 signed int vprintf(const char *pFormat, va_list ap)
 {
   char pStr[MAX_STRING_SIZE];
-  char pError[] = "stdio.c: increase MAX_STRING_SIZE\n\r";
+  char pError[] = "stdio.c: increase MAX_STRING_SIZE\r\n";
   
   // Write formatted string in buffer
   if (vsprintf(pStr, pFormat, ap) >= MAX_STRING_SIZE) {

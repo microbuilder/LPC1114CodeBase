@@ -58,6 +58,11 @@
           <file file_name="../../drivers/chibi/chb_drvr.c"/>
           <file file_name="../../drivers/chibi/chb_spi.c"/>
         </folder>
+        <folder Name="sensors">
+          <folder Name="lm75b">
+            <file file_name="../../drivers/sensors/lm75b/lm75b.c"/>
+          </folder>
+        </folder>
       </folder>
       <file file_name="../../sysdefs.h"/>
       <file file_name="../../lpc111x.h"/>

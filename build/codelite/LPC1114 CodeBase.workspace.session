@@ -5,14 +5,32 @@
   <TabInfoArray Name="TabInfoArray">
     <TabInfo>
       <wxString Value="C:\Users\Kevin\Documents\My Dropbox\microBuilder\Code\LPC1114\LPC1114_CodeBase\main.c" Name="FileName"/>
-      <int Value="27" Name="FirstVisibleLine"/>
-      <int Value="28" Name="CurrentLine"/>
+      <int Value="80" Name="FirstVisibleLine"/>
+      <int Value="109" Name="CurrentLine"/>
+      <wxArrayString Name="Bookmarks"/>
+    </TabInfo>
+    <TabInfo>
+      <wxString Value="C:\Users\Kevin\Documents\My Dropbox\microBuilder\Code\LPC1114\LPC1114_CodeBase\Makefile" Name="FileName"/>
+      <int Value="56" Name="FirstVisibleLine"/>
+      <int Value="71" Name="CurrentLine"/>
+      <wxArrayString Name="Bookmarks"/>
+    </TabInfo>
+    <TabInfo>
+      <wxString Value="C:\Users\Kevin\Documents\My Dropbox\microBuilder\Code\LPC1114\LPC1114_CodeBase\commands.c" Name="FileName"/>
+      <int Value="0" Name="FirstVisibleLine"/>
+      <int Value="0" Name="CurrentLine"/>
+      <wxArrayString Name="Bookmarks"/>
+    </TabInfo>
+    <TabInfo>
+      <wxString Value="C:\Users\Kevin\Documents\My Dropbox\microBuilder\Code\LPC1114\LPC1114_CodeBase\cmd_tbl.h" Name="FileName"/>
+      <int Value="64" Name="FirstVisibleLine"/>
+      <int Value="97" Name="CurrentLine"/>
       <wxArrayString Name="Bookmarks"/>
     </TabInfo>
     <TabInfo>
       <wxString Value="C:\Users\Kevin\Documents\My Dropbox\microBuilder\Code\LPC1114\LPC1114_CodeBase\projectconfig.h" Name="FileName"/>
-      <int Value="0" Name="FirstVisibleLine"/>
-      <int Value="20" Name="CurrentLine"/>
+      <int Value="39" Name="FirstVisibleLine"/>
+      <int Value="56" Name="CurrentLine"/>
       <wxArrayString Name="Bookmarks"/>
     </TabInfo>
   </TabInfoArray>
