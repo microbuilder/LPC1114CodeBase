@@ -51,6 +51,7 @@
     <VirtualDirectory Name="uart">
       <File Name="../../core/uart/uart.c"/>
       <File Name="../../core/uart/uart.h"/>
+      <File Name="../../core/uart/uart_buf.c"/>
     </VirtualDirectory>
     <VirtualDirectory Name="wdt">
       <File Name="../../core/wdt/wdt.c"/>
