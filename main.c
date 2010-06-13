@@ -71,9 +71,9 @@ static void systemInit()
 
   // Initialise Chibi (if requested)
   #ifdef CFG_CHIBI
-    // // Write addresses to EEPROM for the first time
-    // uint16_t addr_short = 0x0000;
-    // uint64_t addr_ieee =  0x0000000000000000;
+    // Write addresses to EEPROM for the first time
+    // uint16_t addr_short = 0x00CC;
+    // uint64_t addr_ieee =  0x00000000000000CC;
     // mcp24aaWriteBuffer(CFG_CHIBI_EEPROM_SHORTADDR, (uint8_t *)&addr_short, 2);
     // mcp24aaWriteBuffer(CFG_CHIBI_EEPROM_IEEEADDR, (uint8_t *)&addr_ieee, 8);
     chb_init();
@@ -93,8 +93,39 @@ int main (void)
   // Configure cpu and mandatory peripherals
   systemInit();
 
+  // char msg[50];
+  // int32_t temperature;
+
   while (1)
   {
+    // Wait 1s
+    // systickDelay(1000);
+
+    // Send temperature
+    // lm75bGetTemperature(&temperature);
+    // temperature *=125;
+    // sprintf(msg, "It's %d.%d degrees C!%s", temperature / 1000, temperature % 1000, CFG_INTERFACE_NEWLINE);
+    // chb_write(0xFFFF, msg, sizeof(msg));
+
+    #ifdef CFG_CHIBI
+      // Check for incoming messages
+      chb_pcb_t *pcb = chb_get_pcb();
+      if (pcb->data_rcv)
+      {
+        rx_data.len = chb_read(&rx_data);
+        // Enable LED to indicate message reception (set low)
+        gpioSetValue (CFG_LED_PORT, CFG_LED_PIN, CFG_LED_ON);
+        // Output message to UART
+        printf("%sMessage received from node 0x%04X: %s (rssi=%d)%s", CFG_INTERFACE_NEWLINE, rx_data.src_addr, rx_data.data, pcb->ed, CFG_INTERFACE_NEWLINE);
+        #ifdef CFG_INTERFACE
+        printf(CFG_INTERFACE_PROMPT);
+        #endif
+        // Disable LED (set high)
+        gpioSetValue (CFG_LED_PORT, CFG_LED_PIN, CFG_LED_OFF);
+        pcb->data_rcv = FALSE;
+      }
+    #endif
+
     #ifdef CFG_INTERFACE
       // Handle any incoming command line input
       cmdPoll();
@@ -141,29 +172,3 @@ int puts(const char * str)
   return 0;
 }
 
-// ToDo: Cleanup
-
-/*    #ifdef CFG_CHIBI
-      chb_pcb_t *pcb = chb_get_pcb();
-
-      // Send message over Chibi every 500mS
-      // systickDelay(500 / CFG_SYSTICK_DELAY_IN_MS);
-      // gpioSetValue (CFG_LED_PORT, CFG_LED_PIN, CFG_LED_ON);
-      // char *text = "Test";
-      // chb_write(0xFFFF, text, sizeof(text));
-      // gpioSetValue (CFG_LED_PORT, CFG_LED_PIN, CFG_LED_OFF);
-
-      // Check for incoming messages
-      if (pcb->data_rcv)
-      {
-        rx_data.len = chb_read(&rx_data);
-        // Enable LED to indicate message reception (set low)
-        gpioSetValue (CFG_LED_PORT, CFG_LED_PIN, CFG_LED_ON);
-        // Output message to UART
-        printf("Message received from node %02X: %s (rssi=%d)%s", rx_data.src_addr, rx_data.data, pcb->ed, CFG_INTERFACE_NEWLINE);
-        // Disable LED (set high)
-        gpioSetValue (CFG_LED_PORT, CFG_LED_PIN, CFG_LED_OFF);
-        pcb->data_rcv = FALSE;
-      }
-    #endif
-*/

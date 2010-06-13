@@ -59,6 +59,10 @@
   #include "drivers/eeprom/mcp24aa/mcp24aa.h"
 #endif
 
+#ifdef CFG_LM75B
+  #include "drivers/sensors/lm75b/lm75b.h"
+#endif
+
 /**************************************************************************/
 /*!
     @brief  Attempts to convert the supplied decimal or hexadecimal
@@ -165,6 +169,13 @@ void cmd_sysinfo(uint8_t argc, char **argv)
     printf("%-30s : 0x%04X%s", "Wireless Node Address", pcb->src_addr, CFG_INTERFACE_NEWLINE);
   #endif
 
+  #ifdef CFG_LM75B
+    int32_t temp = 0;
+    lm75bGetTemperature(&temp);
+    temp *= 125;
+    printf("%-30s : %d.%d C%s", "System Temperature", temp / 1000, temp % 1000, CFG_INTERFACE_NEWLINE);
+  #endif
+
   // printf("%-30s : %s", "<Property Name>", CFG_INTERFACE_NEWLINE);
 }
 
@@ -251,7 +262,7 @@ void cmd_chibi_tx(uint8_t argc, char **argv)
 
   // Get message contents
   data_ptr = data;
-  for (i=0; i<argc-2; i++)
+  for (i=0; i<argc-1; i++)
   {
     len = strlen(argv[i+1]);
     strcpy((char *)data_ptr, (char *)argv[i+1]);
@@ -405,6 +416,16 @@ void cmd_i2ceeprom_write(uint8_t argc, char **argv)
 /**************************************************************************/
 void cmd_lm75b_gettemp(uint8_t argc, char **argv)
 {
+  int32_t temp = 0;
+
+  // Get the current temperature (in 0.125°C units)
+  lm75bGetTemperature(&temp);
+
+  // Multiply value by 125 for fixed-point math (0.125°C per unit)
+  temp *= 125;
+
+  // Use modulus operator to display decimal value
+  printf("Current Temperature: %d.%d C%s", temp / 1000, temp % 1000, CFG_INTERFACE_NEWLINE);
 }
 
 #endif

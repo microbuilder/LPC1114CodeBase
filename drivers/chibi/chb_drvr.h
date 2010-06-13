@@ -38,6 +38,7 @@
 #include "projectconfig.h"
 #include "core/gpio/gpio.h"
 
+#define CHB_CC1190_PRESENT      0       /// Set to 1 if CC1190 is being used
 #define CHB_CHINA               0
 #define CHB_EEPROM_IEEE_ADDR    CFG_CHIBI_EEPROM_IEEEADDR
 #define CHB_EEPROM_SHORT_ADDR   CFG_CHIBI_EEPROM_SHORTADDR
@@ -69,6 +70,13 @@
 #define CHB_SLPTRPORT         3
 #define CHB_SLPTRPIN          3
 #define CHB_SLPTRPIN_IOCONREG IOCON_PIO3_3
+
+// if CC1190 present, set up the ports and pins for high gain mode control
+#if (CHB_CC1190_PRESENT)
+    #define CHB_CC1190_HGM_PORT     1
+    #define CHB_CC1190_HGM_PIN      9
+    #define CHB_CC1190_HGM_IOCONREG IOCON_PIO1_9
+#endif
 
 //#define CHB_DDR_SLPTR       DDRF
 //#define CHB_DDR_RST         DDRF
@@ -176,6 +184,7 @@ enum
     CHB_BPSK_TX_OFFSET          = 3,
     CHB_MIN_FRAME_LENGTH        = 3,
     CHB_MAX_FRAME_LENGTH        = 0x7f,
+    CHB_PA_EXT_EN_POS           = 7
 };
 
 // transceiver timing
@@ -342,6 +351,10 @@ U8 chb_radio_sleep(void);
 
 // data transmit
 U8 chb_tx(U8 *hdr, U8 *data, U8 len);
+
+#if (CHB_CC1190_PRESENT)
+    void chb_set_hgm(U8 enb);
+#endif
 
 #ifdef CHB_DEBUG
 // sram access

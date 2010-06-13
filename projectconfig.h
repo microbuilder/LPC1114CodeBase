@@ -41,6 +41,7 @@
 
 #include "lpc111x.h"
 #include "sysdefs.h"
+#include "drivers/chibi/chb_drvr.h"
 
 #define CFG_CPU_CCLK                (12000000)    // Ref. only.  Clock speed actually set in "core/cpu/cpu.c"
 
@@ -57,16 +58,18 @@
 #define CFG_INTERFACE
 #define CFG_INTERFACE_UART                                  // Use UART for the command-line interface
 #define CFG_INTERFACE_MAXMSGSIZE    (80)                    // The maximum number of bytes to accept for a command
-#define CFG_INTERFACE_NEWLINE       (char *)"\n"            // This should be either \r\n (Windows-style) or \n (Unix-style)
-#define CFG_INTERFACE_PROMPT        (char *)"LPC1114 >> "
+#define CFG_INTERFACE_NEWLINE       (char *)"\r\n"          // This should be either \r\n (Windows-style) or \n (Unix-style)
+#define CFG_INTERFACE_PROMPT        (char *)"LPC1114 >> "   // The text to display at the command prompt
 
 #define CFG_I2CEEPROM
 
-// #define CFG_LM75B
+#define CFG_LM75B
 
-// #define CFG_CHIBI
+#define CFG_CHIBI
+#define CFG_CHIBI_MODE              (BPSK20_868MHZ)         // See chb_drvr.h for possible values
+#define CFG_CHIBI_POWER             (CHB_PWR_EU2_5DBM)      // See chb_drvr.h for possible values
 #define CFG_CHIBI_EEPROM_IEEEADDR   (uint16_t)(0x0000)      // Start location in EEPROM for the full IEEE address
-#define CFG_CHIBI_EEPROM_SHORTADDR  (uint16_t)(0x0009)      // Start location in EEPROM for the short address
+#define CFG_CHIBI_EEPROM_SHORTADDR  (uint16_t)(0x0009)      // Start location in EEPROM for the short (16-bit) address
 
 // #####################
 // Config error-handling

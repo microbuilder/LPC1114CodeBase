@@ -460,6 +460,9 @@ U8 chb_set_channel(U8 channel)
 void chb_set_pwr(U8 val)
 {
     chb_reg_write(PHY_TX_PWR, val);
+
+    // Confirm value
+    U8 check = chb_reg_read(PHY_TX_PWR);
 }
 
 /**************************************************************************/
@@ -580,6 +583,24 @@ U16 chb_get_short_addr()
     chb_eeprom_read(CHB_EEPROM_SHORT_ADDR, (uint8_t*)&addr, 2);
     return addr;	
 }
+/**************************************************************************/
+/*!
+    Set the high gain mode pin for the CC1190
+*/
+/**************************************************************************/
+#if (CHB_CC1190_PRESENT)
+void chb_set_hgm(U8 enb)
+{
+    if (enb)
+    {
+        gpioSetValue(CHB_CC1190_HGM_PORT, CHB_CC1190_HGM_PIN, 1);
+    }
+    else
+    {
+        gpioSetValue(CHB_CC1190_HGM_PORT, CHB_CC1190_HGM_PIN, 0);
+    }
+}
+#endif
 
 /**************************************************************************/
 /*!
@@ -675,12 +696,9 @@ static void chb_radio_init()
     // set autocrc mode
     chb_reg_read_mod_write(TRX_CTRL_1, 1 << CHB_AUTO_CRC_POS, 1 << CHB_AUTO_CRC_POS);
 
-    // set up default phy modulation and data rate - OQPSK, 100 kbps, 868 MHz
-    chb_set_mode(OQPSK_868MHZ);
-
-    // Set power to 3db
-    chb_set_pwr(CHB_PWR_EU2_3DBM);
-
+    // set up default phy modulation, data rate and power (Ex. OQPSK, 100 kbps, 868 MHz, 3dBm)
+    chb_set_mode(CFG_CHIBI_MODE);       // Defined in projectconfig.h
+    chb_set_pwr(CFG_CHIBI_POWER);       // Defined in projectconfig.h
     chb_set_channel(CHB_CHANNEL);
 
     // set fsm state
@@ -698,6 +716,19 @@ static void chb_radio_init()
     // NOTE: Possibly get this from EEPROM
     chb_get_ieee_addr(ieee_addr);
     chb_reg_write64(IEEE_ADDR_0, ieee_addr);
+
+#if (CHB_CC1190_PRESENT)
+    // set high gain mode pin to output and init to zero
+    gpioSetDir (CHB_CC1190_HGM_PORT, CHB_CC1190_HGM_PIN, 1);
+    gpioSetPullup (&CHB_CC1190_HGM_IOCONREG, gpioPullupMode_Inactive);
+    gpioSetValue (CHB_CC1190_HGM_PORT, CHB_CC1190_HGM_PIN, 0);
+
+    // set external power amp on AT86RF212
+    chb_reg_read_mod_write(TRX_CTRL_1, 1<<CHB_PA_EXT_EN_POS, 1<<CHB_PA_EXT_EN_POS);
+
+    // set power to lowest level possible
+    chb_set_pwr(0xd);   // set to -11 dBm
+#endif
 
     // set interrupt/gpio pin to input
     gpioSetDir (CHB_EINTPORT, CHB_EINTPIN, 0);

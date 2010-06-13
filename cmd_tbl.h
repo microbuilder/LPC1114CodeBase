@@ -76,22 +76,22 @@ void cmd_lm75b_gettemp(uint8_t argc, char **argv);
 cmd_t cmd_tbl[] = 
 {
   // command name, min args, max args, function name, command description, syntax description
-  { "help",           0, 0, cmd_help              , "Displays a list of all available commands"           , "'help' has no parameters" },
-  { "hello",          0, 1, cmd_hello             , "Displays 'Hello World!'"                             , "'hello [<name>]'" },
-  { "sysinfo",        0, 0, cmd_sysinfo           , "Displays current system configuration settings"      , "'sysinfo' has no parameters" },
+  { "help",           0, 0,   cmd_help              , "Displays a list of all available commands"           , "'help' has no parameters" },
+  { "hello",          0, 1,   cmd_hello             , "Displays 'Hello World!'"                             , "'hello [<name>]'" },
+  { "sysinfo",        0, 0,   cmd_sysinfo           , "Displays current system configuration settings"      , "'sysinfo' has no parameters" },
 
   #ifdef CFG_CHIBI
-  { "chb-addr",       0, 1, cmd_chibi_addr        , "Chibi - Gets/sets the 16-bit address"                , "'chb-addr [<1-65534>|<OxFFFE>]'" },
-  { "chb-send",       2, 2, cmd_chibi_tx          , "Chibi - Transmits the supplied text/value"           , "'chb-tx <destaddr> <message>'" },
+  { "chb-addr",       0, 1,   cmd_chibi_addr        , "Chibi - Gets/sets the 16-bit node address"           , "'chb-addr [<1-65534>|<OxFFFE>]'" },
+  { "chb-send",       2, 99,  cmd_chibi_tx          , "Chibi - Transmits the supplied text/value"           , "'chb-send <destaddr> <message>'" },
   #endif
 
   #ifdef CFG_I2CEEPROM
-  { "eeprom-read",    1, 1, cmd_i2ceeprom_read    , "EEPROM - Reads one byte from the specified address"  , "'eeprom-read <addr>'" },
-  { "eeprom-write",   2, 2, cmd_i2ceeprom_write   , "EEPROM - Writes one byte to the specified address"   , "'eeprom-write <addr> <value>'" },
+  { "eeprom-read",    1, 1,   cmd_i2ceeprom_read    , "Reads one byte from the specified EEPROM address"    , "'eeprom-read <addr>'" },
+  { "eeprom-write",   2, 2,   cmd_i2ceeprom_write   , "Writes one byte to the specified EEPROM address"     , "'eeprom-write <addr> <value>'" },
   #endif
 
   #ifdef CFG_LM75B
-  { "lm75b-gettemp",  0, 0, cmd_lm75b_gettemp     , "LM75B - Current temperature in degrees celsius"      , "'lm75b-gettemp'" },
+  { "lm75b-read",     0, 0,   cmd_lm75b_gettemp     , "Gets the current temperature in degrees celsius"     , "'lm75b-read'" },
   #endif
 };
 
