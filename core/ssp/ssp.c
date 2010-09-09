@@ -115,6 +115,45 @@ void SSP0_IRQHandler (void)
 
 /**************************************************************************/
 /*! 
+    @brief SSP0 interrupt handler for SPI communication
+
+    The algorithm is, if RXFIFO is at least half full, 
+    start receive until it's empty; if TXFIFO is at least
+    half empty, start transmit until it's full.
+    This will maximize the use of both FIFOs and performance.
+*/
+/**************************************************************************/
+void SSP1_IRQHandler (void)
+{
+  uint32_t regValue;
+
+  regValue = SSP_SSP1MIS;
+
+  /* Check for overrun interrupt */
+  if ( regValue & SSP_SSP1MIS_RORMIS_FRMRCVD )
+  {
+    interruptOverRunStat++;
+    SSP_SSP1ICR = SSP_SSP1ICR_RORIC_CLEAR;      // Clear interrupt
+  }
+
+  /* Check for timeout interrupt */
+  if ( regValue & SSP_SSP1MIS_RTMIS_NOTEMPTY )
+  {
+    interruptRxTimeoutStat++;
+    SSP_SSP1ICR = SSP_SSP1ICR_RTIC_CLEAR;       // Clear interrupt
+  }
+
+  /* Check if Rx buffer is at least half-full */
+  if ( regValue & SSP_SSP1MIS_RXMIS_HALFFULL )
+  {
+    // ToDo: Receive until it's empty
+    interruptRxStat++;
+  }
+  return;
+}
+
+/**************************************************************************/
+/*! 
     @brief Initialises the SSP0 port
 
     By default, SSP0 is set to SPI frame-format with 8-bit data.  Pin 2.11
@@ -215,6 +254,79 @@ void sspInit (uint8_t portNum, sspClockPolarity_t polarity, sspClockPhase_t phas
     SSP_SSP0CR1 = SSP_SSP0CR1_SSE_ENABLED | SSP_SSP0CR1_MS_MASTER | SSP_SSP0CR1_LBM_NORMAL;
   }
 
+  if (portNum == 1)
+  {
+    /* Reset SSP */
+    SCB_PRESETCTRL &= ~SCB_PRESETCTRL_SSP1_MASK;
+    SCB_PRESETCTRL |= SCB_PRESETCTRL_SSP1_RESETDISABLED;
+  
+    /* Enable AHB clock to the SSP domain. */
+    SCB_SYSAHBCLKCTRL |= (SCB_SYSAHBCLKCTRL_SSP1);
+  
+    /* Divide by 5 (SSPCLKDIV also enables to SSP CLK) */
+    SCB_SSP1CLKDIV = SCB_SSP1CLKDIV_DIV5;
+  
+    /* Set P2.2 to SSP MISO */
+    IOCON_PIO2_2 &= ~IOCON_PIO2_2_FUNC_MASK;
+    IOCON_PIO2_2 |= IOCON_PIO2_2_FUNC_MISO1;
+  
+    /* Set P2.3 to SSP MOSI */
+    IOCON_PIO2_3 &= ~IOCON_PIO2_3_FUNC_MASK;
+    IOCON_PIO2_3 |= IOCON_PIO2_3_FUNC_MOSI1;
+  
+    /* Set 2.1 to SSP SCK */
+    // IOCON_SCKLOC = 0x01;
+    IOCON_PIO2_1 = IOCON_PIO2_1_FUNC_SCK1;
+  
+    /* Set P2.0/SSEL1 to GPIO output and high */
+    IOCON_PIO2_0 &= ~IOCON_PIO2_0_FUNC_MASK;
+    IOCON_PIO2_0 |= IOCON_PIO2_0_FUNC_GPIO;
+    gpioSetDir(SSP1_CSPORT, SSP1_CSPIN, 1);
+    gpioSetValue(SSP1_CSPORT, SSP1_CSPIN, 1);
+    gpioSetPullup(&IOCON_PIO2_0, gpioPullupMode_Inactive);  // Board has external pull-up
+  
+    /* (PCLK / (CPSDVSR × [SCR+1])) = (7,200,000 / (2 x [8 + 1])) = 0.4 MHz */
+    uint32_t configReg = ( SSP_SSP1CR0_DSS_8BIT    // Data size = 8-bit
+                  | SSP_SSP1CR0_FRF_SPI       // Frame format = SPI
+                  | SSP_SSP1CR0_SCR_8);       // Serial clock rate = 8
+  
+    // Set clock polarity
+    if (polarity == sspClockPolarity_High)
+      configReg |= SSP_SSP1CR0_CPOL_HIGH;     // Clock polarity = High between frames
+    else
+      configReg &= ~SSP_SSP1CR0_CPOL_MASK;    // Clock polarity = Low between frames
+  
+    // Set edge transition
+    if (phase == sspClockPhase_FallingEdge)
+      configReg |= SSP_SSP1CR0_CPHA_SECOND;   // Clock out phase = Trailing edge clock transition
+    else
+      configReg &= ~SSP_SSP1CR0_CPHA_MASK;    // Clock out phase = Leading edge clock transition
+  
+    // Assign config values to SSP1CR0
+    SSP_SSP1CR0 = configReg;
+  
+    /* Clock prescale register must be even and at least 2 in master mode */
+    SSP_SSP1CPSR = SSP_SSP1CPSR_CPSDVSR_DIV2;
+  
+    /* Clear the Rx FIFO */
+    uint8_t i, Dummy=Dummy;
+    for ( i = 0; i < SSP_FIFOSIZE; i++ )
+    {
+      Dummy = SSP_SSP1DR;
+    }
+  
+    /* Enable the SSP Interrupt */
+    NVIC_EnableIRQ(SSP1_IRQn);
+  
+    /* Set SSPINMS registers to enable interrupts
+     * enable all error related interrupts        */
+    SSP_SSP1IMSC = ( SSP_SSP1IMSC_RORIM_ENBL      // Enable overrun interrupt
+                   | SSP_SSP1IMSC_RTIM_ENBL);     // Enable timeout interrupt
+  
+    /* Enable device and set it to master mode, no loopback */
+    SSP_SSP1CR1 = SSP_SSP1CR1_SSE_ENABLED | SSP_SSP1CR1_MS_MASTER | SSP_SSP1CR1_LBM_NORMAL;
+  }
+
   return;
 }
 
@@ -252,6 +364,23 @@ void sspSend (uint8_t portNum, uint8_t *buf, uint32_t length)
     }
   }
 
+  if (portNum == 1)
+  {
+    for (i = 0; i < length; i++)
+    {
+      /* Move on only if NOT busy and TX FIFO not full. */
+      while ((SSP_SSP1SR & (SSP_SSP1SR_TNF_NOTFULL | SSP_SSP1SR_BSY_BUSY)) != SSP_SSP1SR_TNF_NOTFULL);
+      SSP_SSP1DR = *buf;
+      buf++;
+  
+      while ( (SSP_SSP1SR & (SSP_SSP1SR_BSY_BUSY|SSP_SSP1SR_RNE_NOTEMPTY)) != SSP_SSP1SR_RNE_NOTEMPTY );
+      /* Whenever a byte is written, MISO FIFO counter increments, Clear FIFO 
+      on MISO. Otherwise, when SSP1Receive() is called, previous data byte
+      is left in the FIFO. */
+      Dummy = SSP_SSP1DR;
+    }
+  }
+
   return; 
 }
 
@@ -282,6 +411,21 @@ void sspReceive(uint8_t portNum, uint8_t *buf, uint32_t length)
       while ( (SSP_SSP0SR & (SSP_SSP0SR_BSY_BUSY|SSP_SSP0SR_RNE_NOTEMPTY)) != SSP_SSP0SR_RNE_NOTEMPTY );
       
       *buf = SSP_SSP0DR;
+      buf++;
+    }
+  }
+
+  if (portNum == 1)
+  {
+    for ( i = 0; i < length; i++ )
+    {
+      /* As long as the receive FIFO is not empty, data can be received. */
+      SSP_SSP1DR = 0xFF;
+  
+      /* Wait until the Busy bit is cleared */
+      while ( (SSP_SSP1SR & (SSP_SSP1SR_BSY_BUSY|SSP_SSP1SR_RNE_NOTEMPTY)) != SSP_SSP1SR_RNE_NOTEMPTY );
+      
+      *buf = SSP_SSP1DR;
       buf++;
     }
   }

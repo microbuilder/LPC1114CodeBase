@@ -101,6 +101,8 @@
     <File Name="../../sysdefs.h"/>
     <File Name="../../cmd_tbl.h"/>
     <File Name="../../commands.c"/>
+    <File Name="../../sysinit.c"/>
+    <File Name="../../sysinit.h"/>
   </VirtualDirectory>
   <Settings Type="Dynamic Library">
     <Configuration Name="Debug" CompilerType="gnu gcc" DebuggerType="GNU gdb debugger" Type="Dynamic Library" BuildCmpWithGlobalSettings="append" BuildLnkWithGlobalSettings="append" BuildResWithGlobalSettings="append">
@@ -154,8 +156,8 @@ continue
       <PostBuild/>
       <CustomBuild Enabled="yes">
         <RebuildCommand/>
-        <CleanCommand>cs-make clean</CleanCommand>
-        <BuildCommand>cs-make</BuildCommand>
+        <CleanCommand>make clean</CleanCommand>
+        <BuildCommand>make</BuildCommand>
         <PreprocessFileCommand/>
         <SingleFileCommand/>
         <MakefileGenerationCommand/>

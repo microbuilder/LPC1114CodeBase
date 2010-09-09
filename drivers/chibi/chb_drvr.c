@@ -462,7 +462,8 @@ void chb_set_pwr(U8 val)
     chb_reg_write(PHY_TX_PWR, val);
 
     // Confirm value
-    U8 check = chb_reg_read(PHY_TX_PWR);
+    U8 check;
+    check = chb_reg_read(PHY_TX_PWR);
 }
 
 /**************************************************************************/

@@ -48,9 +48,15 @@
 #define SSP0_CSPORT             0
 #define SSP0_CSPIN              2
 
+#define SSP1_CSPORT             2
+#define SSP1_CSPIN              0
+
 /* Macro definitions to enable and disable SPI */
 #define ssp0Select()            do {gpioSetValue(SSP0_CSPORT, SSP0_CSPIN, 0);} while (0)
 #define ssp0Deselect()          do {gpioSetValue(SSP0_CSPORT, SSP0_CSPIN, 1);} while (0)
+
+#define ssp1Select()            do {gpioSetValue(SSP1_CSPORT, SSP1_CSPIN, 0);} while (0)
+#define ssp1Deselect()          do {gpioSetValue(SSP1_CSPORT, SSP1_CSPIN, 1);} while (0)
 
 /**************************************************************************/
 /*! 

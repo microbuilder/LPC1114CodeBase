@@ -46,6 +46,7 @@ typedef struct
   char *command;
   uint8_t minArgs;
   uint8_t maxArgs;
+  uint8_t hidden;
   void (*func)(uint8_t argc, char **argv);
   const char *description;
   const char *parameters;

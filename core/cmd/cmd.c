@@ -54,7 +54,7 @@
 #include "cmd.h"
 #include "cmd_tbl.h"
 
-#ifdef CFG_INTERFACE_UART
+#ifdef CFG_PRINTF_UART
 #include "core/uart/uart.h"
 #endif
 
@@ -69,7 +69,7 @@ static uint8_t *msg_ptr;
 /**************************************************************************/
 void cmdPoll()
 {
-  #ifdef CFG_INTERFACE_UART
+  #if defined CFG_PRINTF_UART
   while (uartRxBufferDataPending())
   {
     uint8_t c = uartRxBufferRead();
@@ -198,7 +198,7 @@ void cmdParse(char *cmd)
 /**************************************************************************/
 void cmdInit()
 {
-  #ifdef CFG_INTERFACE_UART
+  #if defined CFG_INTERFACE && defined CFG_INTERFACE_UART
   // Check if UART is already initialised
   uart_pcb_t *pcb = uartGetPCB();
   if (!pcb->initialised)
@@ -229,7 +229,10 @@ void cmd_help(uint8_t argc, char **argv)
   // Display full command list
   for (i=0; i < CMD_COUNT; i++)
   {
-    printf ("%-20s   %s%s", cmd_tbl[i].command, cmd_tbl[i].description, CFG_INTERFACE_NEWLINE);
+    if (!cmd_tbl[i].hidden) 
+    {
+      printf ("%-20s   %s%s", cmd_tbl[i].command, cmd_tbl[i].description, CFG_INTERFACE_NEWLINE);
+    }
   }
 
   printf("%sCommand parameters can be seen by entering: <command-name> ?%s", CFG_INTERFACE_NEWLINE, CFG_INTERFACE_NEWLINE);

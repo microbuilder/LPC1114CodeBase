@@ -95,7 +95,7 @@
 
 #include "uart.h"
 
-#ifdef CFG_INTERFACE_UART
+#ifdef CFG_PRINTF_UART
   #include "core/cmd/cmd.h"
 #endif
 

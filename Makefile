@@ -31,7 +31,7 @@ VPATH += core core/adc core/cmd core/cpu core/gpio core/i2c core/pmu
 VPATH += core/ssp core/systick core/timer16 core/timer32 core/uart
 VPATH += core/libc core/wdt
 OBJS += adc.o cpu.o cmd.o gpio.o i2c.o pmu.o ssp.o systick.o timer16.o
-OBJS += timer32.o uart.o uart_buf.o stdio.o string.o wdt.o
+OBJS += timer32.o uart.o uart_buf.o stdio.o string.o wdt.o sysinit.o
 OBJS += commands.o
 
 ##########################################################################
@@ -81,16 +81,18 @@ all: firmware
 	$(AS) $(ASFLAGS) -o $@ $<
 
 firmware: $(OBJS) $(SYS_OBJS)
-	-@echo "MEMORY {"\
-           "  flash(rx): ORIGIN = 0x00000000, LENGTH = $(FLASH)"\
-           "  sram(rwx): ORIGIN = 0x10000000+$(SRAM_USB), LENGTH = $(SRAM)-$(SRAM_USB) }"\
-	       "INCLUDE $(LD_SCRIPT)" > $(LD_TEMP)
+	-@echo "MEMORY" > $(LD_TEMP)
+	-@echo "{" >> $(LD_TEMP)
+	-@echo "  flash(rx): ORIGIN = 0x00000000, LENGTH = $(FLASH)" >> $(LD_TEMP)
+	-@echo "  sram(rwx): ORIGIN = 0x10000000+$(SRAM_USB), LENGTH = $(SRAM)-$(SRAM_USB)" >> $(LD_TEMP)
+	-@echo "}" >> $(LD_TEMP)
+	-@echo "INCLUDE $(LD_SCRIPT)" >> $(LD_TEMP)
 	$(LD) $(LDFLAGS) -T $(LD_TEMP) -o $(OUTFILE).elf $(OBJS)
 	-@echo ""
 	$(SIZE) $(OUTFILE).elf
 	-@echo ""
 	$(OBJCOPY) $(OCFLAGS) -O binary $(OUTFILE).elf $(OUTFILE).bin
 	$(OBJCOPY) $(OCFLAGS) -O ihex $(OUTFILE).elf $(OUTFILE).hex
-
+  
 clean:
 	rm -f $(OBJS) $(LD_TEMP) $(OUTFILE).elf $(OUTFILE).bin $(OUTFILE).hex

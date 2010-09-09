@@ -115,10 +115,10 @@ static int getNumber (char *s, int32_t *result)
   // Try to convert value
   for (value = 0; *s; s++)
   {
-    if (mustBeHex && isxdigit (*s))
-      value = (value << 4) | hexToDec [toupper (*s) - '0'];
-    else if (isdigit (*s))
-      value = (value * 10) + (*s - '0');
+    if (mustBeHex && isxdigit ((uint8_t)*s))
+      value = (value << 4) | hexToDec [toupper((uint8_t)*s) - '0'];
+    else if (isdigit ((uint8_t)*s))
+      value = (value * 10) + ((uint8_t)*s - '0');
     else
     {
       printf ("Malformed number. Must be decimal number, or hex value preceeded by '0x'%s", CFG_INTERFACE_NEWLINE);
@@ -163,17 +163,16 @@ void cmd_sysinfo(uint8_t argc, char **argv)
   printf("%-30s : %d mS %s", "Systick Timer Delay", CFG_SYSTICK_DELAY_IN_MS, CFG_INTERFACE_NEWLINE);
   printf("%-30s : %d BPS %s", "UART Baud Rate", CFG_UART_BAUDRATE, CFG_INTERFACE_NEWLINE);
 
-  #ifdef CFG_CHIBI
-    chb_pcb_t *pcb = chb_get_pcb();
-    printf("%-30s : %s%s", "Wireless Frequency", "868 MHz", CFG_INTERFACE_NEWLINE);
-    printf("%-30s : 0x%04X%s", "Wireless Node Address", pcb->src_addr, CFG_INTERFACE_NEWLINE);
-  #endif
-
   #ifdef CFG_LM75B
     int32_t temp = 0;
     lm75bGetTemperature(&temp);
     temp *= 125;
     printf("%-30s : %d.%d C%s", "System Temperature", temp / 1000, temp % 1000, CFG_INTERFACE_NEWLINE);
+  #endif
+
+  #ifdef CFG_CHIBI
+    chb_pcb_t *pcb = chb_get_pcb();
+    printf("%-30s : 0x%04X%s", "Chibi Address", pcb->src_addr, CFG_INTERFACE_NEWLINE);
   #endif
 
   // printf("%-30s : %s", "<Property Name>", CFG_INTERFACE_NEWLINE);
@@ -193,14 +192,8 @@ void cmd_chibi_addr(uint8_t argc, char **argv)
 {
   if (argc > 0)
   {
-    // Make sure hexadecimal values are 16-bit or less
-    if ((strlen (argv[0]) > 2) && (!strncmp (argv[0], "0x", 2) || !strncmp (argv[0], "0X", 2)) && (strlen (argv[0]) > 6))
-    {
-      printf("Invalid Address: 16-bit hexadecimal value required (ex. '0x12EF').%s", CFG_INTERFACE_NEWLINE);
-      return;
-    }
 
-    // Try to convert supplied value to an integer
+  // Try to convert supplied value to an integer
     int32_t addr;
     getNumber (argv[0], &addr);
     
@@ -231,6 +224,7 @@ void cmd_chibi_addr(uint8_t argc, char **argv)
 
 /**************************************************************************/
 /*! 
+    Sends text or data via Chibi
     
 */
 /**************************************************************************/
@@ -238,13 +232,6 @@ void cmd_chibi_tx(uint8_t argc, char **argv)
 {
   uint8_t i, len, *data_ptr, data[50];
   uint16_t addr;
-
-  // Make sure hexadecimal address values are 16-bit or less
-  if ((strlen (argv[0]) > 2) && (!strncmp (argv[0], "0x", 2) || !strncmp (argv[0], "0X", 2)) && (strlen (argv[0]) > 6))
-  {
-    printf("Invalid Address: 16-bit hexadecimal value required (ex. '0x12EF').%s", CFG_INTERFACE_NEWLINE);
-    return;
-  }
 
   // Try to convert supplied address to an integer
   int32_t addr32;
@@ -289,13 +276,6 @@ void cmd_i2ceeprom_read(uint8_t argc, char **argv)
   uint16_t addr;
   uint8_t value; // buffer[1] = { 0x00 };
 
-  // Make sure hexadecimal address value is 16-bit or less
-  if ((strlen (argv[0]) > 2) && (!strncmp (argv[0], "0x", 2) || !strncmp (argv[0], "0X", 2)) && (strlen (argv[0]) > 6))
-  {
-    printf("Invalid Address: 16-bit hexadecimal value required (ex. '0x00EF').%s", CFG_INTERFACE_NEWLINE);
-    return;
-  }
-
   // Try to convert supplied address to an integer
   int32_t addr32;
   getNumber (argv[0], &addr32);
@@ -324,13 +304,6 @@ void cmd_i2ceeprom_write(uint8_t argc, char **argv)
   uint16_t addr;
   uint8_t val;
 
-  // Make sure hexadecimal address value is 16-bit or less
-  if ((strlen (argv[0]) > 2) && (!strncmp (argv[0], "0x", 2) || !strncmp (argv[0], "0X", 2)) && (strlen (argv[0]) > 6))
-  {
-    printf("Invalid Address: 16-bit hexadecimal value required (ex. '0x00EF').%s", CFG_INTERFACE_NEWLINE);
-    return;
-  }
-
   // Try to convert supplied address to an integer
   int32_t addr32;
   getNumber (argv[0], &addr32);
@@ -358,13 +331,6 @@ void cmd_i2ceeprom_write(uint8_t argc, char **argv)
 
   // Address seems to be OK
   addr = (uint16_t)addr32;
-
-  // Make sure hexadecimal data is 8-bit or less
-  if ((strlen (argv[1]) > 2) && (!strncmp (argv[1], "0x", 2) || !strncmp (argv[1], "0X", 2)) && (strlen (argv[1]) > 4))
-  {
-    printf("Invalid Data: 8-bit hexadecimal value required (ex. '0xEF').%s", CFG_INTERFACE_NEWLINE);
-    return;
-  }
 
   // Try to convert supplied data to an integer
   int32_t val32;
@@ -426,6 +392,58 @@ void cmd_lm75b_gettemp(uint8_t argc, char **argv)
 
   // Use modulus operator to display decimal value
   printf("Current Temperature: %d.%d C%s", temp / 1000, temp % 1000, CFG_INTERFACE_NEWLINE);
+}
+
+#endif
+
+#ifdef CFG_TESTBED
+
+/**************************************************************************/
+/*! 
+    Executes a series of automatic tests using a dedicated testbed.
+*/
+/**************************************************************************/
+void cmd_testbed_test(uint8_t argc, char **argv)
+{
+  printf("Starting Testbed Checks%s%s", CFG_INTERFACE_NEWLINE, CFG_INTERFACE_NEWLINE);
+
+  // ToDo: Test ADC3
+  printf("%-30s : ", "ADC Input");
+  printf("ToDo%s", CFG_INTERFACE_NEWLINE);
+
+  // ToDo: Test EEPROM
+  printf("%-30s : ", "EEPROM (I2C)");
+  printf("ToDo%s", CFG_INTERFACE_NEWLINE);
+
+  // ToDo: Enable LED
+  printf("%-30s : ", "LED");
+  printf("ToDo%s", CFG_INTERFACE_NEWLINE);
+
+  #ifdef CFG_LM75B
+  // ToDo: Test Temperature Sensor
+  printf("%-30s : ", "LM75B Temp. Sensor");
+  printf("ToDo%s", CFG_INTERFACE_NEWLINE);
+  #endif
+
+  #ifdef CFG_CHIBI
+  // ToDo: Test Chibi Presence
+  printf("%-30s : ", "AT86RF212 Presence");
+  printf("ToDo%s", CFG_INTERFACE_NEWLINE);
+
+  // ToDo: Test Chibi TX
+  printf("%-30s : ", "Chibi TX (3s)");
+  printf(".");
+  printf(".");
+  printf(".");
+  printf("ToDo%s", CFG_INTERFACE_NEWLINE);
+  
+  // ToDo: Test Chibi RX
+  printf("%-30s : ", "Chibi RX (3s)");
+  printf(".");
+  printf(".");
+  printf(".");
+  printf("ToDo%s", CFG_INTERFACE_NEWLINE);
+  #endif
 }
 
 #endif

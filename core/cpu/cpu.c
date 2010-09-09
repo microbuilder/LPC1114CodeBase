@@ -215,7 +215,7 @@ void cpuInit (void)
   // GPIO_GPIO3DATA &= ~(GPIO_IO_ALL);
 
   // Configure PLL and main system clock
-  cpuPllSetup(CPU_MULTIPLIER_1);
+  cpuPllSetup(CPU_MULTIPLIER_3);
 }
 
 /**************************************************************************/

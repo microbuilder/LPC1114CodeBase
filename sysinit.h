@@ -1,6 +1,6 @@
 /**************************************************************************/
 /*! 
-    @file     main.c
+    @file     sysinit.h
     @author   K. Townsend (microBuilder.eu)
     @date     22 March 2010
     @version  0.10
@@ -36,42 +36,15 @@
 */
 /**************************************************************************/
 
-#include <stdio.h>
+#ifndef __SYSINIT_H__ 
+#define __SYSINIT_H__
 
-#include "sysinit.h"
+#include "projectconfig.h"
 
-#ifdef CFG_INTERFACE
-  #include "core/cmd/cmd.h"
+#include "core/gpio/gpio.h"
+#include "core/systick/systick.h"
+
+// Function prototypes
+void systemInit();
+
 #endif
-
-#ifdef CFG_CHIBI
-  #include "drivers/chibi/chb_wrapper.h"
-#endif
-
-/**************************************************************************/
-/*! 
-    Main program entry point.  After reset, normal code execution will
-    begin here.
-*/
-/**************************************************************************/
-int main (void)
-{
-  // Configure cpu and mandatory peripherals
-  systemInit();
-
-  while (1)
-  {
-    #ifdef CFG_INTERFACE 
-       // Handle any incoming command line input 
-       cmdPoll(); 
-     #else 
-       // Toggle LED @ 1 Hz 
-       systickDelay(1000); 
-       if (gpioGetValue(CFG_LED_PORT, CFG_LED_PIN))   
-         gpioSetValue (CFG_LED_PORT, CFG_LED_PIN, CFG_LED_ON); 
-       else  
-         gpioSetValue (CFG_LED_PORT, CFG_LED_PIN, CFG_LED_OFF); 
-     #endif  
-  }
-}
-

@@ -1,10 +1,39 @@
 /**************************************************************************/
 /*! 
-    \file     lpc111x.h
-    \author   K. Townsend (microBuilder.eu)
-    \version  1.0
+    @file     lpc111x.h
+    @author   K. Townsend (microBuilder.eu)
+    @version  1.0
 
     LPC1114 header file, based on V0.10 of the LPC1114 User Manual.
+
+    @section LICENSE
+
+    Software License Agreement (BSD License)
+
+    Copyright (c) 2010, microBuilder SARL
+    All rights reserved.
+
+    Redistribution and use in source and binary forms, with or without
+    modification, are permitted provided that the following conditions are met:
+    1. Redistributions of source code must retain the above copyright
+    notice, this list of conditions and the following disclaimer.
+    2. Redistributions in binary form must reproduce the above copyright
+    notice, this list of conditions and the following disclaimer in the
+    documentation and/or other materials provided with the distribution.
+    3. Neither the name of the copyright holders nor the
+    names of its contributors may be used to endorse or promote products
+    derived from this software without specific prior written permission.
+
+    THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS ''AS IS'' AND ANY
+    EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+    DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER BE LIABLE FOR ANY
+    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+    (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+    ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+    SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 /**************************************************************************/
 
@@ -42,6 +71,9 @@
 #define SCB_PRESETCTRL_SSP1_RESETENABLED          ((unsigned int) 0x00000000)
 #define SCB_PRESETCTRL_SSP1_RESETDISABLED         ((unsigned int) 0x00000004)
 #define SCB_PRESETCTRL_SSP1_MASK                  ((unsigned int) 0x00000004)
+#define SCB_PRESETCTRL_CAN_RESETENABLED           ((unsigned int) 0x00000000)
+#define SCB_PRESETCTRL_CAN_RESETDISABLED          ((unsigned int) 0x00000008)
+#define SCB_PRESETCTRL_CAN_MASK                   ((unsigned int) 0x00000008)
 
 /*  SYSPLLCTRL (System PLL control register)
     This register connects and enables the system PLL and configures the PLL multiplier and
@@ -285,6 +317,8 @@
 #define SCB_SYSAHBCLKCTRL_WDT_MASK                ((unsigned int) 0x00008000)
 #define SCB_SYSAHBCLKCTRL_IOCON                   ((unsigned int) 0x00010000) // Enables clock for IO configuration block
 #define SCB_SYSAHBCLKCTRL_IOCON_MASK              ((unsigned int) 0x00010000)
+#define SCB_SYSAHBCLKCTRL_CAN                     ((unsigned int) 0x00020000) // Enables clock for CAN
+#define SCB_SYSAHBCLKCTRL_CAN_MASK                ((unsigned int) 0x00020000)
 #define SCB_SYSAHBCLKCTRL_SSP1                    ((unsigned int) 0x00040000) // Enables clock for SSP1
 #define SCB_SYSAHBCLKCTRL_SSP1_MASK               ((unsigned int) 0x00040000)
 #define SCB_SYSAHBCLKCTRL_ALL_MASK                ((unsigned int) 0x0007FFFF)
@@ -299,7 +333,9 @@
 #define SCB_SSP0CLKDIV_DIV2                       ((unsigned int) 0x00000002)
 #define SCB_SSP0CLKDIV_DIV3                       ((unsigned int) 0x00000003)
 #define SCB_SSP0CLKDIV_DIV4                       ((unsigned int) 0x00000004)
+#define SCB_SSP0CLKDIV_DIV5                       ((unsigned int) 0x00000005)
 #define SCB_SSP0CLKDIV_DIV6                       ((unsigned int) 0x00000006)
+#define SCB_SSP0CLKDIV_DIV10                      ((unsigned int) 0x0000000A)
 #define SCB_SSP0CLKDIV_MASK                       ((unsigned int) 0x000000FF)
 
 /*  UARTCLKDIV (UART clock divider register)
@@ -325,7 +361,9 @@
 #define SCB_SSP1CLKDIV_DIV2                       ((unsigned int) 0x00000002)
 #define SCB_SSP1CLKDIV_DIV3                       ((unsigned int) 0x00000003)
 #define SCB_SSP1CLKDIV_DIV4                       ((unsigned int) 0x00000004)
+#define SCB_SSP1CLKDIV_DIV5                       ((unsigned int) 0x00000005)
 #define SCB_SSP1CLKDIV_DIV6                       ((unsigned int) 0x00000006)
+#define SCB_SSP1CLKDIV_DIV10                      ((unsigned int) 0x0000000A)
 #define SCB_SSP1CLKDIV_MASK                       ((unsigned int) 0x000000FF)
 
 /*  WDTCLKSEL (WDT clock source select register)
@@ -742,6 +780,24 @@
 #define SCB_CPUID_CONSTANT_MASK                   ((unsigned int) 0x000F0000) // Constant
 #define SCB_CPUID_VARIANT_MASK                    ((unsigned int) 0x00F00000) // Variant
 #define SCB_CPUID_IMPLEMENTER_MASK                ((unsigned int) 0xFF000000) // Implementer
+
+#define SCB_ICSR                                  (*(pREG32 (0xE000ED04)))
+#define SCB_ICSR_NMIPENDSET_MASK                  ((unsigned int) 0x80000000)
+#define SCB_ICSR_NMIPENDSET                       ((unsigned int) 0x80000000)
+#define SCB_ICSR_PENDSVSET_MASK                   ((unsigned int) 0x10000000)
+#define SCB_ICSR_PENDSVSET                        ((unsigned int) 0x10000000)
+#define SCB_ICSR_PENDSVCLR_MASK                   ((unsigned int) 0x08000000)
+#define SCB_ICSR_PENDSVCLR                        ((unsigned int) 0x08000000)
+#define SCB_ICSR_PENDSTSET_MASK                   ((unsigned int) 0x04000000)
+#define SCB_ICSR_PENDSTSET                        ((unsigned int) 0x04000000)
+#define SCB_ICSR_PENDSTCLR_MASK                   ((unsigned int) 0x02000000)
+#define SCB_ICSR_PENDSTCLR                        ((unsigned int) 0x02000000)
+#define SCB_ICSR_ISRPREEMPT_MASK                  ((unsigned int) 0x00800000)
+#define SCB_ICSR_ISRPREEMPT                       ((unsigned int) 0x00800000)
+#define SCB_ICSR_ISRPENDING_MASK                  ((unsigned int) 0x00400000)
+#define SCB_ICSR_ISRPENDING                       ((unsigned int) 0x00400000)
+#define SCB_ICSR_VECTPENDING_MASK                 ((unsigned int) 0x001FF000)
+#define SCB_ICSR_VECTACTIVE_MASK                  ((unsigned int) 0x000001FF)
 
 /*  System Control Register */
 
@@ -1192,7 +1248,7 @@
 #define IOCON_PIO2_2_FUNC_MASK                    ((unsigned int) 0x00000007)
 #define IOCON_PIO2_2_FUNC_GPIO                    ((unsigned int) 0x00000000)
 #define IOCON_PIO2_2_FUNC_DCD                     ((unsigned int) 0x00000001)
-#define IOCON_PIO2_2_FUNC_MISO1                   ((unsigned int) 0x00000001)
+#define IOCON_PIO2_2_FUNC_MISO1                   ((unsigned int) 0x00000002)
 #define IOCON_PIO2_2_MODE_MASK                    ((unsigned int) 0x00000018)
 #define IOCON_PIO2_2_MODE_INACTIVE                ((unsigned int) 0x00000000)
 #define IOCON_PIO2_2_MODE_PULLDOWN                ((unsigned int) 0x00000008)
@@ -1206,6 +1262,7 @@
 #define IOCON_PIO2_3_FUNC_MASK                    ((unsigned int) 0x00000007)
 #define IOCON_PIO2_3_FUNC_GPIO_MOSI1              ((unsigned int) 0x00000000)
 #define IOCON_PIO2_3_FUNC_RI                      ((unsigned int) 0x00000001)
+#define IOCON_PIO2_3_FUNC_MOSI1                   ((unsigned int) 0x00000002)
 #define IOCON_PIO2_3_MODE_MASK                    ((unsigned int) 0x00000018)
 #define IOCON_PIO2_3_MODE_INACTIVE                ((unsigned int) 0x00000000)
 #define IOCON_PIO2_3_MODE_PULLDOWN                ((unsigned int) 0x00000008)
@@ -1444,7 +1501,7 @@ typedef enum IRQn
   PendSV_IRQn                   = -2,     /*!< 14 Cortex-M0 Pend SV Interrupt                     */
   SysTick_IRQn                  = -1,     /*!< 15 Cortex-M0 System Tick Interrupt                 */
 
-/******  LPC13xx Specific Interrupt Numbers *******************************************************/
+/******  LPC11xx Specific Interrupt Numbers *******************************************************/
   WAKEUP0_IRQn                  = 0,        /*!< All I/O pins can be used as wakeup source.       */
   WAKEUP1_IRQn                  = 1,        /*!< There are 13 pins in total for LPC11xx           */
   WAKEUP2_IRQn                  = 2,
@@ -3047,5 +3104,9 @@ static inline void NVIC_DisableIRQ(IRQn_t IRQn)
 #define ADC_DR_OVERRUN                            (0x40000000)
 #define ADC_DR_DONE_MASK                          (0x80000000)
 #define ADC_DR_DONE                               (0x80000000)
+
+/*##############################################################################
+## Misc. Inline Functions
+##############################################################################*/
 
 #endif

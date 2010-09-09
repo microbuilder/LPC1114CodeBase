@@ -43,40 +43,60 @@
 #include "sysdefs.h"
 #include "drivers/chibi/chb_drvr.h"
 
-#define CFG_CPU_CCLK                (12000000)    // Ref. only.  Clock speed actually set in "core/cpu/cpu.c"
+/* Core CPU Settings (reference only) */
+#define CFG_CPU_CCLK                (36000000)    // Ref. only.  Clock speed actually set in "core/cpu/cpu.c"
 
+/* Systick Timer Settings */
 #define CFG_SYSTICK_DELAY_IN_MS     (1)           // The number of ms between each tick of the systick timer
+                                                  // If FreeRTOS is used, this will also determine the value of 
+                                                  // configTICK_RATE_HZ in FreeRTOSConfig.h
 
+/* UART Settings */
 #define CFG_UART_BAUDRATE           (57600)       // Default UART speed
 #define CFG_UART_BUFSIZE            (80)          // RX FIFO buffer size (the maximum number of received chars to store)
 
+/* Test LED Pin Settings */
 #define CFG_LED_PORT                (3)
 #define CFG_LED_PIN                 (5)
 #define CFG_LED_ON                  (0)           // The pin state to turn the LED on (0 = low, 1 = High)
 #define CFG_LED_OFF                 (1)           // The pin state to turn the LED off (0 = low, 1 = High)
 
-#define CFG_INTERFACE
-#define CFG_INTERFACE_UART                                  // Use UART for the command-line interface
-#define CFG_INTERFACE_MAXMSGSIZE    (80)                    // The maximum number of bytes to accept for a command
-#define CFG_INTERFACE_NEWLINE       (char *)"\r\n"          // This should be either \r\n (Windows-style) or \n (Unix-style)
-#define CFG_INTERFACE_PROMPT        (char *)"LPC1114 >> "   // The text to display at the command prompt
+/* Printf Redirection */
+// #define CFG_PRINTF_NONE                        // Ignore all printf output
+#define CFG_PRINTF_UART                        // Use UART for printf output
 
+/* CLI Interface Settings */
+#define CFG_INTERFACE
+#define CFG_INTERFACE_MAXMSGSIZE    (80)          // The maximum number of bytes to accept for a command
+#define CFG_INTERFACE_NEWLINE       "\r\n"        // This should be either \r\n (Windows-style) or \n (Unix-style)
+#define CFG_INTERFACE_PROMPT        "LPC1114 >> " // The command-prompt text to display before each command
+
+/* On-board EEPROM Settings */
 #define CFG_I2CEEPROM
 
-#define CFG_LM75B
+/* LM75B Temperature Settings (requires external HW) */
+// #define CFG_LM75B
 
-#define CFG_CHIBI
+/* Chibi Wireless Stack Settings (requires external HW) */
+// #define CFG_CHIBI
 #define CFG_CHIBI_MODE              (BPSK20_868MHZ)         // See chb_drvr.h for possible values
 #define CFG_CHIBI_POWER             (CHB_PWR_EU2_5DBM)      // See chb_drvr.h for possible values
 #define CFG_CHIBI_EEPROM_IEEEADDR   (uint16_t)(0x0000)      // Start location in EEPROM for the full IEEE address
 #define CFG_CHIBI_EEPROM_SHORTADDR  (uint16_t)(0x0009)      // Start location in EEPROM for the short (16-bit) address
 
+// #define CFG_FREERTOS
+
+// #define CFG_TESTBED
 // #####################
-// Config error-handling
+// Config error-checking
 // #####################
+#if defined CFG_PRINTF_NONE && defined CFG_PRINTF_UART
+  #error "CFG_PRINTF_NONE and CFG_PRINTF_UART can not be defined at the same time"
+#endif
+
 #ifdef CFG_INTERFACE
-  #if defined CFG_INTERFACE && !defined CFG_INTERFACE_UART
-    #error "No endpoint defined for CFG_INTERFACE (ex: CFG_INTERFACE_UART)"
+  #if defined CFG_PRINTF_NONE
+    #error "CFG_INTERFACE can not be defined with CFG_PRINTF_NONE"
   #endif
 #endif
 
