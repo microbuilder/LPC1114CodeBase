@@ -100,7 +100,7 @@ void cmdRx(uint8_t c)
         // terminate the msg and reset the msg ptr. then send
         // it to the handler for processing.
         *msg_ptr = '\0';
-        printf("%s", CFG_INTERFACE_NEWLINE);
+        printf("%s", CFG_PRINTF_NEWLINE);
         cmdParse((char *)msg);
         msg_ptr = msg;
         break;
@@ -128,7 +128,7 @@ void cmdRx(uint8_t c)
 /**************************************************************************/
 static void cmdMenu()
 {
-  printf(CFG_INTERFACE_NEWLINE);
+  printf(CFG_PRINTF_NEWLINE);
   printf(CFG_INTERFACE_PROMPT);
 }
 
@@ -162,18 +162,18 @@ void cmdParse(char *cmd)
         if ((argc == 2) && !strcmp (argv [1], "?"))
         {
           // Display paramter help menu on 'command ?'
-          printf ("%s%s%s", cmd_tbl[i].description, CFG_INTERFACE_NEWLINE, CFG_INTERFACE_NEWLINE);
-          printf ("%s%s", cmd_tbl[i].parameters, CFG_INTERFACE_NEWLINE);
+          printf ("%s%s%s", cmd_tbl[i].description, CFG_PRINTF_NEWLINE, CFG_PRINTF_NEWLINE);
+          printf ("%s%s", cmd_tbl[i].parameters, CFG_PRINTF_NEWLINE);
         }
         else if ((argc - 1) < cmd_tbl[i].minArgs)
         {
           // Too few arguments supplied
-          printf ("Too few arguments to command (%d expected)%s", cmd_tbl[i].minArgs, CFG_INTERFACE_NEWLINE);
+          printf ("Too few arguments to command (%d expected)%s", cmd_tbl[i].minArgs, CFG_PRINTF_NEWLINE);
         }
         else if ((argc - 1) > cmd_tbl[i].maxArgs)
         {
           // Too many arguments supplied
-          printf ("Too many arguments to command (%d maximum)%s", cmd_tbl[i].maxArgs, CFG_INTERFACE_NEWLINE);
+          printf ("Too many arguments to command (%d maximum)%s", cmd_tbl[i].maxArgs, CFG_PRINTF_NEWLINE);
         }
         else
         {
@@ -186,7 +186,7 @@ void cmdParse(char *cmd)
         return;
       }
   }
-  printf("Command not recognized: '%s'%s", cmd, CFG_INTERFACE_NEWLINE);
+  printf("Command not recognized: '%s'%s", cmd, CFG_PRINTF_NEWLINE);
 
   cmdMenu();
 }
@@ -223,18 +223,18 @@ void cmd_help(uint8_t argc, char **argv)
 {
   size_t i;
 
-  printf("Command                Description%s", CFG_INTERFACE_NEWLINE);
-  printf("-------                -----------%s", CFG_INTERFACE_NEWLINE);
+  printf("Command                Description%s", CFG_PRINTF_NEWLINE);
+  printf("-------                -----------%s", CFG_PRINTF_NEWLINE);
 
   // Display full command list
   for (i=0; i < CMD_COUNT; i++)
   {
     if (!cmd_tbl[i].hidden) 
     {
-      printf ("%-20s   %s%s", cmd_tbl[i].command, cmd_tbl[i].description, CFG_INTERFACE_NEWLINE);
+      printf ("%-20s   %s%s", cmd_tbl[i].command, cmd_tbl[i].description, CFG_PRINTF_NEWLINE);
     }
   }
 
-  printf("%sCommand parameters can be seen by entering: <command-name> ?%s", CFG_INTERFACE_NEWLINE, CFG_INTERFACE_NEWLINE);
+  printf("%sCommand parameters can be seen by entering: <command-name> ?%s", CFG_PRINTF_NEWLINE, CFG_PRINTF_NEWLINE);
 
 }

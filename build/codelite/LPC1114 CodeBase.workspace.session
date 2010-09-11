@@ -1,30 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Session Name="C:\Users\Kevin\Documents\My Dropbox\microBuilder\Code\LPC1114\LPC1114_CodeBase\build\codelite\LPC1114 CodeBase.workspace">
-  <int Value="3" Name="m_selectedTab"/>
+  <int Value="1" Name="m_selectedTab"/>
   <wxString Value="C:\Users\Kevin\Documents\My Dropbox\microBuilder\Code\LPC1114\LPC1114_CodeBase\build\codelite\LPC1114 CodeBase.workspace" Name="m_workspaceName"/>
   <TabInfoArray Name="TabInfoArray">
     <TabInfo>
       <wxString Value="C:\Users\Kevin\Documents\My Dropbox\microBuilder\Code\LPC1114\LPC1114_CodeBase\main.c" Name="FileName"/>
-      <int Value="64" Name="FirstVisibleLine"/>
-      <int Value="71" Name="CurrentLine"/>
+      <int Value="46" Name="FirstVisibleLine"/>
+      <int Value="84" Name="CurrentLine"/>
       <wxArrayString Name="Bookmarks"/>
     </TabInfo>
     <TabInfo>
       <wxString Value="C:\Users\Kevin\Documents\My Dropbox\microBuilder\Code\LPC1114\LPC1114_CodeBase\projectconfig.h" Name="FileName"/>
-      <int Value="65" Name="FirstVisibleLine"/>
-      <int Value="71" Name="CurrentLine"/>
-      <wxArrayString Name="Bookmarks"/>
-    </TabInfo>
-    <TabInfo>
-      <wxString Value="C:\Users\Kevin\Documents\My Dropbox\microBuilder\Code\LPC1114\LPC1114_CodeBase\commands.c" Name="FileName"/>
-      <int Value="162" Name="FirstVisibleLine"/>
-      <int Value="169" Name="CurrentLine"/>
-      <wxArrayString Name="Bookmarks"/>
-    </TabInfo>
-    <TabInfo>
-      <wxString Value="C:\Users\Kevin\Documents\My Dropbox\microBuilder\Code\LPC1114\LPC1114_CodeBase\lpc1xxx\LPC11xx_handlers.c" Name="FileName"/>
-      <int Value="99" Name="FirstVisibleLine"/>
-      <int Value="106" Name="CurrentLine"/>
+      <int Value="208" Name="FirstVisibleLine"/>
+      <int Value="217" Name="CurrentLine"/>
       <wxArrayString Name="Bookmarks"/>
     </TabInfo>
   </TabInfoArray>

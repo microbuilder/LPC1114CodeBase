@@ -121,7 +121,7 @@ static int getNumber (char *s, int32_t *result)
       value = (value * 10) + ((uint8_t)*s - '0');
     else
     {
-      printf ("Malformed number. Must be decimal number, or hex value preceeded by '0x'%s", CFG_INTERFACE_NEWLINE);
+      printf ("Malformed number. Must be decimal number, or hex value preceeded by '0x'%s", CFG_PRINTF_NEWLINE);
       return 0;
     }
   }
@@ -144,11 +144,11 @@ void cmd_hello(uint8_t argc, char **argv)
 {
   if (argc > 0)
   {
-    printf("Hello %s%s", argv[0],CFG_INTERFACE_NEWLINE);
+    printf("Hello %s%s", argv[0],CFG_PRINTF_NEWLINE);
   }
   else
   {
-    printf("Hello World!%s", CFG_INTERFACE_NEWLINE);
+    printf("Hello World!%s", CFG_PRINTF_NEWLINE);
   }
 }
 
@@ -159,23 +159,23 @@ void cmd_hello(uint8_t argc, char **argv)
 /**************************************************************************/
 void cmd_sysinfo(uint8_t argc, char **argv)
 {
-  printf("%-30s : %d Hz %s", "Core System Clock", CFG_CPU_CCLK, CFG_INTERFACE_NEWLINE);
-  printf("%-30s : %d mS %s", "Systick Timer Delay", CFG_SYSTICK_DELAY_IN_MS, CFG_INTERFACE_NEWLINE);
-  printf("%-30s : %d BPS %s", "UART Baud Rate", CFG_UART_BAUDRATE, CFG_INTERFACE_NEWLINE);
+  printf("%-30s : %d Hz %s", "Core System Clock", CFG_CPU_CCLK, CFG_PRINTF_NEWLINE);
+  printf("%-30s : %d mS %s", "Systick Timer Delay", CFG_SYSTICK_DELAY_IN_MS, CFG_PRINTF_NEWLINE);
+  printf("%-30s : %d BPS %s", "UART Baud Rate", CFG_UART_BAUDRATE, CFG_PRINTF_NEWLINE);
 
   #ifdef CFG_LM75B
     int32_t temp = 0;
     lm75bGetTemperature(&temp);
     temp *= 125;
-    printf("%-30s : %d.%d C%s", "System Temperature", temp / 1000, temp % 1000, CFG_INTERFACE_NEWLINE);
+    printf("%-30s : %d.%d C%s", "System Temperature", temp / 1000, temp % 1000, CFG_PRINTF_NEWLINE);
   #endif
 
   #ifdef CFG_CHIBI
     chb_pcb_t *pcb = chb_get_pcb();
-    printf("%-30s : 0x%04X%s", "Chibi Address", pcb->src_addr, CFG_INTERFACE_NEWLINE);
+    printf("%-30s : 0x%04X%s", "Chibi Address", pcb->src_addr, CFG_PRINTF_NEWLINE);
   #endif
 
-  // printf("%-30s : %s", "<Property Name>", CFG_INTERFACE_NEWLINE);
+  // printf("%-30s : %s", "<Property Name>", CFG_PRINTF_NEWLINE);
 }
 
 #ifdef CFG_CHIBI
@@ -200,25 +200,25 @@ void cmd_chibi_addr(uint8_t argc, char **argv)
     // Check for invalid values (getNumber may complain about this as well)
     if (addr <= 0 || addr > 0xFFFF)
     {
-      printf("Invalid Address: Value from 1-65534 or 0x0001-0xFFFE required.%s", CFG_INTERFACE_NEWLINE);
+      printf("Invalid Address: Value from 1-65534 or 0x0001-0xFFFE required.%s", CFG_PRINTF_NEWLINE);
       return;
     }
     if (addr == 0xFFFF)
     {
-      printf("Invalid Address: 0xFFFF is reserved for global transmissions.%s", CFG_INTERFACE_NEWLINE);
+      printf("Invalid Address: 0xFFFF is reserved for global transmissions.%s", CFG_PRINTF_NEWLINE);
       return;
     }
 
     // Write address to EEPROM and update peripheral control block
     chb_set_short_addr((uint16_t)addr);
     chb_pcb_t *pcb = chb_get_pcb();
-    printf("Address set to: 0x%04X%s", pcb->src_addr, CFG_INTERFACE_NEWLINE);
+    printf("Address set to: 0x%04X%s", pcb->src_addr, CFG_PRINTF_NEWLINE);
   }
   else
   {
     // Display the current address
     chb_pcb_t *pcb = chb_get_pcb();
-    printf("0x%04X%s", pcb->src_addr, CFG_INTERFACE_NEWLINE);
+    printf("0x%04X%s", pcb->src_addr, CFG_PRINTF_NEWLINE);
   }
 }
 
@@ -240,7 +240,7 @@ void cmd_chibi_tx(uint8_t argc, char **argv)
   // Check for invalid values (getNumber may complain about this as well)
   if (addr32 <= 0 || addr32 > 0xFFFF)
   {
-    printf("Invalid Address: Value from 1-65534 or 0x0001-0xFFFE required.%s", CFG_INTERFACE_NEWLINE);
+    printf("Invalid Address: Value from 1-65534 or 0x0001-0xFFFE required.%s", CFG_PRINTF_NEWLINE);
     return;
   }
 
@@ -283,7 +283,7 @@ void cmd_i2ceeprom_read(uint8_t argc, char **argv)
   // Check for invalid values (getNumber may complain about this as well)
   if (addr32 < 0 || addr32 > MCP24AA_MAXADDR)
   {
-    printf("Address out of range: Value from 0-%d or 0x0000-0x%04X required.%s", MCP24AA_MAXADDR, MCP24AA_MAXADDR, CFG_INTERFACE_NEWLINE);
+    printf("Address out of range: Value from 0-%d or 0x0000-0x%04X required.%s", MCP24AA_MAXADDR, MCP24AA_MAXADDR, CFG_PRINTF_NEWLINE);
     return;
   }
 
@@ -291,7 +291,7 @@ void cmd_i2ceeprom_read(uint8_t argc, char **argv)
   addr = (uint16_t)addr32;
   mcp24aaReadByte(addr, &value);
 
-  printf("0x%02X%s", value, CFG_INTERFACE_NEWLINE);
+  printf("0x%02X%s", value, CFG_PRINTF_NEWLINE);
 }
 
 /**************************************************************************/
@@ -311,7 +311,7 @@ void cmd_i2ceeprom_write(uint8_t argc, char **argv)
   // Check for invalid values (getNumber may complain about this as well)
   if (addr32 < 0 || addr32 > MCP24AA_MAXADDR)
   {
-    printf("Address out of range: Value from 0-%d or 0x0000-0x%04X required.%s", MCP24AA_MAXADDR, MCP24AA_MAXADDR, CFG_INTERFACE_NEWLINE);
+    printf("Address out of range: Value from 0-%d or 0x0000-0x%04X required.%s", MCP24AA_MAXADDR, MCP24AA_MAXADDR, CFG_PRINTF_NEWLINE);
     return;
   }
 
@@ -319,12 +319,12 @@ void cmd_i2ceeprom_write(uint8_t argc, char **argv)
   #ifdef CFG_CHIBI
   if ((addr32 >= CFG_CHIBI_EEPROM_IEEEADDR) && (addr32 <= CFG_CHIBI_EEPROM_IEEEADDR + 7))
   {
-    printf("Reserved Address: 0x%04X to 0x%04X is reserved for Chibi IEEE address%s", CFG_CHIBI_EEPROM_IEEEADDR, CFG_CHIBI_EEPROM_IEEEADDR + 7, CFG_INTERFACE_NEWLINE);
+    printf("Reserved Address: 0x%04X to 0x%04X is reserved for Chibi IEEE address%s", CFG_CHIBI_EEPROM_IEEEADDR, CFG_CHIBI_EEPROM_IEEEADDR + 7, CFG_PRINTF_NEWLINE);
     return;
   }
   if ((addr32 >= CFG_CHIBI_EEPROM_SHORTADDR) && (addr32 <= CFG_CHIBI_EEPROM_SHORTADDR + 1))
   {
-    printf("Reserved Address: 0x%04X to 0x%04X is reserved for Chibi address%s", CFG_CHIBI_EEPROM_SHORTADDR, CFG_CHIBI_EEPROM_SHORTADDR + 1, CFG_INTERFACE_NEWLINE);
+    printf("Reserved Address: 0x%04X to 0x%04X is reserved for Chibi address%s", CFG_CHIBI_EEPROM_SHORTADDR, CFG_CHIBI_EEPROM_SHORTADDR + 1, CFG_PRINTF_NEWLINE);
     return;
   }
   #endif
@@ -339,7 +339,7 @@ void cmd_i2ceeprom_write(uint8_t argc, char **argv)
   // Check for invalid values (getNumber may complain about this as well)
   if (val32 < 0 || val32 > 0xFF)
   {
-    printf("Invalid Data: Value from 0-255 or 0x00-0xFF required.%s", CFG_INTERFACE_NEWLINE);
+    printf("Invalid Data: Value from 0-255 or 0x00-0xFF required.%s", CFG_PRINTF_NEWLINE);
     return;
   }
 
@@ -357,10 +357,10 @@ void cmd_i2ceeprom_write(uint8_t argc, char **argv)
     switch (error)
     {
       case (MCP24AA_ERROR_I2CINIT):
-        printf("Error: Unable to initialised I2C%s", CFG_INTERFACE_NEWLINE);
+        printf("Error: Unable to initialised I2C%s", CFG_PRINTF_NEWLINE);
         return;
       case (MCP24AA_ERROR_ADDRERR):
-        printf("Error: Supplied address is out of range%s", CFG_INTERFACE_NEWLINE);
+        printf("Error: Supplied address is out of range%s", CFG_PRINTF_NEWLINE);
         return;
       default:
         break;
@@ -368,7 +368,7 @@ void cmd_i2ceeprom_write(uint8_t argc, char **argv)
   }
 
   // Write successful
-  printf("EEPROM: 0x%02X written at address 0x%04X%s", val, addr, CFG_INTERFACE_NEWLINE);
+  printf("EEPROM: 0x%02X written at address 0x%04X%s", val, addr, CFG_PRINTF_NEWLINE);
 }
 
 #endif
@@ -391,7 +391,7 @@ void cmd_lm75b_gettemp(uint8_t argc, char **argv)
   temp *= 125;
 
   // Use modulus operator to display decimal value
-  printf("Current Temperature: %d.%d C%s", temp / 1000, temp % 1000, CFG_INTERFACE_NEWLINE);
+  printf("Current Temperature: %d.%d C%s", temp / 1000, temp % 1000, CFG_PRINTF_NEWLINE);
 }
 
 #endif
@@ -405,44 +405,44 @@ void cmd_lm75b_gettemp(uint8_t argc, char **argv)
 /**************************************************************************/
 void cmd_testbed_test(uint8_t argc, char **argv)
 {
-  printf("Starting Testbed Checks%s%s", CFG_INTERFACE_NEWLINE, CFG_INTERFACE_NEWLINE);
+  printf("Starting Testbed Checks%s%s", CFG_PRINTF_NEWLINE, CFG_PRINTF_NEWLINE);
 
   // ToDo: Test ADC3
   printf("%-30s : ", "ADC Input");
-  printf("ToDo%s", CFG_INTERFACE_NEWLINE);
+  printf("ToDo%s", CFG_PRINTF_NEWLINE);
 
   // ToDo: Test EEPROM
   printf("%-30s : ", "EEPROM (I2C)");
-  printf("ToDo%s", CFG_INTERFACE_NEWLINE);
+  printf("ToDo%s", CFG_PRINTF_NEWLINE);
 
   // ToDo: Enable LED
   printf("%-30s : ", "LED");
-  printf("ToDo%s", CFG_INTERFACE_NEWLINE);
+  printf("ToDo%s", CFG_PRINTF_NEWLINE);
 
   #ifdef CFG_LM75B
   // ToDo: Test Temperature Sensor
   printf("%-30s : ", "LM75B Temp. Sensor");
-  printf("ToDo%s", CFG_INTERFACE_NEWLINE);
+  printf("ToDo%s", CFG_PRINTF_NEWLINE);
   #endif
 
   #ifdef CFG_CHIBI
   // ToDo: Test Chibi Presence
   printf("%-30s : ", "AT86RF212 Presence");
-  printf("ToDo%s", CFG_INTERFACE_NEWLINE);
+  printf("ToDo%s", CFG_PRINTF_NEWLINE);
 
   // ToDo: Test Chibi TX
   printf("%-30s : ", "Chibi TX (3s)");
   printf(".");
   printf(".");
   printf(".");
-  printf("ToDo%s", CFG_INTERFACE_NEWLINE);
+  printf("ToDo%s", CFG_PRINTF_NEWLINE);
   
   // ToDo: Test Chibi RX
   printf("%-30s : ", "Chibi RX (3s)");
   printf(".");
   printf(".");
   printf(".");
-  printf("ToDo%s", CFG_INTERFACE_NEWLINE);
+  printf("ToDo%s", CFG_PRINTF_NEWLINE);
   #endif
 }
 

@@ -36,11 +36,9 @@
 
 #include "types.h"
 
-#define CHB_BUF_SZ 128
-
 void chb_buf_init();
 void chb_buf_write(U8 data);
 U8 chb_buf_read();
-U8 chb_buf_get_len();
+U32 chb_buf_get_len();
 
 #endif

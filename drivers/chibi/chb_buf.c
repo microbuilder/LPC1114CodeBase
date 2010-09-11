@@ -32,10 +32,12 @@
 
 *******************************************************************/
 #include <stdio.h>
+
+#include "projectconfig.h"
 #include "chb_buf.h"
 
-static U8 chb_buf[CHB_BUF_SZ];
-static U8 rd_ptr, wr_ptr, len;
+static U8 chb_buf[CFG_CHIBI_BUFFERSIZE];
+static U32 rd_ptr, wr_ptr, len;
 
 /**************************************************************************/
 /*!
@@ -57,7 +59,7 @@ void chb_buf_init()
 void chb_buf_write(U8 data)
 {
     chb_buf[wr_ptr] = data;
-    wr_ptr = (wr_ptr + 1) % CHB_BUF_SZ;
+    wr_ptr = (wr_ptr + 1) % CFG_CHIBI_BUFFERSIZE;
     len++;
 }
 
@@ -71,7 +73,7 @@ U8 chb_buf_read()
     U8 data;
 
     data = chb_buf[rd_ptr];
-    rd_ptr = (rd_ptr + 1) % CHB_BUF_SZ;
+    rd_ptr = (rd_ptr + 1) % CFG_CHIBI_BUFFERSIZE;
     len--;
     return data;
 }
@@ -81,7 +83,7 @@ U8 chb_buf_read()
 
 */
 /**************************************************************************/
-U8 chb_buf_get_len()
+U32 chb_buf_get_len()
 {
     return len;
 }

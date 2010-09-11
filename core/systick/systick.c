@@ -63,6 +63,11 @@
 
 #include "systick.h"
 
+#ifdef CFG_SDCARD
+#include "drivers/fatfs/diskio.h"
+volatile uint32_t fatTicks = 0;
+#endif
+
 volatile uint32_t msTicks;             // 1ms tick counter
 
 /**************************************************************************/
@@ -70,12 +75,19 @@ volatile uint32_t msTicks;             // 1ms tick counter
     @brief Systick interrupt handler
 */
 /**************************************************************************/
-#ifndef CFG_FREERTOS                   // If FreeRTOS is enabled, this is handled in port.c
 void SysTick_Handler (void)
 {
   msTicks++;
+
+  #ifdef CFG_SDCARD
+  fatTicks++;
+  if (fatTicks == 10)
+  {
+    fatTicks = 0;
+    disk_timerproc();
+  }
+  #endif
 }
-#endif
 
 /**************************************************************************/
 /*! 

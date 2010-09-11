@@ -87,6 +87,15 @@
         <File Name="../../drivers/sensors/lm75b/lm75b.h"/>
       </VirtualDirectory>
     </VirtualDirectory>
+    <VirtualDirectory Name="fatfs">
+      <File Name="../../drivers/fatfs/ccsbcs.c"/>
+      <File Name="../../drivers/fatfs/diskio.h"/>
+      <File Name="../../drivers/fatfs/ff.c"/>
+      <File Name="../../drivers/fatfs/ff.h"/>
+      <File Name="../../drivers/fatfs/ffconf.h"/>
+      <File Name="../../drivers/fatfs/integer.h"/>
+      <File Name="../../drivers/fatfs/mmc.c"/>
+    </VirtualDirectory>
   </VirtualDirectory>
   <VirtualDirectory Name="lpc1xxx">
     <File Name="../../lpc1xxx/linkscript.ld"/>

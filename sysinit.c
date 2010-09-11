@@ -39,6 +39,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#ifdef CFG_PRINTF_CWDEBUG
+  #include <cross_studio_io.h>
+#endif
+
 #include "sysinit.h"
 
 #include "core/cpu/cpu.h"
@@ -54,27 +58,23 @@
 
 #ifdef CFG_CHIBI
   #include "drivers/chibi/chb.h"
-  static chb_rx_data_t rx_data;
 #endif
 
-#ifdef CFG_USBHID
-  #include "core/usbhid-rom/usbhid.h"
-#endif
+#ifdef CFG_SDCARD
+  #include "core/timer32/timer32.h"
+  #include "core/ssp/ssp.h"
+  #include "drivers/fatfs/diskio.h"
+  #include "drivers/fatfs/ff.h"
+  
+  static FILINFO Finfo;
+  static FATFS Fatfs[1];
+  static uint8_t buf[64];
 
-#ifdef CFG_USBCDC
-  #include "core/usbcdc/usb.h"
-  #include "core/usbcdc/usbcore.h"
-  #include "core/usbcdc/usbhw.h"
-  #include "core/usbcdc/cdcuser.h"
-#endif
-
-#ifdef CFG_LCD
-  #include "drivers/lcd/lcd.h"
-  #include "drivers/lcd/drawing.h"
-  #include "drivers/lcd/fonts/consolas9.h"
-  #include "drivers/lcd/fonts/consolas11.h"
-  #include "drivers/lcd/fonts/consolas16.h"
-  #include "drivers/lcd/fonts/smallfonts.h"
+  DWORD get_fattime ()
+  {
+    // ToDo!
+    return 0;
+  }
 #endif
 
 #ifdef CFG_I2CEEPROM
@@ -97,9 +97,7 @@ void systemInit()
   cpuInit();
 
   // Initialise the systick timer (delay set in projectconfig.h)
-  #ifndef CFG_FREERTOS
   systickInit((CFG_CPU_CCLK / 1000) * CFG_SYSTICK_DELAY_IN_MS);
-  #endif
 
   // Initialise GPIO
   gpioInit();
@@ -109,6 +107,8 @@ void systemInit()
     uartInit(CFG_UART_BAUDRATE);
   #endif
 
+  // Printf can now be used
+
   // Initialise power management unit
   pmuInit();
 
@@ -116,82 +116,109 @@ void systemInit()
   gpioSetDir(CFG_LED_PORT, CFG_LED_PIN, 1);
   gpioSetValue(CFG_LED_PORT, CFG_LED_PIN, CFG_LED_OFF);
 
-  // Initialise USB HID
-  #ifdef CFG_USBHID
-    usbHIDInit();
-  #endif
-
-  // Initialise USB CDC
-  #ifdef CFG_USBCDC
-    CDC_Init();                   // Initialise VCOM
-    USB_Init();                   // USB Initialization
-    USB_Connect(TRUE);            // USB Connect
-    while (!USB_Configuration);   // wait until USB is configured
-  #endif
-
-  // Printf can now be used with either UART or USBCDC
-
   // Initialise EEPROM
   #ifdef CFG_I2CEEPROM
     mcp24aaInit();
   #endif
 
-  // Initialise LCD Display
-  #ifdef CFG_LCD
-    lcdInit();
-
-    // Get 16-bit equivalent of 24-bit color
-    uint16_t darkGray = drawRGB24toRGB565(0x33, 0x33, 0x33);
-    uint16_t lightGray = drawRGB24toRGB565(0xCC, 0xCC, 0xCC);
-
-    // Draw background
-    drawFill(lightGray);
-    drawRectangleFilled(1, 1, 240, 20, darkGray);
-    drawRectangleFilled(1, 240, 240, 320, darkGray);
-
-    // Render some text
-    #if defined CFG_LCD_INCLUDESMALLFONTS & CFG_LCD_INCLUDESMALLFONTS == 1
-      drawStringSmall(1, 210, WHITE, "5x8 System (Max 40 Characters)", Font_System5x8);
-      drawStringSmall(1, 220, WHITE, "7x8 System (Max 30 Characters)", Font_System7x8);
-    #endif
-    drawString(5,   8,    WHITE,    &consolas9ptFontInfo,   "LPC1343 Demo Code v0.25");
-
-    // Draw some primitive shapes
-    drawCircle(15, 300, 10, WHITE);
-    drawLine(100, 280, 200, 310, WHITE);
-    drawRectangle (220, 5, 230, 15, WHITE);
-    drawRectangleFilled (222, 7, 228, 13, lightGray);
-
-    // Draw some compound shapes
-    drawString(10,   150,    BLACK,    &consolas9ptFontInfo,   "Green Progress");
-    drawProgressBar(100, 150, 130, 9, WHITE, BLACK, lightGray, GREEN, 75);
-    drawString(10,   165,    BLACK,    &consolas9ptFontInfo,   "Yellow Progress");
-    drawProgressBar(100, 165, 130, 9, WHITE, BLACK, lightGray, YELLOW, 23);
-    drawString(10,   180,    RED,    &consolas9ptFontInfo,   "Red Progress");
-    drawProgressBar(100, 180, 130, 9, WHITE, BLACK, lightGray, RED, 64);
-    drawString(10,   200,    BLACK,    &consolas9ptFontInfo,   "Battery");
-    drawProgressBar(100, 195, 130, 15, WHITE, BLACK, lightGray, BLUE, 90);
-
-    uint16_t getc;
-    getc = lcdGetPixel(0, 0);
-    // drawFill(getc);
-  #endif
-
   // Initialise Chibi
   #ifdef CFG_CHIBI
     // Write addresses to EEPROM for the first time if necessary
-    // uint16_t addr_short = 0x0001;
-    // uint64_t addr_ieee =  0x0000000000000001;
+    // uint16_t addr_short = 0x1234;
+    // uint64_t addr_ieee =  addr_short;
     // mcp24aaWriteBuffer(CFG_CHIBI_EEPROM_SHORTADDR, (uint8_t *)&addr_short, 2);
     // mcp24aaWriteBuffer(CFG_CHIBI_EEPROM_IEEEADDR, (uint8_t *)&addr_ieee, 8);
     chb_init();
     chb_pcb_t *pcb = chb_get_pcb();
-    printf("%-40s : 0x%04X%s", "Chibi Initialised", pcb->src_addr, CFG_INTERFACE_NEWLINE);
+    printf("%-40s : 0x%04X%s", "Chibi Initialised", pcb->src_addr, CFG_PRINTF_NEWLINE);
+  #endif
+
+  // Initialise SD Card
+  #ifdef CFG_SDCARD
+    // Init SSP w/clock low between frames and transition on leading edge
+    sspInit(1, sspClockPolarity_Low, sspClockPhase_RisingEdge);
+    DSTATUS stat;
+    stat = disk_initialize(0);
+    if (stat & STA_NOINIT) 
+    {
+      printf("%-40s : %s\n", "MMC", "Not Initialised");
+    }
+    if (stat & STA_NODISK) 
+    {
+      printf("%-40s : %s\n", "MMC", "No Disk");
+    }
+    if (stat == 0)
+    {
+      DSTATUS stat;
+      DWORD p2;
+      WORD w1;
+      BYTE res, b1;
+      DIR dir;
+  
+      // SD Card Initialised
+      printf("%-40s : %s\n", "MMC", "Initialised");
+      // Drive size
+      if (disk_ioctl(0, GET_SECTOR_COUNT, &p2) == RES_OK) 
+      {
+        printf("%-40s : %d\n", "MMC Drive Size", p2);
+      }
+      // Sector Size
+      if (disk_ioctl(0, GET_SECTOR_SIZE, &w1) == RES_OK) 
+      {
+        printf("%-40s : %d\n", "MMC Sector Size", w1);
+      }
+      // Card Type
+      if (disk_ioctl(0, MMC_GET_TYPE, &b1) == RES_OK) 
+      {
+        printf("%-40s : %d\n", "MMC Card Type", b1);
+      }
+      // Try to mount drive
+      res = f_mount(0, &Fatfs[0]);
+      if (res != FR_OK) 
+      {
+        printf("%-40s : %d\n", "MMC - Failed to mount 0:", res);
+      }
+      if (res == FR_OK)
+      {
+        res = f_opendir(&dir, "/");
+        if (res) 
+        {
+            printf("%-40s : %d\n", "MMC - Failed to open /:", res);
+            return;
+        }
+        // Read dir
+        for(;;) 
+        {
+            res = f_readdir(&dir, &Finfo);
+            if ((res != FR_OK) || !Finfo.fname[0]) break;
+            #if _USE_LFN == 0
+              printf("%-25s \n", (char *)&Finfo.fname[0]);
+            #else
+              printf("%-75s \n", (char *)&Finfo.lfname[0]);
+            #endif
+        }
+        // Create a file
+        //FIL logFile;  
+        //if(f_open(&logFile, "/log.txt", FA_READ | FA_WRITE | FA_OPEN_ALWAYS)!=FR_OK) 
+        //{  
+        //  // Flag error  
+        //  printf ("Unabled to create log.txt\n"); 
+        //}  
+        //unsigned int bytesWritten;  
+        //f_write(&logFile, "New log opened!\n", 16, &bytesWritten);  
+        //// Flush the write buffer (required?)
+        //// f_sync(&logFile);  
+        //// Close and unmount.   
+        //f_close(&logFile);  
+        //f_mount(0,0); 
+        //printf("Wrote data to log.txt\n");
+      }
+    }
   #endif
 
   // Start the command line interface (if requested)
   #ifdef CFG_INTERFACE
-    printf("%sType 'help' for a list of available commands%s", CFG_INTERFACE_NEWLINE, CFG_INTERFACE_NEWLINE);
+    printf("%sType 'help' for a list of available commands%s", CFG_PRINTF_NEWLINE, CFG_PRINTF_NEWLINE);
     cmdInit();
   #endif
 }
@@ -211,12 +238,9 @@ void __putchar(const char c)
     uartSendByte(c);
   #endif
 
-  #ifdef CFG_PRINTF_USBCDC
-    usbcdcSendByte(c);
-  #endif
-
-  #if defined CFG_PRINTF_NONE
-    // Ignore output
+  #ifdef CFG_PRINTF_CWDEBUG
+    // Send output to the Crossworks debug interface
+    debug_printf("%c", c);
   #endif
 }
 
