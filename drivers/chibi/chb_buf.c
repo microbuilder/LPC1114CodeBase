@@ -76,7 +76,6 @@ U8 chb_buf_read()
     data = chb_buf[rd_ptr];
     rd_ptr = (rd_ptr + 1) % CFG_CHIBI_BUFFERSIZE;
     len--;
-    printf(".%d.", len);
     return data;
 }
 

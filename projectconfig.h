@@ -218,7 +218,7 @@
     // #define CFG_CHIBI
     #define CFG_CHIBI_MODE              (OQPSK_868MHZ)      // See chb_drvr.h for possible values
     #define CFG_CHIBI_POWER             (CHB_PWR_EU2_3DBM)  // See chb_drvr.h for possible values
-    #define CFG_CHIBI_BUFFERSIZE        (512)
+    #define CFG_CHIBI_BUFFERSIZE        (128)
     #define CFG_CHIBI_EEPROM_IEEEADDR   (uint16_t)(0x0000)
     #define CFG_CHIBI_EEPROM_SHORTADDR  (uint16_t)(0x0009)
 /*=========================================================================*/

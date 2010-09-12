@@ -44,6 +44,12 @@
   #include "core/cmd/cmd.h"
 #endif
 
+#ifdef CFG_CHIBI
+  #include "drivers/chibi/chb.h"
+  #include "drivers/chibi/chb_buf.h"
+  static chb_rx_data_t rx_data; 
+#endif
+
 /**************************************************************************/
 /*! 
     Main program entry point.  After reset, normal code execution will
@@ -55,8 +61,37 @@ int main (void)
   // Configure cpu and mandatory peripherals
   systemInit();
 
+  // Get CHIBI peripheral control block if required
+  #ifdef CFG_CHIBI
+    chb_pcb_t *pcb = chb_get_pcb(); 
+  #endif
+
   while (1)
   {
+    #ifdef CFG_CHIBI
+      // Check for incoming messages 
+      while (pcb->data_rcv) 
+      { 
+        rx_data.len = chb_read(&rx_data); 
+        // Enable LED to indicate message reception 
+        gpioSetValue (CFG_LED_PORT, CFG_LED_PIN, CFG_LED_ON); 
+        // Display message and buffer size
+        printf("Message received from node %04X: %s, len=%d, rssi=%d%s", rx_data.src_addr, rx_data.data, rx_data.len, pcb->ed, CFG_PRINTF_NEWLINE); 
+        printf("Buffer Len: %d%s", (int)chb_buf_get_len(), CFG_PRINTF_NEWLINE);
+        // Disable LED
+        gpioSetValue (CFG_LED_PORT, CFG_LED_PIN, CFG_LED_OFF); 
+      }
+
+      // // Send global message every 500 ms
+      // char *text = "Test"; 
+      // gpioSetValue (CFG_LED_PORT, CFG_LED_PIN, CFG_LED_ON); 
+      // chb_write(0xFFFF, text, sizeof(text) + 1); 
+      // gpioSetValue (CFG_LED_PORT, CFG_LED_PIN, CFG_LED_OFF);  
+      //
+      // // Delay for 500mS
+      // systickDelay(500);
+    #endif
+
     #ifdef CFG_INTERFACE 
       // Handle any incoming command line input 
       cmdPoll(); 
