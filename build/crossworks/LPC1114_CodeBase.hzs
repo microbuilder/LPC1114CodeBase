@@ -1,16 +1,7 @@
 <!DOCTYPE CrossStudio_for_ARM_Session_File>
 <session>
  <Bookmarks/>
- <Breakpoints>
-  <BreakpointListItem group="CM3 Exceptions" type="Exception" state="2" counter="0" expression="BusFault" />
-  <BreakpointListItem group="CM3 Exceptions" type="Exception" state="2" counter="0" expression="ExceptionEntryReturnFault" />
-  <BreakpointListItem group="CM3 Exceptions" type="Exception" state="2" counter="0" expression="HardFault" />
-  <BreakpointListItem group="CM3 Exceptions" type="Exception" state="2" counter="0" expression="MemManage" />
-  <BreakpointListItem group="CM3 Exceptions" type="Exception" state="3" counter="0" expression="Reset" />
-  <BreakpointListItem group="CM3 Exceptions" type="Exception" state="2" counter="0" expression="UsageFault_CheckingError" />
-  <BreakpointListItem group="CM3 Exceptions" type="Exception" state="2" counter="0" expression="UsageFault_Coprocessor" />
-  <BreakpointListItem group="CM3 Exceptions" type="Exception" state="2" counter="0" expression="UsageFault_StateError" />
- </Breakpoints>
+ <Breakpoints/>
  <ExecutionCountWindow/>
  <Memory1>
   <MemoryWindow autoEvaluate="0" addressText="" numColumns="8" sizeText="" dataSize="1" radix="16" addressSpace="" />
@@ -64,10 +55,10 @@
  </Watch4>
  <Files>
   <SessionOpenFile useTextEdit="1" useBinaryEdit="0" codecName="Latin1" x="0" debugPath="C:\Users\Kevin\Documents\My Dropbox\microBuilder\Code\LPC1114\LPC1114_CodeBase\drivers\chibi\chb_buf.c" y="78" path="C:\Users\Kevin\Documents\My Dropbox\microBuilder\Code\LPC1114\LPC1114_CodeBase\drivers\chibi\chb_buf.c" left="0" selected="0" name="unnamed" top="48" />
-  <SessionOpenFile useTextEdit="1" useBinaryEdit="0" codecName="Latin1" x="7" debugPath="C:\Users\Kevin\Documents\My Dropbox\microBuilder\Code\LPC1114\LPC1114_CodeBase\main.c" y="81" path="C:\Users\Kevin\Documents\My Dropbox\microBuilder\Code\LPC1114\LPC1114_CodeBase\main.c" left="0" selected="1" name="unnamed" top="0" />
-  <SessionOpenFile useTextEdit="1" useBinaryEdit="0" codecName="Latin1" x="47" debugPath="C:\Users\Kevin\Documents\My Dropbox\microBuilder\Code\LPC1114\LPC1114_CodeBase\projectconfig.h" y="210" path="C:\Users\Kevin\Documents\My Dropbox\microBuilder\Code\LPC1114\LPC1114_CodeBase\projectconfig.h" left="0" selected="0" name="unnamed" top="155" />
+  <SessionOpenFile useTextEdit="1" useBinaryEdit="0" codecName="Latin1" x="1" debugPath="C:\Users\Kevin\Documents\My Dropbox\microBuilder\Code\LPC1114\LPC1114_CodeBase\main.c" y="59" path="C:\Users\Kevin\Documents\My Dropbox\microBuilder\Code\LPC1114\LPC1114_CodeBase\main.c" left="0" selected="0" name="unnamed" top="62" />
   <SessionOpenFile useTextEdit="1" useBinaryEdit="0" codecName="Latin1" x="0" debugPath="C:\Users\Kevin\Documents\My Dropbox\microBuilder\Code\LPC1114\LPC1114_CodeBase\drivers\chibi\chb_drvr.c" y="894" path="C:\Users\Kevin\Documents\My Dropbox\microBuilder\Code\LPC1114\LPC1114_CodeBase\drivers\chibi\chb_drvr.c" left="0" selected="0" name="unnamed" top="841" />
   <SessionOpenFile useTextEdit="1" useBinaryEdit="0" codecName="Latin1" x="0" debugPath="C:\Users\Kevin\Documents\My Dropbox\microBuilder\Code\LPC1114\LPC1114_CodeBase\drivers\chibi\chb.c" y="193" path="C:\Users\Kevin\Documents\My Dropbox\microBuilder\Code\LPC1114\LPC1114_CodeBase\drivers\chibi\chb.c" left="0" selected="0" name="unnamed" top="157" />
+  <SessionOpenFile useTextEdit="1" useBinaryEdit="0" codecName="Latin1" x="0" debugPath="C:\Users\Kevin\Documents\My Dropbox\microBuilder\Code\LPC1114\LPC1114_CodeBase\projectconfig.h" y="212" path="C:\Users\Kevin\Documents\My Dropbox\microBuilder\Code\LPC1114\LPC1114_CodeBase\projectconfig.h" left="0" selected="1" name="unnamed" top="54" />
  </Files>
  <ARMCrossStudioWindow activeProject="LPC1114_CodeBase" autoConnectTarget="Segger J-Link" debugSearchFileMap="" fileDialogInitialDirectory="C:\Users\Kevin\Documents\My Dropbox\microBuilder\Code\LPC1114\LPC1114_CodeBase\drivers\fatfs" fileDialogDefaultFilter="*.c" autoConnectCapabilities="388991" debugSearchPath="" buildConfiguration="THUMB Flash Release" />
 </session>
