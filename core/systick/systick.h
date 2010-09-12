@@ -41,6 +41,8 @@
 
 #include "projectconfig.h"
 
+volatile uint32_t msTicks;             // 1ms tick counter
+
 void systickInit (uint32_t delayMs);
 void systickDelay (uint32_t delayTicks) ;
 

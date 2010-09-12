@@ -68,8 +68,6 @@
 volatile uint32_t fatTicks = 0;
 #endif
 
-volatile uint32_t msTicks;             // 1ms tick counter
-
 /**************************************************************************/
 /*! 
     @brief Systick interrupt handler

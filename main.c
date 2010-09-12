@@ -37,6 +37,7 @@
 /**************************************************************************/
 
 #include <stdio.h>
+#include <string.h>
 
 #include "sysinit.h"
 
@@ -61,37 +62,17 @@ int main (void)
   // Configure cpu and mandatory peripherals
   systemInit();
 
-  // Get CHIBI peripheral control block if required
   #ifdef CFG_CHIBI
+    // Get reference to CHIBI peripheral control block
     chb_pcb_t *pcb = chb_get_pcb(); 
+    // Setup buffer for outgoing messages
+    char txtBuffer[80];
+    uint32_t msgNum, msgLen;
+    msgNum = msgLen = 0;
   #endif
 
   while (1)
   {
-    #ifdef CFG_CHIBI
-      // Check for incoming messages 
-      while (pcb->data_rcv) 
-      { 
-        rx_data.len = chb_read(&rx_data); 
-        // Enable LED to indicate message reception 
-        gpioSetValue (CFG_LED_PORT, CFG_LED_PIN, CFG_LED_ON); 
-        // Display message and buffer size
-        printf("Message received from node %04X: %s, len=%d, rssi=%d%s", rx_data.src_addr, rx_data.data, rx_data.len, pcb->ed, CFG_PRINTF_NEWLINE); 
-        printf("Buffer Len: %d%s", (int)chb_buf_get_len(), CFG_PRINTF_NEWLINE);
-        // Disable LED
-        gpioSetValue (CFG_LED_PORT, CFG_LED_PIN, CFG_LED_OFF); 
-      }
-
-      // // Send global message every 500 ms
-      // char *text = "Test"; 
-      // gpioSetValue (CFG_LED_PORT, CFG_LED_PIN, CFG_LED_ON); 
-      // chb_write(0xFFFF, text, sizeof(text) + 1); 
-      // gpioSetValue (CFG_LED_PORT, CFG_LED_PIN, CFG_LED_OFF);  
-      //
-      // // Delay for 500mS
-      // systickDelay(500);
-    #endif
-
     #ifdef CFG_INTERFACE 
       // Handle any incoming command line input 
       cmdPoll(); 
@@ -103,6 +84,26 @@ int main (void)
       else  
         gpioSetValue (CFG_LED_PORT, CFG_LED_PIN, CFG_LED_OFF); 
     #endif  
+
+    #ifdef CFG_CHIBI
+      // Check for incoming messages 
+      while (pcb->data_rcv) 
+      { 
+        rx_data.len = chb_read(&rx_data); 
+        gpioSetValue (CFG_LED_PORT, CFG_LED_PIN, CFG_LED_ON);   // Enabled LED
+        printf("Message received from node %04X: %s (len=%d, rssi=%d)%s", rx_data.src_addr, rx_data.data, rx_data.len, pcb->ed, CFG_PRINTF_NEWLINE); 
+        gpioSetValue (CFG_LED_PORT, CFG_LED_PIN, CFG_LED_OFF);  // Disabled LED
+      }
+
+      // // Send global message
+      // msgNum++;                                               // Increment message number (for testing)
+      // sprintf(txtBuffer, "%d, tick: %d", msgNum, msTicks);    // Slow and inefficient, but easy to change
+      // msgLen = strlen(txtBuffer);                             // Calculate string length
+      // gpioSetValue (CFG_LED_PORT, CFG_LED_PIN, CFG_LED_ON);   // Turn LED on
+      // chb_write(0xFFFF, txtBuffer, msgLen + 1);               // Transmit message
+      // gpioSetValue (CFG_LED_PORT, CFG_LED_PIN, CFG_LED_OFF);  // Turn LED off
+      // systickDelay(500);                                      // Wait before sending a new message
+    #endif
   }
 }
 
