@@ -37,7 +37,8 @@
 #include "chb_buf.h"
 
 static U8 chb_buf[CFG_CHIBI_BUFFERSIZE];
-static U32 rd_ptr, wr_ptr, len;
+static volatile U32 rd_ptr, wr_ptr;
+static volatile U32 len;
 
 /**************************************************************************/
 /*!
@@ -75,6 +76,7 @@ U8 chb_buf_read()
     data = chb_buf[rd_ptr];
     rd_ptr = (rd_ptr + 1) % CFG_CHIBI_BUFFERSIZE;
     len--;
+    printf(".%d.", len);
     return data;
 }
 
