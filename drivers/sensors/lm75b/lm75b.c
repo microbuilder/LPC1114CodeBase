@@ -33,7 +33,7 @@
         // Get the current temperature (in 0.125°C units)
         lm75bGetTemperature(&temp);
   
-        // Multiply value by 125 for fixed-point math (0.125°C per unit)
+        // Multiply value by 125 (1000/8) for fixed-point math (0.125°C per unit)
         temp *= 125;
 
         // Use modulus operator to display decimal value
@@ -118,7 +118,7 @@ static lm75bError_e lm75bRead16(uint8_t reg, int32_t *value)
   I2CReadLength = 2;
   I2CMasterBuffer[0] = LM75B_ADDRESS;             // I2C device address
   I2CMasterBuffer[1] = reg;                       // Command register
-  // Append address w/read bit
+  // Append device address w/read bit
   I2CMasterBuffer[2] = LM75B_ADDRESS | LM75B_READBIT;  
   i2cEngine();
 

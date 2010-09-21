@@ -56,6 +56,10 @@
   #include "core/cmd/cmd.h"
 #endif
 
+#ifdef CFG_ST7565
+  #include "drivers/lcd/bitmap/st7565/st7565.h"
+#endif
+
 #ifdef CFG_CHIBI
   #include "drivers/chibi/chb.h"
 #endif
@@ -68,7 +72,7 @@
   
   static FILINFO Finfo;
   static FATFS Fatfs[1];
-  static uint8_t buf[64];
+  // static uint8_t buf[64];
 
   DWORD get_fattime ()
   {
@@ -116,6 +120,17 @@ void systemInit()
   gpioSetDir(CFG_LED_PORT, CFG_LED_PIN, 1);
   gpioSetValue(CFG_LED_PORT, CFG_LED_PIN, CFG_LED_OFF);
 
+  // Initialise the ST7565 128x64 pixel display
+  #ifdef CFG_ST7565
+    st7565Init();
+    st7565ClearScreen();    // Clear the screen  
+    st7565BLEnable();       // Enable the backlight
+    st7565DrawString(1, 1, "3X6 SYSTEM", Font_System3x6);   // 3x6 is UPPER CASE only
+    st7565DrawString(1, 10, "5x8 System", Font_System5x8);
+    st7565DrawString(1, 20, "7x8 System", Font_System7x8);
+    st7565Refresh();        // Refresh the screen
+  #endif
+
   // Initialise EEPROM
   #ifdef CFG_I2CEEPROM
     mcp24aaInit();
@@ -135,8 +150,6 @@ void systemInit()
 
   // Initialise SD Card
   #ifdef CFG_SDCARD
-    // Init SSP w/clock low between frames and transition on leading edge
-    sspInit(1, sspClockPolarity_Low, sspClockPhase_RisingEdge);
     DSTATUS stat;
     stat = disk_initialize(0);
     if (stat & STA_NOINIT) 
@@ -149,7 +162,6 @@ void systemInit()
     }
     if (stat == 0)
     {
-      DSTATUS stat;
       DWORD p2;
       WORD w1;
       BYTE res, b1;
@@ -160,7 +172,7 @@ void systemInit()
       // Drive size
       if (disk_ioctl(0, GET_SECTOR_COUNT, &p2) == RES_OK) 
       {
-        printf("%-40s : %d\n", "MMC Drive Size", p2);
+        printf("%-40s : %d\n", "MMC Drive Size", (int)p2);
       }
       // Sector Size
       if (disk_ioctl(0, GET_SECTOR_SIZE, &w1) == RES_OK) 

@@ -1,6 +1,6 @@
 /**************************************************************************/
 /*! 
-    @file     main.c
+    @file     smallfonts.h
     @author   K. Townsend (microBuilder.eu)
     @date     22 March 2010
     @version  0.10
@@ -35,40 +35,34 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 /**************************************************************************/
+#ifndef __SMALLFONTS_H_
+#define __SMALLFONTS_H_
 
-#include <stdio.h>
-#include <string.h>
+/* Partially based on original code for the KS0108 by Stephane Rey */
+/* Current version by Kevin Townsend */
+/* Last Updated: 12 May 2009 */
 
-#include "sysinit.h"
+#include "projectconfig.h"
 
-#ifdef CFG_INTERFACE
-  #include "core/cmd/cmd.h"
-#endif
-
-/**************************************************************************/
-/*! 
-    Main program entry point.  After reset, normal code execution will
-    begin here.
-*/
-/**************************************************************************/
-int main (void)
+struct FONT_DEF 
 {
-  // Configure cpu and mandatory peripherals
-  systemInit();
+    uint8_t u8Width;     	/* Character width for storage         */
+    uint8_t u8Height;  	/* Character height for storage        */
+    uint8_t u8FirstChar;     /* The first character available       */
+    uint8_t u8LastChar;      /* The last character available        */
+    uint8_t *au8FontTable;   /* Font table start address in memory  */
+};
 
-  while (1)
-  {
-    #ifdef CFG_INTERFACE 
-      // Handle any incoming command line input 
-      cmdPoll(); 
-    #else 
-      // Toggle LED @ 1 Hz 
-      systickDelay(1000); 
-      if (gpioGetValue(CFG_LED_PORT, CFG_LED_PIN))   
-        gpioSetValue (CFG_LED_PORT, CFG_LED_PIN, CFG_LED_ON); 
-      else  
-        gpioSetValue (CFG_LED_PORT, CFG_LED_PIN, CFG_LED_OFF); 
-    #endif  
-  }
-}
+extern const struct FONT_DEF Font_System3x6;
+extern const struct FONT_DEF Font_System5x8;
+extern const struct FONT_DEF Font_System7x8;
+extern const struct FONT_DEF Font_8x8;
+extern const struct FONT_DEF Font_8x8Thin;
 
+extern const uint8_t au8FontSystem3x6[];
+extern const uint8_t au8FontSystem5x8[];
+extern const uint8_t au8FontSystem7x8[];
+extern const uint8_t au8Font8x8[];
+extern const uint8_t au8Font8x8Thin[];
+
+#endif

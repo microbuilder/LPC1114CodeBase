@@ -1,0 +1,6 @@
+v0.21 - [In Development]
+====================================
+
+- Added ChaN's FATFS and a basic MMC/SDHC driver
+- Added "drivers/lcd" and a prelimenary (experimental) driver for 128x64
+  pixel ST7565-based bitmap LCDs (ex: http://www.adafruit.com/index.php?main_page=product_info&cPath=37&products_id=250)

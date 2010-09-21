@@ -64,9 +64,11 @@
 #include "systick.h"
 
 #ifdef CFG_SDCARD
-#include "drivers/fatfs/diskio.h"
-volatile uint32_t fatTicks = 0;
+  #include "drivers/fatfs/diskio.h"
+  volatile uint32_t fatTicks = 0;
 #endif
+
+volatile uint32_t systickTicks;             //  systick tick counter
 
 /**************************************************************************/
 /*! 
@@ -75,7 +77,7 @@ volatile uint32_t fatTicks = 0;
 /**************************************************************************/
 void SysTick_Handler (void)
 {
-  msTicks++;
+  systickTicks++;
 
   #ifdef CFG_SDCARD
   fatTicks++;
@@ -112,6 +114,9 @@ void systickInit (uint32_t ticks)
   {
     return;
   }
+
+  // Reset counter
+  systickTicks = 0;
                      
   // Set reload register
   SYSTICK_STRELOAD  = (ticks & SYSTICK_STRELOAD_MASK) - 1;
@@ -142,7 +147,7 @@ void systickInit (uint32_t ticks)
 void systickDelay (uint32_t delayTicks) 
 {
   uint32_t curTicks;
-  curTicks = msTicks;
+  curTicks = systickTicks;
 
   // Make sure delay is at least 1 tick in case of division, etc.
   if (delayTicks == 0) delayTicks = 1;
@@ -150,13 +155,25 @@ void systickDelay (uint32_t delayTicks)
   if (curTicks > 0xFFFFFFFF - delayTicks)
   {
     // Rollover will occur during delay
-    while (msTicks >= curTicks)
+    while (systickTicks >= curTicks)
     {
-      while (msTicks < (delayTicks - (0xFFFFFFFF - curTicks)));
+      while (systickTicks < (delayTicks - (0xFFFFFFFF - curTicks)));
     }      
   }
   else
   {
-    while ((msTicks - curTicks) < delayTicks);
+    while ((systickTicks - curTicks) < delayTicks);
   }
+}
+
+/**************************************************************************/
+/*! 
+    @brief      Returns the current value of the systick timer counter. 
+                This value is incremented by one every time an interrupt
+                fires for the systick timer.
+*/
+/**************************************************************************/
+uint32_t systickGetTicks(void)
+{
+  return systickTicks;
 }
