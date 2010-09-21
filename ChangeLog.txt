@@ -1,5 +1,5 @@
-v0.21 - [In Development]
-====================================
+v0.21 - 21 September 2010
+=========================
 
 - Added ChaN's FATFS and a basic MMC/SDHC driver
 - Added "drivers/lcd" and a prelimenary (experimental) driver for 128x64
