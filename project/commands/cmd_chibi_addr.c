@@ -1,7 +1,10 @@
 /**************************************************************************/
 /*! 
-    @file     main.c
+    @file     cmd_chibi_addr.c
     @author   K. Townsend (microBuilder.eu)
+
+    @brief    Code to execute for cmd_chibi_addr in the 'core/cmd'
+              command-line interpretter.
 
     @section LICENSE
 
@@ -33,65 +36,55 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 /**************************************************************************/
-
 #include <stdio.h>
-#include <string.h>
 
 #include "projectconfig.h"
-#include "sysinit.h"
+#include "core/cmd/cmd.h"
+#include "commands.h"       // Generic helper functions
 
-#include "core/systick/systick.h"
+#ifdef CFG_CHIBI
+  #include "drivers/chibi/chb.h"
+  #include "drivers/chibi/chb_drvr.h"
 
-#ifdef CFG_INTERFACE
-  #include "core/cmd/cmd.h"
+/**************************************************************************/
+/*! 
+    Gets or sets the 16-bit sensor node address.  This value can be 
+    anything between 1-65534 (0x0001-0xFFFE), and in decimal or
+    hexadecimal notation.  All hexadecimal values must be preceded by
+    '0x' or '0X' to be properly interpreted (ex. 0x009F).
+*/
+/**************************************************************************/
+void cmd_chibi_addr(uint8_t argc, char **argv)
+{
+  if (argc > 0)
+  {
+    // Try to convert supplied value to an integer
+    int32_t addr;
+    getNumber (argv[0], &addr);
+    
+    // Check for invalid values (getNumber may complain about this as well)
+    if (addr <= 0 || addr > 0xFFFF)
+    {
+      printf("Invalid Address: Value from 1-65534 or 0x0001-0xFFFE required.%s", CFG_PRINTF_NEWLINE);
+      return;
+    }
+    if (addr == 0xFFFF)
+    {
+      printf("Invalid Address: 0xFFFF is reserved for global transmissions.%s", CFG_PRINTF_NEWLINE);
+      return;
+    }
+
+    // Write address to EEPROM and update peripheral control block
+    chb_set_short_addr((uint16_t)addr);
+    chb_pcb_t *pcb = chb_get_pcb();
+    printf("Address set to: 0x%04X%s", pcb->src_addr, CFG_PRINTF_NEWLINE);
+  }
+  else
+  {
+    // Display the current address
+    chb_pcb_t *pcb = chb_get_pcb();
+    printf("0x%04X%s", pcb->src_addr, CFG_PRINTF_NEWLINE);
+  }
+}
+
 #endif
-
-/**************************************************************************/
-/*! 
-    Approximates a 1 millisecond delay using "nop".  This is less
-    accurate than a dedicated timer, but is useful in certain situations.
-
-    The number of ticks to delay depends on the optimisation level set
-    when compiling (-O).  Depending on the compiler settings, one of the
-    two defined values for 'delay' should be used.
-*/
-/**************************************************************************/
-void delayms(uint32_t ms)
-{
-  uint32_t delay = ms * ((CFG_CPU_CCLK / 100) / 45);      // Release Mode (-Os)
-  // uint32_t delay = ms * ((CFG_CPU_CCLK / 100) / 120);  // Debug Mode (No optimisations)
-
-  while (delay > 0)
-  {
-    __asm volatile ("nop");
-    delay--;
-  }
-}
-
-/**************************************************************************/
-/*! 
-    Main program entry point.  After reset, normal code execution will
-    begin here.
-*/
-/**************************************************************************/
-int main (void)
-{
-  // Configure cpu and mandatory peripherals
-  systemInit();
-
-  while (1)
-  {
-    #ifdef CFG_INTERFACE 
-      // Handle any incoming command line input 
-      cmdPoll(); 
-    #else 
-      // Toggle LED @ 1 Hz 
-      systickDelay(1000); 
-      if (gpioGetValue(CFG_LED_PORT, CFG_LED_PIN))   
-        gpioSetValue (CFG_LED_PORT, CFG_LED_PIN, CFG_LED_ON); 
-      else  
-        gpioSetValue (CFG_LED_PORT, CFG_LED_PIN, CFG_LED_OFF); 
-    #endif  
-  }
-}
-

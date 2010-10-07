@@ -1,3 +1,16 @@
+v0.30 - 7 October 2010
+======================
+
+- Moved command.c and cmd_tbl.h to /project to try to keep all project-specific files in one location
+- Created seperate .c files for every command for the command-line interface to make it easier
+  to maintain and share code between projects.  All commands listed in cmd_tbl.h are now stored
+  in their own files in /project/commands (ex.: "/project/commands/cmd_hello.c", etc.)
+- Add a CLI command to show the contents of any directory from the SD card 
+  (/project/commmands/cmd_sd_dir.c)
+- Added a CLI command showing how to enter deep-sleep and exit with a SW wakeup
+  (/project/commands/cmd_deepsleep.c)
+- Fixed pmu.c to set the core clock back to an appropriate state after wakeup
+
 v0.21 - 21 September 2010
 =========================
 

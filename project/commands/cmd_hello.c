@@ -1,7 +1,10 @@
 /**************************************************************************/
 /*! 
-    @file     main.c
+    @file     cmd_hello.c
     @author   K. Townsend (microBuilder.eu)
+
+    @brief    Code to execute for cmd_hello in the 'core/cmd'
+              command-line interpretter.
 
     @section LICENSE
 
@@ -33,65 +36,26 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 /**************************************************************************/
-
 #include <stdio.h>
-#include <string.h>
 
 #include "projectconfig.h"
-#include "sysinit.h"
-
-#include "core/systick/systick.h"
-
-#ifdef CFG_INTERFACE
-  #include "core/cmd/cmd.h"
-#endif
+#include "core/cmd/cmd.h"
+#include "commands.h"       // Generic helper functions
 
 /**************************************************************************/
 /*! 
-    Approximates a 1 millisecond delay using "nop".  This is less
-    accurate than a dedicated timer, but is useful in certain situations.
-
-    The number of ticks to delay depends on the optimisation level set
-    when compiling (-O).  Depending on the compiler settings, one of the
-    two defined values for 'delay' should be used.
+    'hello' command handler
 */
 /**************************************************************************/
-void delayms(uint32_t ms)
+void cmd_hello(uint8_t argc, char **argv)
 {
-  uint32_t delay = ms * ((CFG_CPU_CCLK / 100) / 45);      // Release Mode (-Os)
-  // uint32_t delay = ms * ((CFG_CPU_CCLK / 100) / 120);  // Debug Mode (No optimisations)
-
-  while (delay > 0)
+  if (argc > 0)
   {
-    __asm volatile ("nop");
-    delay--;
+    printf("Hello %s%s", argv[0],CFG_PRINTF_NEWLINE);
   }
-}
-
-/**************************************************************************/
-/*! 
-    Main program entry point.  After reset, normal code execution will
-    begin here.
-*/
-/**************************************************************************/
-int main (void)
-{
-  // Configure cpu and mandatory peripherals
-  systemInit();
-
-  while (1)
+  else
   {
-    #ifdef CFG_INTERFACE 
-      // Handle any incoming command line input 
-      cmdPoll(); 
-    #else 
-      // Toggle LED @ 1 Hz 
-      systickDelay(1000); 
-      if (gpioGetValue(CFG_LED_PORT, CFG_LED_PIN))   
-        gpioSetValue (CFG_LED_PORT, CFG_LED_PIN, CFG_LED_ON); 
-      else  
-        gpioSetValue (CFG_LED_PORT, CFG_LED_PIN, CFG_LED_OFF); 
-    #endif  
+    printf("Hello World!%s", CFG_PRINTF_NEWLINE);
   }
 }
 

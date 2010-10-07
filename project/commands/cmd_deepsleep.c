@@ -1,7 +1,10 @@
 /**************************************************************************/
 /*! 
-    @file     main.c
+    @file     cmd_deepsleep.c
     @author   K. Townsend (microBuilder.eu)
+
+    @brief    Code to execute for cmd_deepsleep in the 'core/cmd'
+              command-line interpretter.
 
     @section LICENSE
 
@@ -33,65 +36,52 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 /**************************************************************************/
-
 #include <stdio.h>
-#include <string.h>
 
 #include "projectconfig.h"
-#include "sysinit.h"
+#include "core/cmd/cmd.h"
+#include "commands.h"
 
-#include "core/systick/systick.h"
-
-#ifdef CFG_INTERFACE
-  #include "core/cmd/cmd.h"
-#endif
+#include "core/pmu/pmu.h"
 
 /**************************************************************************/
 /*! 
-    Approximates a 1 millisecond delay using "nop".  This is less
-    accurate than a dedicated timer, but is useful in certain situations.
-
-    The number of ticks to delay depends on the optimisation level set
-    when compiling (-O).  Depending on the compiler settings, one of the
-    two defined values for 'delay' should be used.
+    Puts the device into deep sleep
 */
 /**************************************************************************/
-void delayms(uint32_t ms)
+void cmd_deepsleep(uint8_t argc, char **argv)
 {
-  uint32_t delay = ms * ((CFG_CPU_CCLK / 100) / 45);      // Release Mode (-Os)
-  // uint32_t delay = ms * ((CFG_CPU_CCLK / 100) / 120);  // Debug Mode (No optimisations)
+  printf("Entering Deep Sleep mode%s", CFG_PRINTF_NEWLINE);
 
-  while (delay > 0)
+  #ifdef CFG_CHIBI
+  if (chb_radio_sleep() == 1)
   {
-    __asm volatile ("nop");
-    delay--;
+    printf("Unable to put RF transceiver into sleep mode%s", CFG_PRINTF_NEWLINE);
   }
+  #endif
+
+  // Put peripherals into sleep mode
+  uint32_t pmuRegVal;
+  pmuRegVal = SCB_PDSLEEPCFG_IRCOUT_PD |
+              SCB_PDSLEEPCFG_IRC_PD |
+              SCB_PDSLEEPCFG_FLASH_PD |
+              SCB_PDSLEEPCFG_BOD_PD |
+              SCB_PDSLEEPCFG_ADC_PD |
+              SCB_PDSLEEPCFG_SYSPLL_PD |
+              SCB_PDSLEEPCFG_SYSOSC_PD;
+
+  // If the wakeup timer is not used, WDTOSC can also be stopped (saves ~2uA)
+  // pmuRegVal |= SCB_PDSLEEPCFG_WDTOSC_PD;
+
+  // Enter deep sleep mode (wakeup after ~10 seconds)
+  // Note that the exact delay is variable since the internal WDT oscillator
+  // is used for lowest possible power consumption and because it requires
+  // no external components, but it only has +-/40% accuracy
+  pmuDeepSleep(pmuRegVal, 10);
+
+  // On wakeup, the WAKEUP interrupt will be fired, which is handled
+  // by WAKEUP_IRQHandler in 'core/pmu/pmu.c'.  This will set the CPU
+  // back to an appropriate state, and execution will be returned to
+  // the point that it left off before entering deep sleep mode.
+  printf("Woke up from deep sleep");
 }
-
-/**************************************************************************/
-/*! 
-    Main program entry point.  After reset, normal code execution will
-    begin here.
-*/
-/**************************************************************************/
-int main (void)
-{
-  // Configure cpu and mandatory peripherals
-  systemInit();
-
-  while (1)
-  {
-    #ifdef CFG_INTERFACE 
-      // Handle any incoming command line input 
-      cmdPoll(); 
-    #else 
-      // Toggle LED @ 1 Hz 
-      systickDelay(1000); 
-      if (gpioGetValue(CFG_LED_PORT, CFG_LED_PIN))   
-        gpioSetValue (CFG_LED_PORT, CFG_LED_PIN, CFG_LED_ON); 
-      else  
-        gpioSetValue (CFG_LED_PORT, CFG_LED_PIN, CFG_LED_OFF); 
-    #endif  
-  }
-}
-

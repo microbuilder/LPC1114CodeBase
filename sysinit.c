@@ -69,10 +69,6 @@
   #include "core/ssp/ssp.h"
   #include "drivers/fatfs/diskio.h"
   #include "drivers/fatfs/ff.h"
-  
-  static FILINFO Finfo;
-  static FATFS Fatfs[1];
-  // static uint8_t buf[64];
 
   DWORD get_fattime ()
   {
@@ -125,9 +121,9 @@ void systemInit()
     st7565Init();
     st7565ClearScreen();    // Clear the screen  
     st7565BLEnable();       // Enable the backlight
-    st7565DrawString(1, 1, "3X6 SYSTEM", Font_System3x6);   // 3x6 is UPPER CASE only
-    st7565DrawString(1, 10, "5x8 System", Font_System5x8);
-    st7565DrawString(1, 20, "7x8 System", Font_System7x8);
+    st7565DrawString(1, 1, "3X6 SYSTEM (32 CHARS)", Font_System3x6);   // 3x6 is UPPER CASE only
+    st7565DrawString(1, 10, "5x8 System (21 Chars)", Font_System5x8);
+    st7565DrawString(1, 20, "7x8 System (16)", Font_System7x8);
     st7565Refresh();        // Refresh the screen
   #endif
 
@@ -139,7 +135,7 @@ void systemInit()
   // Initialise Chibi
   #ifdef CFG_CHIBI
     // Write addresses to EEPROM for the first time if necessary
-    // uint16_t addr_short = 0x1234;
+    // uint16_t addr_short = 0x1166;
     // uint64_t addr_ieee =  addr_short;
     // mcp24aaWriteBuffer(CFG_CHIBI_EEPROM_SHORTADDR, (uint8_t *)&addr_short, 2);
     // mcp24aaWriteBuffer(CFG_CHIBI_EEPROM_IEEEADDR, (uint8_t *)&addr_ieee, 8);
@@ -154,77 +150,16 @@ void systemInit()
     stat = disk_initialize(0);
     if (stat & STA_NOINIT) 
     {
-      printf("%-40s : %s\n", "MMC", "Not Initialised");
+      printf("%-40s : %s\n", "SD", "Not Initialised");
     }
     if (stat & STA_NODISK) 
     {
-      printf("%-40s : %s\n", "MMC", "No Disk");
+      printf("%-40s : %s\n", "SD", "No Disk");
     }
     if (stat == 0)
     {
-      DWORD p2;
-      WORD w1;
-      BYTE res, b1;
-      DIR dir;
-  
       // SD Card Initialised
-      printf("%-40s : %s\n", "MMC", "Initialised");
-      // Drive size
-      if (disk_ioctl(0, GET_SECTOR_COUNT, &p2) == RES_OK) 
-      {
-        printf("%-40s : %d\n", "MMC Drive Size", (int)p2);
-      }
-      // Sector Size
-      if (disk_ioctl(0, GET_SECTOR_SIZE, &w1) == RES_OK) 
-      {
-        printf("%-40s : %d\n", "MMC Sector Size", w1);
-      }
-      // Card Type
-      if (disk_ioctl(0, MMC_GET_TYPE, &b1) == RES_OK) 
-      {
-        printf("%-40s : %d\n", "MMC Card Type", b1);
-      }
-      // Try to mount drive
-      res = f_mount(0, &Fatfs[0]);
-      if (res != FR_OK) 
-      {
-        printf("%-40s : %d\n", "MMC - Failed to mount 0:", res);
-      }
-      if (res == FR_OK)
-      {
-        res = f_opendir(&dir, "/");
-        if (res) 
-        {
-            printf("%-40s : %d\n", "MMC - Failed to open /:", res);
-            return;
-        }
-        // Read dir
-        for(;;) 
-        {
-            res = f_readdir(&dir, &Finfo);
-            if ((res != FR_OK) || !Finfo.fname[0]) break;
-            #if _USE_LFN == 0
-              printf("%-25s \n", (char *)&Finfo.fname[0]);
-            #else
-              printf("%-75s \n", (char *)&Finfo.lfname[0]);
-            #endif
-        }
-        // Create a file
-        //FIL logFile;  
-        //if(f_open(&logFile, "/log.txt", FA_READ | FA_WRITE | FA_OPEN_ALWAYS)!=FR_OK) 
-        //{  
-        //  // Flag error  
-        //  printf ("Unabled to create log.txt\n"); 
-        //}  
-        //unsigned int bytesWritten;  
-        //f_write(&logFile, "New log opened!\n", 16, &bytesWritten);  
-        //// Flush the write buffer (required?)
-        //// f_sync(&logFile);  
-        //// Close and unmount.   
-        //f_close(&logFile);  
-        //f_mount(0,0); 
-        //printf("Wrote data to log.txt\n");
-      }
+      printf("%-40s : %s\n", "SD", "Initialised");
     }
   #endif
 

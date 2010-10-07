@@ -43,7 +43,6 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 /**************************************************************************/
-
 #include "core/gpio/gpio.h"
 #include "core/cpu/cpu.h"
 #include "core/timer32/timer32.h"
@@ -72,7 +71,7 @@ void WAKEUP_IRQHandler(void)
   }
 
   // Reconfigure system clock/PLL
-  cpuPllSetup(CPU_MULTIPLIER_1);
+  cpuPllSetup(CPU_MULTIPLIER_3);
 
   // Reconfigure CT32B0
   timer32Init(0, TIMER32_DEFAULTINTERVAL);

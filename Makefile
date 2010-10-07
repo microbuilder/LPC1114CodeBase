@@ -16,6 +16,18 @@ VPATH =
 OBJS = main.o
 
 ##########################################################################
+# Project-specific files 
+##########################################################################
+
+VPATH += project
+OBJS += commands.o eeprom.o
+
+VPATH += project/commands
+OBJS += cmd_chibi_addr.o cmd_chibi_tx.o cmd_deepsleep.o cmd_hello.o
+OBJS += cmd_i2ceeprom_read.o cmd_i2ceeprom_write.o cmd_lm75b_gettemp.o
+OBJS += cmd_sysinfo.o cmd_sd_dir.o
+
+##########################################################################
 # Optional driver files 
 ##########################################################################
 
@@ -47,7 +59,6 @@ VPATH += core/ssp core/systick core/timer16 core/timer32 core/uart
 VPATH += core/libc core/wdt
 OBJS += adc.o cpu.o cmd.o gpio.o i2c.o pmu.o ssp.o systick.o timer16.o
 OBJS += timer32.o uart.o uart_buf.o stdio.o string.o wdt.o sysinit.o
-OBJS += commands.o
 
 ##########################################################################
 # GNU GCC compiler prefix and location
@@ -60,6 +71,12 @@ SIZE = $(CROSS_COMPILE)size
 OBJCOPY = $(CROSS_COMPILE)objcopy
 OBJDUMP = $(CROSS_COMPILE)objdump
 OUTFILE = firmware
+
+##########################################################################
+# GNU GCC compiler flags
+##########################################################################
+ROOT_PATH = .
+INCLUDE_PATHS = -I$(ROOT_PATH) -I$(ROOT_PATH)/project
 
 ##########################################################################
 # Startup files
@@ -82,8 +99,8 @@ OBJS += $(TARGET)_handlers.o LPC1xxx_startup.o
 ##########################################################################
 # Compiler settings, parameters and flags
 ##########################################################################
-CFLAGS  = -c -Os -I. -Wall -mthumb -ffunction-sections -fdata-sections -fmessage-length=0 -mcpu=$(CPU_TYPE) -DTARGET=$(TARGET) -fno-builtin
-ASFLAGS = -c -Os -I. -Wall -mthumb -ffunction-sections -fdata-sections -fmessage-length=0 -mcpu=$(CPU_TYPE) -D__ASSEMBLY__ -x assembler-with-cpp
+CFLAGS  = -c -Os $(INCLUDE_PATHS) -Wall -mthumb -ffunction-sections -fdata-sections -fmessage-length=0 -mcpu=$(CPU_TYPE) -DTARGET=$(TARGET) -fno-builtin
+ASFLAGS = -c -Os $(INCLUDE_PATHS) -Wall -mthumb -ffunction-sections -fdata-sections -fmessage-length=0 -mcpu=$(CPU_TYPE) -D__ASSEMBLY__ -x assembler-with-cpp
 LDFLAGS = -nostartfiles -mcpu=$(CPU_TYPE) -mthumb -Wl,--gc-sections
 OCFLAGS = --strip-unneeded
 

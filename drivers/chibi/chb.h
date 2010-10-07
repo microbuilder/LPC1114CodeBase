@@ -36,7 +36,7 @@
 
 #include "types.h"
 
-#define CHB_HDR_SZ        9    // FCF + seq + pan_id + dest_addr + src_addr (1 + 2 + 1 + 2 + 2 + 2)
+#define CHB_HDR_SZ        9    // FCF + seq + pan_id + dest_addr + src_addr (2 + 1 + 2 + 2 + 2)
 #define CHB_FCS_LEN       2
 #define CHB_MAX_PAYLOAD   100
 
@@ -46,7 +46,7 @@
 // frame pending = false
 // ack request = false
 // pan ID compression = true
-#define CHB_FCF_BYTE_0    0x41    
+#define CHB_FCF_BYTE_0    0x41
 
 // dest addr = 16-bit
 // frame version = 802.15.4 (not 2003)

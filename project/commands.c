@@ -1,7 +1,10 @@
 /**************************************************************************/
 /*! 
-    @file     main.c
+    @file     commands.c
     @author   K. Townsend (microBuilder.eu)
+
+    @brief    Common helper-functions for all commands in the 'core/cmd'
+              command-line interpretter.
 
     @section LICENSE
 
@@ -35,63 +38,83 @@
 /**************************************************************************/
 
 #include <stdio.h>
-#include <string.h>
+#include <string.h>   // memset
+#include <ctype.h>    // isdigit, isspace, etc.
 
-#include "projectconfig.h"
-#include "sysinit.h"
-
-#include "core/systick/systick.h"
-
-#ifdef CFG_INTERFACE
-  #include "core/cmd/cmd.h"
-#endif
+#include "core/cmd/cmd.h"
+#include "commands.h"
 
 /**************************************************************************/
-/*! 
-    Approximates a 1 millisecond delay using "nop".  This is less
-    accurate than a dedicated timer, but is useful in certain situations.
+/*!
+    @brief  Attempts to convert the supplied decimal or hexadecimal
+          string to the matching 32-bit value.  All hexadecimal values
+          must be preceded by either '0x' or '0X' to be properly parsed.
 
-    The number of ticks to delay depends on the optimisation level set
-    when compiling (-O).  Depending on the compiler settings, one of the
-    two defined values for 'delay' should be used.
+    @param[in]  s
+                Input string
+    @param[out] result
+                Signed 32-bit integer to hold the conversion results
+
+    @section Example
+
+    @code
+    char *hex = "0xABCD";
+    char *dec = "1234";
+
+    // Convert supplied values to integers
+    int32_t hexValue, decValue;
+    getNumber (hex, &hexValue);
+    getNumber (dec, &decValue);
+
+    @endcode
 */
 /**************************************************************************/
-void delayms(uint32_t ms)
+int getNumber (char *s, int32_t *result)
 {
-  uint32_t delay = ms * ((CFG_CPU_CCLK / 100) / 45);      // Release Mode (-Os)
-  // uint32_t delay = ms * ((CFG_CPU_CCLK / 100) / 120);  // Debug Mode (No optimisations)
+  int32_t value;
+  uint32_t mustBeHex = FALSE;
+  uint32_t sgn = 1;
+  const unsigned char hexToDec [] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 255, 255, 255, 255, 255, 255, 255, 10, 11, 12, 13, 14, 15};
 
-  while (delay > 0)
+  if (!s)
+    return 0;
+
+  // Check if this is a hexadecimal value
+  if ((strlen (s) > 2) && (!strncmp (s, "0x", 2) || !strncmp (s, "0X", 2)))
   {
-    __asm volatile ("nop");
-    delay--;
+    mustBeHex = TRUE;
+    s += 2;
   }
+
+  // Check for negative sign
+  if (!mustBeHex && *s && (*s == '-'))
+  {
+    sgn = -1;
+    s++;
+  }
+
+  // Try to convert value
+  for (value = 0; *s; s++)
+  {
+    if (mustBeHex && isxdigit ((uint8_t)*s))
+      value = (value << 4) | hexToDec [toupper((uint8_t)*s) - '0'];
+    else if (isdigit ((uint8_t)*s))
+      value = (value * 10) + ((uint8_t)*s - '0');
+    else
+    {
+      printf ("Malformed number. Must be decimal number, or hex value preceeded by '0x'%s", CFG_PRINTF_NEWLINE);
+      return 0;
+    }
+  }
+
+  // Set number to negative value if required
+  if (!mustBeHex)
+    value *= sgn;
+
+  *result = value;
+
+  return 1;
 }
 
-/**************************************************************************/
-/*! 
-    Main program entry point.  After reset, normal code execution will
-    begin here.
-*/
-/**************************************************************************/
-int main (void)
-{
-  // Configure cpu and mandatory peripherals
-  systemInit();
 
-  while (1)
-  {
-    #ifdef CFG_INTERFACE 
-      // Handle any incoming command line input 
-      cmdPoll(); 
-    #else 
-      // Toggle LED @ 1 Hz 
-      systickDelay(1000); 
-      if (gpioGetValue(CFG_LED_PORT, CFG_LED_PIN))   
-        gpioSetValue (CFG_LED_PORT, CFG_LED_PIN, CFG_LED_ON); 
-      else  
-        gpioSetValue (CFG_LED_PORT, CFG_LED_PIN, CFG_LED_OFF); 
-    #endif  
-  }
-}
 

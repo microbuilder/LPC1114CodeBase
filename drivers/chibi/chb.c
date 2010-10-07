@@ -84,7 +84,7 @@ static U8 chb_gen_hdr(U8 *hdr, U16 addr, U8 len)
     *hdr_ptr++ = pcb.seq++;
 
     // fill out dest pan ID, dest addr, src addr
-    *(U16 *)hdr_ptr = CHB_PAN_ID;
+    *(U16 *)hdr_ptr = CFG_CHIBI_PANID;
     hdr_ptr += sizeof(U16);
     *(U16 *)hdr_ptr = addr;
     hdr_ptr += sizeof(U16);

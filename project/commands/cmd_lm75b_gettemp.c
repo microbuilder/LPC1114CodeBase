@@ -1,7 +1,10 @@
 /**************************************************************************/
 /*! 
-    @file     main.c
+    @file     cmd_lm75b_gettemp.c
     @author   K. Townsend (microBuilder.eu)
+
+    @brief    Code to execute for cmd_lm75b_gettemp in the 'core/cmd'
+              command-line interpretter.
 
     @section LICENSE
 
@@ -33,65 +36,32 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 /**************************************************************************/
-
 #include <stdio.h>
-#include <string.h>
 
 #include "projectconfig.h"
-#include "sysinit.h"
+#include "core/cmd/cmd.h"
+#include "commands.h"       // Generic helper functions
 
-#include "core/systick/systick.h"
+#ifdef CFG_LM75B
+  #include "drivers/sensors/lm75b/lm75b.h"
 
-#ifdef CFG_INTERFACE
-  #include "core/cmd/cmd.h"
+/**************************************************************************/
+/*! 
+    Gets the current temperature in degrees celsius from the LM75B
+*/
+/**************************************************************************/
+void cmd_lm75b_gettemp(uint8_t argc, char **argv)
+{
+  int32_t temp = 0;
+
+  // Get the current temperature (in 0.125°C units)
+  lm75bGetTemperature(&temp);
+
+  // Multiply value by 125 for fixed-point math (0.125°C per unit)
+  temp *= 125;
+
+  // Use modulus operator to display decimal value
+  printf("Current Temperature: %d.%d C%s", temp / 1000, temp % 1000, CFG_PRINTF_NEWLINE);
+}
+
 #endif
-
-/**************************************************************************/
-/*! 
-    Approximates a 1 millisecond delay using "nop".  This is less
-    accurate than a dedicated timer, but is useful in certain situations.
-
-    The number of ticks to delay depends on the optimisation level set
-    when compiling (-O).  Depending on the compiler settings, one of the
-    two defined values for 'delay' should be used.
-*/
-/**************************************************************************/
-void delayms(uint32_t ms)
-{
-  uint32_t delay = ms * ((CFG_CPU_CCLK / 100) / 45);      // Release Mode (-Os)
-  // uint32_t delay = ms * ((CFG_CPU_CCLK / 100) / 120);  // Debug Mode (No optimisations)
-
-  while (delay > 0)
-  {
-    __asm volatile ("nop");
-    delay--;
-  }
-}
-
-/**************************************************************************/
-/*! 
-    Main program entry point.  After reset, normal code execution will
-    begin here.
-*/
-/**************************************************************************/
-int main (void)
-{
-  // Configure cpu and mandatory peripherals
-  systemInit();
-
-  while (1)
-  {
-    #ifdef CFG_INTERFACE 
-      // Handle any incoming command line input 
-      cmdPoll(); 
-    #else 
-      // Toggle LED @ 1 Hz 
-      systickDelay(1000); 
-      if (gpioGetValue(CFG_LED_PORT, CFG_LED_PIN))   
-        gpioSetValue (CFG_LED_PORT, CFG_LED_PIN, CFG_LED_ON); 
-      else  
-        gpioSetValue (CFG_LED_PORT, CFG_LED_PIN, CFG_LED_OFF); 
-    #endif  
-  }
-}
-

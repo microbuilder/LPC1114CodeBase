@@ -2,7 +2,7 @@
 <CodeLite_Project Name="LPC1114_CodeBase" InternalType="">
   <Plugins>
     <Plugin Name="qmake">
-      <![CDATA[00010001N0005Debug000000000000]]>
+      <![CDATA[00020001N0005Debug0000000000000001N0007Release000000000000]]>
     </Plugin>
   </Plugins>
   <Description/>
@@ -108,10 +108,28 @@
     <File Name="../../Makefile"/>
     <File Name="../../projectconfig.h"/>
     <File Name="../../sysdefs.h"/>
-    <File Name="../../cmd_tbl.h"/>
-    <File Name="../../commands.c"/>
     <File Name="../../sysinit.c"/>
     <File Name="../../sysinit.h"/>
+    <File Name="../../ChangeLog.txt"/>
+  </VirtualDirectory>
+  <VirtualDirectory Name="project">
+    <File Name="../../project/cmd_tbl.h"/>
+    <File Name="../../project/commands.c"/>
+    <File Name="../../project/eeprom.c"/>
+    <File Name="../../project/eeprom.h"/>
+    <File Name="../../project/commands.h"/>
+    <VirtualDirectory Name="commands">
+      <File Name="../../project/commands/cmd_chibi_addr.c"/>
+      <File Name="../../project/commands/cmd_chibi_tx.c"/>
+      <File Name="../../project/commands/cmd_deepsleep.c"/>
+      <File Name="../../project/commands/cmd_hello.c"/>
+      <File Name="../../project/commands/cmd_i2ceeprom_read.c"/>
+      <File Name="../../project/commands/cmd_i2ceeprom_write.c"/>
+      <File Name="../../project/commands/cmd_lm75b_gettemp.c"/>
+      <File Name="../../project/commands/cmd_sysinfo.c"/>
+      <File Name="../../project/commands/cmd_sd_dir.c"/>
+    </VirtualDirectory>
+    <File Name="../../project/readme.txt"/>
   </VirtualDirectory>
   <Settings Type="Dynamic Library">
     <Configuration Name="Debug" CompilerType="gnu gcc" DebuggerType="GNU gdb debugger" Type="Dynamic Library" BuildCmpWithGlobalSettings="append" BuildLnkWithGlobalSettings="append" BuildResWithGlobalSettings="append">
@@ -148,17 +166,17 @@ monitor sleep 10
 load "../../firmware.elf"
 
 # Initialise stack pointer (R13) and program counter (PC, R15)
-monitor reg r13 = (0x00000000)
-monitor reg pc = (0x00000004)
+# monitor reg r13 = (0x00000000)
+# monitor reg pc = (0x00000004)
 
-break main
-continue 
+# break main
+# continue 
 
 # Reset device to start execution
-# monitor reset
+monitor reset
 
 # Start the device
-# monitor go</PostConnectCommands>
+monitor go</PostConnectCommands>
         <StartupCommands/>
       </Debugger>
       <PreBuild/>

@@ -101,8 +101,8 @@ enum
 // configuration parameters
 enum
 {
-    CHB_CHANNEL             = 1,
-    CHB_PAN_ID              = 0x1234,
+    CHB_CHANNEL             = 1,        // Replaced in projectconfig.h with CFG_CHIBI_CHANNEL
+    CHB_PAN_ID              = 0x1234,   // Replaced in projectconfig.h with CFG_CHIBI_PANID
     CHB_TX_PWR              = 0x0,
     CHB_SHORT_ADDR          = 0x0,
     CHB_IEEE_ADDR           = 0x0,

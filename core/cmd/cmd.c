@@ -52,7 +52,7 @@
 #include <string.h>
 
 #include "cmd.h"
-#include "cmd_tbl.h"
+#include "project/cmd_tbl.h"
 
 #ifdef CFG_PRINTF_UART
 #include "core/uart/uart.h"

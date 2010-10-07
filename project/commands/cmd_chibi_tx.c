@@ -1,7 +1,10 @@
 /**************************************************************************/
 /*! 
-    @file     main.c
+    @file     cmd_chibi_tx.c
     @author   K. Townsend (microBuilder.eu)
+
+    @brief    Code to execute for cmd_chibi_tx in the 'core/cmd'
+              command-line interpretter.
 
     @section LICENSE
 
@@ -33,65 +36,55 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 /**************************************************************************/
-
 #include <stdio.h>
 #include <string.h>
 
 #include "projectconfig.h"
-#include "sysinit.h"
+#include "core/cmd/cmd.h"
+#include "commands.h"       // Generic helper functions
 
-#include "core/systick/systick.h"
+#ifdef CFG_CHIBI
+  #include "drivers/chibi/chb.h"
+  #include "drivers/chibi/chb_drvr.h"
 
-#ifdef CFG_INTERFACE
-  #include "core/cmd/cmd.h"
+/**************************************************************************/
+/*! 
+    Sends text or data via Chibi
+    
+*/
+/**************************************************************************/
+void cmd_chibi_tx(uint8_t argc, char **argv)
+{
+  uint8_t i, len, *data_ptr, data[50];
+  uint16_t addr;
+
+  // Try to convert supplied address to an integer
+  int32_t addr32;
+  getNumber (argv[0], &addr32);
+  
+  // Check for invalid values (getNumber may complain about this as well)
+  if (addr32 <= 0 || addr32 > 0xFFFF)
+  {
+    printf("Invalid Address: Value from 1-65534 or 0x0001-0xFFFE required.%s", CFG_PRINTF_NEWLINE);
+    return;
+  }
+
+  // Address seems to be OK
+  addr = (uint16_t)addr32;
+
+  // Get message contents
+  data_ptr = data;
+  for (i=0; i<argc-1; i++)
+  {
+    len = strlen(argv[i+1]);
+    strcpy((char *)data_ptr, (char *)argv[i+1]);
+    data_ptr += len;
+    *data_ptr++ = ' ';
+  }
+  *data_ptr++ = '\0';
+
+  // Send message
+  chb_write(addr, data, data_ptr - data);
+}
+
 #endif
-
-/**************************************************************************/
-/*! 
-    Approximates a 1 millisecond delay using "nop".  This is less
-    accurate than a dedicated timer, but is useful in certain situations.
-
-    The number of ticks to delay depends on the optimisation level set
-    when compiling (-O).  Depending on the compiler settings, one of the
-    two defined values for 'delay' should be used.
-*/
-/**************************************************************************/
-void delayms(uint32_t ms)
-{
-  uint32_t delay = ms * ((CFG_CPU_CCLK / 100) / 45);      // Release Mode (-Os)
-  // uint32_t delay = ms * ((CFG_CPU_CCLK / 100) / 120);  // Debug Mode (No optimisations)
-
-  while (delay > 0)
-  {
-    __asm volatile ("nop");
-    delay--;
-  }
-}
-
-/**************************************************************************/
-/*! 
-    Main program entry point.  After reset, normal code execution will
-    begin here.
-*/
-/**************************************************************************/
-int main (void)
-{
-  // Configure cpu and mandatory peripherals
-  systemInit();
-
-  while (1)
-  {
-    #ifdef CFG_INTERFACE 
-      // Handle any incoming command line input 
-      cmdPoll(); 
-    #else 
-      // Toggle LED @ 1 Hz 
-      systickDelay(1000); 
-      if (gpioGetValue(CFG_LED_PORT, CFG_LED_PIN))   
-        gpioSetValue (CFG_LED_PORT, CFG_LED_PIN, CFG_LED_ON); 
-      else  
-        gpioSetValue (CFG_LED_PORT, CFG_LED_PIN, CFG_LED_OFF); 
-    #endif  
-  }
-}
-

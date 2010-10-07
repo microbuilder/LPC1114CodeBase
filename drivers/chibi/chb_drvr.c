@@ -700,14 +700,14 @@ static void chb_radio_init()
     // set up default phy modulation, data rate and power (Ex. OQPSK, 100 kbps, 868 MHz, 3dBm)
     chb_set_mode(CFG_CHIBI_MODE);       // Defined in projectconfig.h
     chb_set_pwr(CFG_CHIBI_POWER);       // Defined in projectconfig.h
-    chb_set_channel(CHB_CHANNEL);
+    chb_set_channel(CFG_CHIBI_CHANNEL); // Defined in projectconfig.h
 
     // set fsm state
     // put trx in rx auto ack mode
     chb_set_state(RX_AACK_ON);
 
     // set pan ID
-    chb_reg_write16(PAN_ID_0, CHB_PAN_ID);
+    chb_reg_write16(PAN_ID_0, CFG_CHIBI_PANID);  // Defiend in projectconfig.h
 
     // set short addr
     // NOTE: Possibly get this from EEPROM

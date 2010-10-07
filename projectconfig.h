@@ -131,6 +131,7 @@
     CFG_PRINTF_CWDEBUG        Will cause all printf statements to be
                               redirected to the Crossworks
                               debug_printf statement (Crossworks only)
+                              Warning: This is very slow!
     CFG_PRINTF_NEWLINE        This should be either "\r\n" for Windows or
                               "\n" for *nix
 
@@ -177,9 +178,11 @@
 
     CFG_I2CEEPROM             If defined, drivers for the onboard EEPROM
                               will be included during build
+    CFG_I2CEEPROM_SIZE        The number of bytes available on the EEPROM
 
     -----------------------------------------------------------------------*/
     #define CFG_I2CEEPROM
+    #define CFG_I2CEEPROM_SIZE          (4096)
 /*=========================================================================*/
 
 
@@ -203,9 +206,11 @@
     CFG_CHIBI                   If defined, the CHIBI wireless stack will be
                                 included during build.  Requires external HW.
     CFG_CHIBI_MODE              The mode to use when receiving and transmitting
-                                with Chibi.  See chb_drvr.h for possible values
+                                wireless data.  See chb_drvr.h for possible values
     CFG_CHIBI_POWER             The power level to use when transmitting.  See
                                 chb_drvr.h for possible values
+    CFG_CHIBI_CHANNEL           802.15.4 Channel (0 = 868MHz, 1-10 = 915MHz)
+    CFG_CHIBI_PANID             16-bit PAN Identifier (ex.0x1234)
     CFG_CHIBI_BUFFERSIZE        The size of the message buffer in bytes
     CFG_CHIBI_EEPROM_IEEEADDR   Start location in EEPROM for the full IEEE
                                 address of this node
@@ -218,6 +223,8 @@
     // #define CFG_CHIBI
     #define CFG_CHIBI_MODE              (OQPSK_868MHZ)      // See chb_drvr.h for possible values
     #define CFG_CHIBI_POWER             (CHB_PWR_EU2_3DBM)  // See chb_drvr.h for possible values
+    #define CFG_CHIBI_CHANNEL           (0)                 // 0 = 868-868.6 MHz, 1-10 = 915MHz
+    #define CFG_CHIBI_PANID             (0x1234)
     #define CFG_CHIBI_BUFFERSIZE        (128)
     #define CFG_CHIBI_EEPROM_IEEEADDR   (uint16_t)(0x0000)
     #define CFG_CHIBI_EEPROM_SHORTADDR  (uint16_t)(0x0009)
@@ -228,9 +235,11 @@
     ST7565 128x64 Graphic LCD
     -----------------------------------------------------------------------
 
-    CFG_ST7565                  If defined, this will cause drivers for
-                                the 128x64 pixel ST7565 LCD to be included
+    CFG_ST7565                If defined, this will cause drivers for
+                              the 128x64 pixel ST7565 LCD to be included
 
+    Note:                     LPC1114 @ 36MHz and the ST7565 with the
+                              backlight enabled consumes ~35mA
     -----------------------------------------------------------------------*/
     // #define CFG_ST7565
 /*=========================================================================*/

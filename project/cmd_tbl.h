@@ -2,8 +2,6 @@
 /*! 
     @file     cmd_tbl.h
     @author   K. Townsend (microBuilder.eu)
-    @date     22 March 2010
-    @version  0.10
 
     @section LICENSE
 
@@ -44,7 +42,7 @@
 #include <stdio.h>
 
 #ifdef CFG_INTERFACE_UART
-#include "core/uart/uart.h"
+  #include "core/uart/uart.h"
 #endif
 
 // Function prototypes for the command table
@@ -67,9 +65,11 @@ void cmd_i2ceeprom_write(uint8_t argc, char **argv);
 void cmd_lm75b_gettemp(uint8_t argc, char **argv);
 #endif
 
-#ifdef CFG_TESTBED
-void cmd_testbed_test(uint8_t argc, char **argv);
+#ifdef CFG_SDCARD
+void cmd_sd_dir(uint8_t argc, char **argv);
 #endif
+
+void cmd_deepsleep(uint8_t argc, char **argv);
 
 /**************************************************************************/
 /*! 
@@ -84,7 +84,7 @@ cmd_t cmd_tbl[] =
 {
   // command name, min args, max args, hidden, function name, command description, syntax description
   { "help",           0,  0,  0,  cmd_help              , "Displays a list of all available commands"           , "'help' has no parameters" },
-  { "hello",          0,  1,  0,  cmd_hello             , "Displays \'Hello World!\'"                             , "'hello [<name>]'" },
+  { "hello",          0,  1,  0,  cmd_hello             , "Displays \'Hello World!\'"                           , "'hello [<name>]'" },
   { "sysinfo",        0,  0,  0,  cmd_sysinfo           , "Displays current system configuration settings"      , "'sysinfo' has no parameters" },
 
   #ifdef CFG_CHIBI
@@ -101,9 +101,11 @@ cmd_t cmd_tbl[] =
   { "lm75b-read",     0,  0,  0,  cmd_lm75b_gettemp     , "Gets the current temperature in degrees celsius"     , "'lm75b-read' has no parameters" },
   #endif
 
-  #ifdef CFG_TESTBED
-  { "test",           0,  0,  1,  cmd_testbed_test      , "Executes all testbed tests"                          , "'test' has no parameters" },
+  #ifdef CFG_SDCARD
+  { "sd-dir",         0,  1,  0,  cmd_sd_dir            , "List all files in the specified directory"           , "'sd-dir [<path>]'" },
   #endif
+
+  { "sleep",          0,  0,  0,  cmd_deepsleep         , "Put the device into deep sleep for ~10 seconds"      , "'sleep' has no parameters" },
 };
 
 #endif

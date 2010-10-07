@@ -68,7 +68,7 @@ void chb_eeprom_read(uint16_t addr, uint8_t *buf, uint16_t size)
   // Instantiate error message placeholder
   mcp24aaError_e error = MCP24AA_ERROR_OK;
   
-  // Read the contents of address 0x0125
+  // Read the contents of address addr
   error = mcp24aaReadBuffer(addr, buf, size);
   if (error)
   {

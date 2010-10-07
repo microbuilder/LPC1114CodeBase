@@ -369,9 +369,8 @@ DSTATUS disk_initialize (
 
         // SD Enable (Power)
         gpioSetDir( CFG_SDCARD_ENPORT, CFG_SDCARD_ENPIN, gpioDirection_Output ); /* SD Enable Pin */
-        gpioSetValue( CFG_SDCARD_ENPORT, CFG_SDCARD_ENPIN, 1 ); /* Disable card (by setting ENPIN high turned on below) */
-        gpioSetValue( CFG_SDCARD_ENPORT, CFG_SDCARD_ENPIN, 0 ); /* Disable card (by setting ENPIN high turned on below) */
-        gpioSetPullup( &IOCON_PIO2_5, gpioPullupMode_Inactive );  /* External pullup present */
+        gpioSetValue( CFG_SDCARD_ENPORT, CFG_SDCARD_ENPIN, 1 ); /* Disable card (by setting ENPIN high, turned on below) */
+        gpioSetPullup( &IOCON_PIO2_5, gpioPullupMode_Inactive );  /* Disable internal pullup */
 
 	if (drv) return STA_NOINIT;			/* Supports only single drive */
 	if (Stat & STA_NODISK) return Stat;	/* No card in the socket */
