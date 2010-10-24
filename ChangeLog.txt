@@ -1,3 +1,12 @@
+v0.31 - Ongoing
+===============
+
+- Added a simple pwm example using 16-bit timer 1 and p1.9 (MAT0).  The example can be found
+  in "/drivers/pwm".
+- Added a bi-polar stepper motor driver based on the Arduino library.  Basic position data was added
+  to detect deviation from the 'Home' position and to retrieve the spindle's current rotation.  See
+  "drivers/motor/stepper" for more information.
+
 v0.30 - 7 October 2010
 ======================
 

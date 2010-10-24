@@ -36,7 +36,6 @@
 #include <string.h>
 
 #include "projectconfig.h"
-#include "drivers/eeprom/mcp24aa/mcp24aa.h"
 #include "eeprom.h"
 
 static uint8_t buf[32];
@@ -107,6 +106,30 @@ uint16_t eepromReadU16(uint16_t addr)
   if (error) { };
 
   memcpy(&results, buf, sizeof(uint16_t));
+  return results;
+}
+
+/**************************************************************************/
+/*! 
+    @brief Reads 2 bytes from EEPROM
+
+    @param[in]  addr
+                The 16-bit address to read from in EEPROM
+
+    @return     A signed 16-bit value (int16_t)
+*/
+/**************************************************************************/
+int16_t eepromReadS16(uint16_t addr)
+{
+  int16_t results;
+
+  mcp24aaError_e error = MCP24AA_ERROR_OK;
+  error = mcp24aaReadBuffer(addr, buf, sizeof(int16_t));
+  
+  // ToDo: Handle any errors
+  if (error) { };
+
+  memcpy(&results, buf, sizeof(int16_t));
   return results;
 }
 
@@ -184,26 +207,160 @@ uint64_t eepromReadU64(uint16_t addr)
 
 /**************************************************************************/
 /*! 
-    @brief Writes a single byte to EEPROM
+    @brief Reads 8 bytes from EEPROM
 
     @param[in]  addr
                 The 16-bit address to read from in EEPROM
-    @param[in]  data
-                The 8-bit value to write to EEPROM
 
-    @return     MCP24AA_ERROR_OK      - Write operation was successful
-                MCP24AA_ERROR_I2CINIT - Unable to initialise I2C
-                MCP24AA_ERROR_I2CBUSY - I2C busy
-                MCP24AA_ERROR_ADDRERR - Address out of range
-
-    Note:       MCP24AA_ERROR_OK is equal to 0, so you can test if any
-                errors occured during write with:
-                if (!(eepromWriteByte(0x1234, 0x00))) ...
+    @return     A signed 64-bit value (int64_t)
 */
 /**************************************************************************/
-mcp24aaError_e eepromWriteByte(uint16_t addr, uint8_t data)
+int64_t eepromReadS64(uint16_t addr)
 {
-  // Write data at the supplied address
-  return mcp24aaWriteByte(addr, data);
+  int64_t results;
+
+  mcp24aaError_e error = MCP24AA_ERROR_OK;
+  error = mcp24aaReadBuffer(addr, buf, sizeof(int64_t));
+  
+  // ToDo: Handle any errors
+  if (error) { };
+
+  memcpy(&results, buf, sizeof(int64_t));
+  return results;
 }
 
+/**************************************************************************/
+/*! 
+    @brief Writes 1 byte to EEPROM
+
+    @param[in]  addr
+                The 16-bit address to write to in EEPROM
+*/
+/**************************************************************************/
+void eepromWriteU8(uint16_t addr, uint8_t value)
+{
+  mcp24aaError_e error = MCP24AA_ERROR_OK;
+  error = mcp24aaWriteBuffer(addr, (uint8_t *)&value, sizeof(value));
+
+  // ToDo: Handle any errors
+  if (error) { };
+}
+
+/**************************************************************************/
+/*! 
+    @brief Writes 1 signed byte to EEPROM
+
+    @param[in]  addr
+                The 16-bit address to write to in EEPROM
+*/
+/**************************************************************************/
+void eepromWriteS8(uint16_t addr, int8_t value)
+{
+  mcp24aaError_e error = MCP24AA_ERROR_OK;
+  error = mcp24aaWriteBuffer(addr, (uint8_t *)&value, sizeof(value));
+
+  // ToDo: Handle any errors
+  if (error) { };
+}
+
+/**************************************************************************/
+/*! 
+    @brief Writes an unsigned 16-bit integer to EEPROM
+
+    @param[in]  addr
+                The 16-bit address to write to in EEPROM
+*/
+/**************************************************************************/
+void eepromWriteU16(uint16_t addr, uint16_t value)
+{
+  mcp24aaError_e error = MCP24AA_ERROR_OK;
+  error = mcp24aaWriteBuffer(addr, (uint8_t *)&value, sizeof(value));
+
+  // ToDo: Handle any errors
+  if (error) { };
+}
+
+/**************************************************************************/
+/*! 
+    @brief Writes a signed 16-bit integer to EEPROM
+
+    @param[in]  addr
+                The 16-bit address to write to in EEPROM
+*/
+/**************************************************************************/
+void eepromWriteS16(uint16_t addr, int16_t value)
+{
+  mcp24aaError_e error = MCP24AA_ERROR_OK;
+  error = mcp24aaWriteBuffer(addr, (uint8_t *)&value, sizeof(value));
+
+  // ToDo: Handle any errors
+  if (error) { };
+}
+
+/**************************************************************************/
+/*! 
+    @brief Writes an unsigned 32-bit integer to EEPROM
+
+    @param[in]  addr
+                The 16-bit address to write to in EEPROM
+*/
+/**************************************************************************/
+void eepromWriteU32(uint16_t addr, uint32_t value)
+{
+  mcp24aaError_e error = MCP24AA_ERROR_OK;
+  error = mcp24aaWriteBuffer(addr, (uint8_t *)&value, sizeof(value));
+
+  // ToDo: Handle any errors
+  if (error) { };
+}
+
+/**************************************************************************/
+/*! 
+    @brief Writes a signed 32-bit integer to EEPROM
+
+    @param[in]  addr
+                The 16-bit address to write to in EEPROM
+*/
+/**************************************************************************/
+void eepromWriteS32(uint16_t addr, int32_t value)
+{
+  mcp24aaError_e error = MCP24AA_ERROR_OK;
+  error = mcp24aaWriteBuffer(addr, (uint8_t *)&value, sizeof(value));
+
+  // ToDo: Handle any errors
+  if (error) { };
+}
+
+/**************************************************************************/
+/*! 
+    @brief Writes an unsigned 64-bit integer to EEPROM
+
+    @param[in]  addr
+                The 16-bit address to write to in EEPROM
+*/
+/**************************************************************************/
+void eepromWriteU64(uint16_t addr, uint64_t value)
+{
+  mcp24aaError_e error = MCP24AA_ERROR_OK;
+  error = mcp24aaWriteBuffer(addr, (uint8_t *)&value, sizeof(value));
+
+  // ToDo: Handle any errors
+  if (error) { };
+}
+
+/**************************************************************************/
+/*! 
+    @brief Writes a signed 64-bit integer to EEPROM
+
+    @param[in]  addr
+                The 16-bit address to write to in EEPROM
+*/
+/**************************************************************************/
+void eepromWriteS64(uint16_t addr, int64_t value)
+{
+  mcp24aaError_e error = MCP24AA_ERROR_OK;
+  error = mcp24aaWriteBuffer(addr, (uint8_t *)&value, sizeof(value));
+
+  // ToDo: Handle any errors
+  if (error) { };
+}

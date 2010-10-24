@@ -105,6 +105,8 @@ void st7565ClearScreen( void );
 void st7565Refresh( void );
 void st7565DrawPixel( uint8_t x, uint8_t y );
 void st7565ClearPixel( uint8_t x, uint8_t y );
-void st7565DrawString(uint16_t x, uint16_t y, char* text, struct FONT_DEF font);
+uint8_t st7565GetPixel( uint8_t x, uint8_t y );
+void st7565DrawString( uint16_t x, uint16_t y, char* text, struct FONT_DEF font );
+void st7565ShiftFrameBuffer( uint8_t pixels );
 
 #endif

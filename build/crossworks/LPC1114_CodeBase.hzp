@@ -1,7 +1,7 @@
 <!DOCTYPE CrossStudio_Project_File>
 <solution Name="LPC1114_CodeBase" version="2">
   <project Name="LPC1114_CodeBase">
-    <configuration Name="Common" Target="LPC1114" arm_architecture="v6M" arm_core_type="Cortex-M0" arm_linker_heap_size="128" arm_linker_process_stack_size="0" arm_linker_stack_size="1024" arm_simulator_memory_simulation_filename="$(TargetsDir)/LPC1000/LPC1000SimulatorMemory.dll" arm_simulator_memory_simulation_parameter="LPC11;0x8000;0x2000;0x0" arm_target_debug_interface_type="ADIv5" arm_target_loader_parameter="12000000" build_intermediate_directory="$(Configuration)" c_preprocessor_definitions="USE_PROCESS_STACK" c_user_include_directories="$(TargetsDir)/LPC1000/include;$(ProjectDir)/../../;$(ProjectDir)/../../freertos/inc/;$(ProjectDir)/../../freertos/;$(ProjectDir)/../../project/" link_include_startup_code="No" linker_additional_files="$(TargetsDir)/LPC1000/lib/liblpc1000$(LibExt)$(LIB);$(TargetsDir)/LPC1000/lib/cmsis$(LibExt)$(LIB)" linker_memory_map_file="$(TargetsDir)/LPC1000/LPC1114_MemoryMap.xml" linker_output_format="hex" oscillator_frequency="12MHz" project_directory="" project_type="Executable" property_groups_file_path="$(TargetsDir)/LPC1000/propertyGroups11xx.xml"/>
+    <configuration Name="Common" Target="LPC1114" arm_architecture="v6M" arm_core_type="Cortex-M0" arm_linker_heap_size="256" arm_linker_process_stack_size="0" arm_linker_stack_size="1024" arm_simulator_memory_simulation_filename="$(TargetsDir)/LPC1000/LPC1000SimulatorMemory.dll" arm_simulator_memory_simulation_parameter="LPC11;0x8000;0x2000;0x0" arm_target_debug_interface_type="ADIv5" arm_target_loader_parameter="12000000" build_intermediate_directory="$(Configuration)" c_preprocessor_definitions="USE_PROCESS_STACK" c_user_include_directories="$(TargetsDir)/LPC1000/include;$(ProjectDir)/../../;$(ProjectDir)/../../freertos/inc/;$(ProjectDir)/../../freertos/;$(ProjectDir)/../../project/" link_include_startup_code="No" linker_additional_files="$(TargetsDir)/LPC1000/lib/liblpc1000$(LibExt)$(LIB);$(TargetsDir)/LPC1000/lib/cmsis$(LibExt)$(LIB)" linker_memory_map_file="$(TargetsDir)/LPC1000/LPC1114_MemoryMap.xml" linker_output_format="hex" oscillator_frequency="12MHz" project_directory="" project_type="Executable" property_groups_file_path="$(TargetsDir)/LPC1000/propertyGroups11xx.xml"/>
     <configuration Name="Flash" Placement="Flash" arm_target_flash_loader_file_path="$(TargetsDir)/LPC1000/Release/Loader_lpc1100.elf" arm_target_flash_loader_type="LIBMEM RPC Loader" linker_patch_build_command="&quot;$(StudioDir)/bin/crossscript&quot; &quot;load(\&quot;$(TargetsDir)/LPC1000/LPC1000_LinkPatch.js\&quot;);patch(\&quot;$(TargetPath)\&quot;);&quot;" linker_section_placement_file="$(StudioDir)/targets/Cortex_M/flash_placement.xml" target_reset_script="FLASHReset()"/>
     <configuration Name="RAM" Placement="RAM" linker_section_placement_file="$(StudioDir)/targets/Cortex_M/ram_placement.xml" target_reset_script="SRAMReset()"/>
     <folder Name="Source Files">
@@ -43,7 +43,7 @@
         </folder>
         <folder Name="cmd">
           <file file_name="../../core/cmd/cmd.c">
-            <configuration Name="THUMB Flash Debug" build_exclude_from_build="Yes"/>
+            <configuration Name="THUMB Flash Debug" build_exclude_from_build="No"/>
           </file>
         </folder>
       </folder>
@@ -84,11 +84,11 @@
         </folder>
         <folder Name="fatfs">
           <file file_name="../../drivers/fatfs/ff.c">
-            <configuration Name="THUMB Flash Debug" build_exclude_from_build="Yes"/>
+            <configuration Name="THUMB Flash Debug" build_exclude_from_build="No"/>
             <configuration Name="THUMB RAM Debug" build_exclude_from_build="Yes"/>
           </file>
           <file file_name="../../drivers/fatfs/mmc.c">
-            <configuration Name="THUMB Flash Debug" build_exclude_from_build="Yes"/>
+            <configuration Name="THUMB Flash Debug" build_exclude_from_build="No"/>
             <configuration Name="THUMB RAM Debug" build_exclude_from_build="Yes"/>
           </file>
         </folder>
@@ -103,6 +103,14 @@
           <file file_name="../../drivers/lcd/smallfonts.c">
             <configuration Name="THUMB Flash Debug" build_exclude_from_build="Yes"/>
           </file>
+        </folder>
+        <folder Name="pwm">
+          <file file_name="../../drivers/pwm/pwm.c"/>
+        </folder>
+        <folder Name="motor">
+          <folder Name="stepper">
+            <file file_name="../../drivers/motor/stepper/stepper.c"/>
+          </folder>
         </folder>
       </folder>
       <file file_name="../../sysdefs.h"/>
@@ -124,6 +132,30 @@
           <file file_name="../../project/commands/cmd_i2ceeprom_write.c"/>
           <file file_name="../../project/commands/cmd_lm75b_gettemp.c"/>
           <file file_name="../../project/commands/cmd_sd_dir.c"/>
+          <file file_name="../../project/commands/cmd_wireless_eepromdefaults.c"/>
+        </folder>
+        <file file_name="../../project/constants.h"/>
+        <folder Name="wireless">
+          <folder Name="frames">
+            <folder Name="requestresponse">
+              <file file_name="../../project/wireless/frames/requestresponse/analogdata.c"/>
+              <file file_name="../../project/wireless/frames/requestresponse/battery.c"/>
+              <file file_name="../../project/wireless/frames/requestresponse/binarydata.c"/>
+              <file file_name="../../project/wireless/frames/requestresponse/datastorage.c"/>
+              <file file_name="../../project/wireless/frames/requestresponse/nodedetails.c"/>
+              <file file_name="../../project/wireless/frames/requestresponse/numericdata.c"/>
+              <file file_name="../../project/wireless/frames/requestresponse/position.c"/>
+              <file file_name="../../project/wireless/frames/requestresponse/textdata.c"/>
+              <file file_name="../../project/wireless/frames/requestresponse/time.c"/>
+            </folder>
+          </folder>
+          <file file_name="../../project/wireless/msgkey.h"/>
+          <file file_name="../../project/wireless/router.c"/>
+          <file file_name="../../project/wireless/routing_tbl.h"/>
+          <file file_name="../../project/wireless/serialise.c"/>
+          <folder Name="endpoints">
+            <file file_name="../../project/wireless/endpoints/ep_nodedetails.c"/>
+          </folder>
         </folder>
       </folder>
     </folder>

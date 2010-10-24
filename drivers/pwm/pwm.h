@@ -1,9 +1,7 @@
 /**************************************************************************/
 /*! 
-    @file     smallfonts.h
+    @file     pwm.h
     @author   K. Townsend (microBuilder.eu)
-    @date     22 March 2010
-    @version  0.10
 
     @section LICENSE
 
@@ -35,34 +33,17 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 /**************************************************************************/
-#ifndef __SMALLFONTS_H_
-#define __SMALLFONTS_H_
 
-/* Partially based on original code for the KS0108 by Stephane Rey */
-/* Current version by Kevin Townsend */
-/* Last Updated: 12 May 2009 */
+#ifndef _PWM_H_
+#define _PWM_H_
 
 #include "projectconfig.h"
 
-struct FONT_DEF 
-{
-    uint8_t u8Width;     	/* Character width for storage         */
-    uint8_t u8Height;  	/* Character height for storage        */
-    uint8_t u8FirstChar;     /* The first character available       */
-    uint8_t u8LastChar;      /* The last character available        */
-    const uint8_t *au8FontTable;   /* Font table start address in memory  */
-};
-
-extern const struct FONT_DEF Font_System3x6;
-extern const struct FONT_DEF Font_System5x8;
-extern const struct FONT_DEF Font_System7x8;
-extern const struct FONT_DEF Font_8x8;
-extern const struct FONT_DEF Font_8x8Thin;
-
-extern const uint8_t au8FontSystem3x6[];
-extern const uint8_t au8FontSystem5x8[];
-extern const uint8_t au8FontSystem7x8[];
-extern const uint8_t au8Font8x8[];
-extern const uint8_t au8Font8x8Thin[];
+void pwmInit( void );
+void pwmStart( void );
+void pwmStop( void );
+int  pwmSetDutyCycle( uint32_t percentage );
+int  pwmSetFrequencyInTicks( uint16_t frequency );
+int  pwmSetFrequencyInMicroseconds(uint16_t frequency);
 
 #endif

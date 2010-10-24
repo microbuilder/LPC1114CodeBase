@@ -2,8 +2,6 @@
 /*! 
     @file     projectconfig.h
     @author   K. Townsend (microBuilder.eu)
-    @date     22 March 2010
-    @version  0.10
 
     @section LICENSE
 
@@ -166,7 +164,7 @@
                               this varies with the number of commands
                               present
     -----------------------------------------------------------------------*/
-    #define CFG_INTERFACE
+    // #define CFG_INTERFACE
     #define CFG_INTERFACE_MAXMSGSIZE    (80)
     #define CFG_INTERFACE_PROMPT        "LPC1114 >> "
 /*=========================================================================*/

@@ -36,22 +36,22 @@
 */
 /**************************************************************************/
 
-#include <stdint.h>
-
 #ifndef _SYSDEFS_H_
 #define _SYSDEFS_H_
 
-#ifndef TRUE
-#define TRUE (1)
-#endif
-#ifndef FALSE
-#define FALSE (0)
-#endif
+#include <stdio.h>
+#include <stdint.h>
+#include <stdbool.h>
+
+// Stay compatible with ugly "windows" style
+#define BOOL bool
+#define TRUE true
+#define FALSE false
 
 typedef volatile uint8_t REG8;
 typedef volatile uint16_t REG16;
 typedef volatile uint32_t REG32;
-typedef int BOOL;
+typedef unsigned char byte_t;
 
 #define pREG8  (REG8 *)
 #define pREG16 (REG16 *)
@@ -62,3 +62,4 @@ typedef int BOOL;
 #endif
 
 #endif
+

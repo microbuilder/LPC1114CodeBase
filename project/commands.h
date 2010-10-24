@@ -33,7 +33,12 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 /**************************************************************************/
+#ifndef __COMMANDS_H__ 
+#define __COMMANDS_H__
+
 #include "projectconfig.h"
 
 // Method Prototypes
 int getNumber (char *s, int32_t *result);
+
+#endif

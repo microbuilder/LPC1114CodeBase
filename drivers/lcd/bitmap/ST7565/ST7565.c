@@ -2,8 +2,6 @@
 /*! 
     @file     ST7565.c
     @author   K. Townsend (microBuilder.eu)
-    @date     22 March 2010
-    @version  0.10
 
     @section DESCRIPTION
 
@@ -44,7 +42,7 @@
 /**************************************************************************/
 #include <string.h>
 
-#include "ST7565.h"
+#include "st7565.h"
 
 #include "core/gpio/gpio.h"
 #include "core/systick/systick.h"
@@ -269,18 +267,21 @@ void st7565SetBrightness(uint8_t val)
 /**************************************************************************/
 void st7565ClearScreen(void) 
 {
-  uint8_t p, c;
-  
-  for(p = 0; p < 8; p++) 
-  {
-    CMD(ST7565_CMD_SET_PAGE | p);
-    for(c = 0; c < 129; c++) 
-    {
-      CMD(ST7565_CMD_SET_COLUMN_LOWER | (c & 0xf));
-      CMD(ST7565_CMD_SET_COLUMN_UPPER | ((c >> 4) & 0xf));
-      DATA(0xC);
-    }     
-  }
+  memset(&buffer, 0x00, 128*64/8);
+  st7565Refresh();
+
+//  uint8_t p, c;
+//  
+//  for(p = 0; p < 8; p++) 
+//  {
+//    CMD(ST7565_CMD_SET_PAGE | p);
+//    for(c = 0; c < 129; c++) 
+//    {
+//      CMD(ST7565_CMD_SET_COLUMN_LOWER | (c & 0xf));
+//      CMD(ST7565_CMD_SET_COLUMN_UPPER | ((c >> 4) & 0xf));
+//      DATA(0xC);
+//    }     
+//  }
 }
 
 /**************************************************************************/
@@ -332,6 +333,24 @@ void st7565ClearPixel(uint8_t x, uint8_t y)
 }
 
 /**************************************************************************/
+/*! 
+    @brief Gets the value (1 or 0) of the specified pixel from the buffer
+
+    @param[in]  x
+                The x position (0..127)
+    @param[in]  y
+                The y position (0..63)
+
+    @return     1 if the pixel is enabled, 0 if disabled
+*/
+/**************************************************************************/
+uint8_t st7565GetPixel(uint8_t x, uint8_t y)
+{
+  if ((x >= 128) || (y >= 64)) return 0;
+  return buffer[x+ (y/8)*128] & (1 << (7-(y%8)));
+}
+
+/**************************************************************************/
 /*!
     @brief  Draws a string using the supplied font data.
 
@@ -376,3 +395,75 @@ void st7565DrawString(uint16_t x, uint16_t y, char* text, struct FONT_DEF font)
     drawChar(x + (l * (font.u8Width + 1)), y, text[l], font);
   }
 }
+
+/**************************************************************************/
+/*!
+    @brief  Shifts the contents of the frame buffer up the specified
+            number of pixels
+
+    @param[in]  height
+                The number of pixels to shift the frame buffer up, leaving
+                a blank space at the bottom of the frame buffer x pixels
+                high
+
+    @section Example
+
+    @code 
+
+    #include "drivers/lcd/bitmap/st7565/st7565.h"
+    #include "drivers/lcd/smallfonts.h"
+    
+    // Configure the pins and initialise the LCD screen
+    st7565Init();
+
+    // Enable the backlight
+    st7565BLEnable();
+
+    // Continually write some text, scrolling upward one line each time
+    while (1)
+    {
+      // Shift the buffer up 8 pixels (adjust for font-height)
+      st7565ShiftFrameBuffer(8);
+      // Render some text on the screen with different fonts
+      st7565DrawString(1, 56, "INSERT TEXT HERE", Font_System3x6);   // 3x6 is UPPER CASE only
+      // Refresh the screen to see the results
+      st7565Refresh();    
+      // Wait a bit before writing the next line
+      systickDelay(1000);
+    }
+
+    @endcode
+*/
+/**************************************************************************/
+void st7565ShiftFrameBuffer( uint8_t height )
+{
+  if (height == 0) return;
+  if (height >= 64)
+  {
+    // Clear the entire frame buffer
+    st7565ClearScreen();
+    return;
+  }
+
+  // This is horribly inefficient, but at least easy to understand
+  // In a production environment, this should be significantly optimised
+
+  uint8_t y, x;
+  for (y = 0; y < 64; y++)
+  {
+    for (x = 0; x < 128; x++)
+    {
+      if (63 - y > height)
+      {
+        // Shift height from further ahead in the buffer
+        st7565GetPixel(x, y + height) ? st7565DrawPixel(x, y) : st7565ClearPixel(x, y);
+      }
+      else
+      {
+        // Clear the entire line
+        st7565ClearPixel(x, y);
+      }
+    }
+  }
+}
+

@@ -121,9 +121,6 @@ void systemInit()
     st7565Init();
     st7565ClearScreen();    // Clear the screen  
     st7565BLEnable();       // Enable the backlight
-    st7565DrawString(1, 1, "3X6 SYSTEM (32 CHARS)", Font_System3x6);   // 3x6 is UPPER CASE only
-    st7565DrawString(1, 10, "5x8 System (21 Chars)", Font_System5x8);
-    st7565DrawString(1, 20, "7x8 System (16)", Font_System7x8);
     st7565Refresh();        // Refresh the screen
   #endif
 
@@ -197,6 +194,11 @@ void __putchar(const char c)
 
     @param[in]  str
                 Text to send
+
+    @note This function is only called when using the GCC-compiler
+          in Codelite or running the Makefile manually.  This function
+          will not be called when using the C library in Crossworks for
+          ARM.
 */
 /**************************************************************************/
 int puts(const char * str)

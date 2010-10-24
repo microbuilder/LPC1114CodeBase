@@ -72,5 +72,6 @@ uint8_t uartRxBufferRead();
 void uartRxBufferWrite(uint8_t data);
 void uartRxBufferClearFIFO();
 uint8_t uartRxBufferDataPending();
+bool uartRxBufferReadArray(byte_t* rx, size_t* len);
 
 #endif

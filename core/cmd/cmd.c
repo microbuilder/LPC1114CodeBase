@@ -169,11 +169,13 @@ void cmdParse(char *cmd)
         {
           // Too few arguments supplied
           printf ("Too few arguments to command (%d expected)%s", cmd_tbl[i].minArgs, CFG_PRINTF_NEWLINE);
+          printf ("%sType '%s ?' for more information%s%s", CFG_PRINTF_NEWLINE, cmd_tbl[i].command, CFG_PRINTF_NEWLINE, CFG_PRINTF_NEWLINE);
         }
         else if ((argc - 1) > cmd_tbl[i].maxArgs)
         {
           // Too many arguments supplied
           printf ("Too many arguments to command (%d maximum)%s", cmd_tbl[i].maxArgs, CFG_PRINTF_NEWLINE);
+          printf ("%sType '%s ?' for more information%s%s", CFG_PRINTF_NEWLINE, cmd_tbl[i].command, CFG_PRINTF_NEWLINE, CFG_PRINTF_NEWLINE);
         }
         else
         {

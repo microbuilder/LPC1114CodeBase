@@ -82,6 +82,26 @@ uint8_t uartRxBufferRead()
 
 /**************************************************************************/
 /*!
+  Read byte array from uart
+ */
+/**************************************************************************/
+bool uartRxBufferReadArray(byte_t* rx, size_t* len)
+{
+  uart_pcb_t *pcb = uartGetPCB();
+  *len = 0;
+  
+  while(pcb->rxfifo.len != 0)
+  {
+    (*rx) = uartRxBufferRead();
+    (*len)++;
+    rx++;
+  }
+  
+  return (*len != 0);
+}
+
+/**************************************************************************/
+/*!
   Write one byte into the RX buffer. This function will write one
   byte into the array index specified by the write pointer and increment
   the write index. If the write index exceeds the max buffer size, then it

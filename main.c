@@ -40,6 +40,7 @@
 #include "projectconfig.h"
 #include "sysinit.h"
 
+#include "core/gpio/gpio.h"
 #include "core/systick/systick.h"
 
 #ifdef CFG_INTERFACE
@@ -87,10 +88,14 @@ int main (void)
     #else 
       // Toggle LED @ 1 Hz 
       systickDelay(1000); 
-      if (gpioGetValue(CFG_LED_PORT, CFG_LED_PIN))   
+      if (gpioGetValue(CFG_LED_PORT, CFG_LED_PIN))
+      {
         gpioSetValue (CFG_LED_PORT, CFG_LED_PIN, CFG_LED_ON); 
-      else  
+      }
+      else
+      {
         gpioSetValue (CFG_LED_PORT, CFG_LED_PIN, CFG_LED_OFF); 
+      }
     #endif  
   }
 }

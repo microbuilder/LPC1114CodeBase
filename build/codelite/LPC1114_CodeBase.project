@@ -96,6 +96,16 @@
       <File Name="../../drivers/fatfs/integer.h"/>
       <File Name="../../drivers/fatfs/mmc.c"/>
     </VirtualDirectory>
+    <VirtualDirectory Name="pwm">
+      <File Name="../../drivers/pwm/pwm.c"/>
+      <File Name="../../drivers/pwm/pwm.h"/>
+    </VirtualDirectory>
+    <VirtualDirectory Name="motor">
+      <VirtualDirectory Name="stepper">
+        <File Name="../../drivers/motor/stepper/stepper.c"/>
+        <File Name="../../drivers/motor/stepper/stepper.h"/>
+      </VirtualDirectory>
+    </VirtualDirectory>
   </VirtualDirectory>
   <VirtualDirectory Name="lpc1xxx">
     <File Name="../../lpc1xxx/linkscript.ld"/>
