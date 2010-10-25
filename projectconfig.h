@@ -190,7 +190,7 @@
     DEPENDENCIES:               PWM output requires the use of 16-bit
                                 timer 1 and pin 1.9 (CT16B1_MAT0).
     -----------------------------------------------------------------------*/
-    // #define CFG_PWM
+    #define CFG_PWM
     #define CFG_PWM_DEFAULT_PULSEWIDTH  (CFG_CPU_CCLK / 1000)
     #define CFG_PWM_DEFAULT_DUTYCYCLE   (50)
 /*=========================================================================*/

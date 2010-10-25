@@ -78,7 +78,6 @@
 #include "stepper.h"
 #include "core/gpio/gpio.h"
 #include "core/timer16/timer16.h"
-#include "drivers/pwm/pwm.h"
 
 static int64_t  stepperPosition = 0;          // The current position (in steps) relative to 'Home'
 static uint32_t stepperStepNumber = 0;        // The current position (in steps) relative to 0°

@@ -9,7 +9,7 @@
     @section Example
 
     @code 
-    #include "drivers/pwm/pwm.h"
+    #include "core/pwm/pwm.h"
     ...
 
     // Initialises PWM output on 16-bit Timer 1 and

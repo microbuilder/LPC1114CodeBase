@@ -46,6 +46,9 @@
             <configuration Name="THUMB Flash Debug" build_exclude_from_build="No"/>
           </file>
         </folder>
+        <folder Name="pwm">
+          <file file_name="../../core/pwm/pwm.c"/>
+        </folder>
       </folder>
       <folder Name="drivers">
         <folder Name="eeprom">
@@ -103,9 +106,6 @@
           <file file_name="../../drivers/lcd/smallfonts.c">
             <configuration Name="THUMB Flash Debug" build_exclude_from_build="Yes"/>
           </file>
-        </folder>
-        <folder Name="pwm">
-          <file file_name="../../drivers/pwm/pwm.c"/>
         </folder>
         <folder Name="motor">
           <folder Name="stepper">

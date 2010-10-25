@@ -33,10 +33,6 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 /**************************************************************************/
-
-#include <stdio.h>
-#include <string.h>
-
 #include "projectconfig.h"
 #include "sysinit.h"
 

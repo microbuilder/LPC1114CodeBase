@@ -51,10 +51,6 @@ OBJS += smallfonts.o ST7565.o
 VPATH += drivers/fatfs
 OBJS += ff.o mmc.o
 
-# PWM
-VPATH += drivers/pwm
-OBJS += pwm.o
-
 # Motors
 VPATH += drivers/motor/stepper
 OBJS += stepper.o
@@ -64,9 +60,10 @@ OBJS += stepper.o
 ##########################################################################
 VPATH += core core/adc core/cmd core/cpu core/gpio core/i2c core/pmu
 VPATH += core/ssp core/systick core/timer16 core/timer32 core/uart
-VPATH += core/libc core/wdt
+VPATH += core/libc core/wdt core/pwm
 OBJS += adc.o cpu.o cmd.o gpio.o i2c.o pmu.o ssp.o systick.o timer16.o
 OBJS += timer32.o uart.o uart_buf.o stdio.o string.o wdt.o sysinit.o
+OBJS += pwm.o
 
 ##########################################################################
 # GNU GCC compiler prefix and location

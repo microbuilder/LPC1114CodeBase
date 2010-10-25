@@ -61,6 +61,10 @@
       <File Name="../../core/cmd/cmd.c"/>
       <File Name="../../core/cmd/cmd.h"/>
     </VirtualDirectory>
+    <VirtualDirectory Name="pwm">
+      <File Name="../../core/pwm/pwm.c"/>
+      <File Name="../../core/pwm/pwm.h"/>
+    </VirtualDirectory>
   </VirtualDirectory>
   <VirtualDirectory Name="drivers">
     <VirtualDirectory Name="eeprom">
@@ -95,10 +99,6 @@
       <File Name="../../drivers/fatfs/ffconf.h"/>
       <File Name="../../drivers/fatfs/integer.h"/>
       <File Name="../../drivers/fatfs/mmc.c"/>
-    </VirtualDirectory>
-    <VirtualDirectory Name="pwm">
-      <File Name="../../drivers/pwm/pwm.c"/>
-      <File Name="../../drivers/pwm/pwm.h"/>
     </VirtualDirectory>
     <VirtualDirectory Name="motor">
       <VirtualDirectory Name="stepper">
