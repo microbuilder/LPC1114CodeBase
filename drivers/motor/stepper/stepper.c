@@ -291,6 +291,7 @@ void stepperStep(int32_t steps)
       }
       stepperStepNumber--;        // Decrement single rotation counter
     }
+
     // Decrement number of remaining steps
     stepsLeft--;
 

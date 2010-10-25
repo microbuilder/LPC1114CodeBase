@@ -3,8 +3,8 @@
     @file     pwm.c
     @author   K. Townsend (microBuilder.eu)
 
-    @brief    Simple PWM example that can be used to control a stepper
-              motor, dim an LED, etc.
+    @brief    Simple PWM example that can be used to control a motor, dim
+              an LED, etc.
 
     @section Example
 
@@ -20,7 +20,10 @@
     pwmSetDutyCycle(50);                  // Set 50% duty cycle
     pwmSetFrequencyInMicroseconds(100);   // 100 millisecond pulse width
 
-    // Enable to PWM output
+    // Enable PWM output for exactly 50 pulses
+    pwmStartFixed(50);
+
+    // Alternatively, enable PWM output indefinately
     pwmStart();
 
     @endcode
@@ -57,8 +60,13 @@
 /**************************************************************************/
 #include "pwm.h"
 
-static uint32_t pwmPulseWidth = CFG_CPU_CCLK / 1000;
-static uint32_t pwmPercentage = 50;
+uint32_t pwmPulseWidth = CFG_PWM_DEFAULT_PULSEWIDTH;
+uint32_t pwmDutyCycle = CFG_PWM_DEFAULT_DUTYCYCLE;
+
+// pwmMaxPulses is used by TIMER16_1_IRQHandler to turn PWM off after
+// a specified number of pulses have been sent.  This only relevant when
+// pwmStartFixed() is used.
+volatile uint32_t pwmMaxPulses = 0;
 
 /**************************************************************************/
 /*! 
@@ -79,7 +87,7 @@ void pwmInit(void)
   TMR_TMR16B1MR3 = pwmPulseWidth;
 
   /* Set default duty cycle (MR0) */
-  TMR_TMR16B1MR0 = (pwmPulseWidth * (100 - pwmPercentage)) / 100;
+  TMR_TMR16B1MR0 = (pwmPulseWidth * (100 - pwmDutyCycle)) / 100;
 
   /* Configure match control register to reset on MR3 */
   TMR_TMR16B1MCR = (TMR_TMR16B1MCR_MR3_RESET_ENABLED);
@@ -87,8 +95,14 @@ void pwmInit(void)
   /* External Match Register Settings for PWM */
   TMR_TMR16B1EMR = TMR_TMR16B1EMR_EMC0_TOGGLE | TMR_TMR16B1EMR_EM0;
 
+  /* Disable Timer1 by default (enabled by pwmStart of pwmStartFixed) */
+  TMR_TMR16B1TCR &= ~TMR_TMR16B1TCR_COUNTERENABLE_MASK;
+
   /* Enable PWM0 and PWM3 */
   TMR_TMR16B1PWMC = TMR_TMR16B1PWMC_PWM0_ENABLED | TMR_TMR16B1PWMC_PWM3_ENABLED;
+
+  /* Make sure that the timer interrupt is enabled */
+  NVIC_EnableIRQ(TIMER_16_1_IRQn);
 }
 
 /**************************************************************************/
@@ -98,6 +112,9 @@ void pwmInit(void)
 /**************************************************************************/
 void pwmStart(void)
 {
+  /* Disable interrupt on MR3 in case it was enabled by pwmStartFixed() */
+  TMR_TMR16B1MCR  &= ~(TMR_TMR16B1MCR_MR3_INT_MASK);
+
   /* Enable Timer1 */
   TMR_TMR16B1TCR = TMR_TMR16B1TCR_COUNTERENABLE_ENABLED;
 }
@@ -110,12 +127,41 @@ void pwmStart(void)
 void pwmStop(void)
 {
   /* Disable Timer1 */
-  TMR_TMR16B1TCR = TMR_TMR16B1TCR_COUNTERENABLE_DISABLED;  
+  TMR_TMR16B1TCR &= ~(TMR_TMR16B1TCR_COUNTERENABLE_MASK);
+}
+
+/**************************************************************************/
+/*! 
+    Starts the PWM output, and stops after the specified number of
+    pulses.
+
+    @param[in]  pulses
+                The number of pulses to generate before disabling the
+                PWM output.  The output is actually disabled in the 
+                timer ISR.
+
+    @warning    The PWM output is actually stopped inside the 16-bit
+                timer ISR in "core/timer16/timer16.h".
+*/
+/**************************************************************************/
+void pwmStartFixed(uint32_t pulses)
+{
+  pwmMaxPulses = pulses;
+
+  /* Configure match control register to also raise an interrupt on MR3 */
+  TMR_TMR16B1MCR  |= (TMR_TMR16B1MCR_MR3_INT_ENABLED);
+
+  /* Enable Timer1 (it will eventually be disabled in the ISR) */
+  TMR_TMR16B1TCR = TMR_TMR16B1TCR_COUNTERENABLE_ENABLED;
 }
 
 /**************************************************************************/
 /*! 
     Sets the signal's duty cycle in percent (1-100).
+
+    @param[in]  percentage
+                The duty-cycle in percentage (the amount of time that
+                the signal is 'high' relative to the time its 'low').
 */
 /**************************************************************************/
 int pwmSetDutyCycle(uint32_t percentage)
@@ -127,7 +173,7 @@ int pwmSetDutyCycle(uint32_t percentage)
   }
 
   /* Set Duty Cycle (MR0) */
-  TMR_TMR16B1MR0 = (pwmPulseWidth * (100 - (pwmPercentage = percentage))) / 100;
+  TMR_TMR16B1MR0 = (pwmPulseWidth * (100 - (pwmDutyCycle = percentage))) / 100;
 
   return 0;
 }
@@ -136,20 +182,23 @@ int pwmSetDutyCycle(uint32_t percentage)
 /*! 
     Sets the signal's frequency/pulse-width to the specified number
     of ticks.
+
+    @param[in]  ticks
+                The duration in clock ticks of each full pulse.
 */
 /**************************************************************************/
-int pwmSetFrequencyInTicks(uint16_t frequency)
+int pwmSetFrequencyInTicks(uint16_t ticks)
 {
-  if (frequency < 1)
+  if (ticks < 1)
   {
     return -1;
   }
 
   /* Set Pulse Width (MR3)*/
-  TMR_TMR16B1MR3 = (pwmPulseWidth = frequency);
+  TMR_TMR16B1MR3 = (pwmPulseWidth = ticks);
 
   /* Adjust Duty Cycle (MR0) */
-  TMR_TMR16B1MR0 = (pwmPulseWidth * (100 - pwmPercentage)) / 100;
+  TMR_TMR16B1MR0 = (pwmPulseWidth * (100 - pwmDutyCycle)) / 100;
 
   return 0;  
 }
@@ -158,16 +207,19 @@ int pwmSetFrequencyInTicks(uint16_t frequency)
 /*! 
     Sets the signal's frequency/pulse-width to the specified number
     of microseconds.
+
+    @param[in]  us
+                The duration in microseconds of each full pulse.
 */
 /**************************************************************************/
-int pwmSetFrequencyInMicroseconds(uint16_t frequency)
+int pwmSetFrequencyInMicroseconds(uint16_t us)
 {
-  if (frequency < 1)
+  if (us < 1)
   {
     return -1;
   }
 
-  uint32_t ticks = (((CFG_CPU_CCLK/SCB_SYSAHBCLKDIV) / 1000000) * frequency);
+  uint32_t ticks = (((CFG_CPU_CCLK/SCB_SYSAHBCLKDIV) / 1000000) * us);
   if (ticks > 0xFFFF)
   {
     /* Delay exceeds the upper limit for the 16-bit timer */
@@ -178,7 +230,7 @@ int pwmSetFrequencyInMicroseconds(uint16_t frequency)
   TMR_TMR16B1MR3 = (pwmPulseWidth = ticks);
 
   /* Adjust Duty Cycle (MR0) */
-  TMR_TMR16B1MR0 = (pwmPulseWidth * (100 - pwmPercentage)) / 100;
+  TMR_TMR16B1MR0 = (pwmPulseWidth * (100 - pwmDutyCycle)) / 100;
 
   return 0;  
 }

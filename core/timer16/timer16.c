@@ -78,6 +78,11 @@
 volatile uint32_t timer16_0_counter = 0;
 volatile uint32_t timer16_1_counter = 0;
 
+#ifdef CFG_PWM
+  volatile uint32_t pwmCounter = 0;
+  extern volatile uint32_t pwmMaxPulses;    // See drivers/pwm/pwm.c
+#endif
+
 /**************************************************************************/
 /*! 
     @brief  Causes a blocking delay for the specified number of
@@ -278,6 +283,7 @@ void TIMER16_0_IRQHandler(void)
 
   /* Increment timer counter by 1 (it will automatically roll back to 0) */
   timer16_0_counter++;
+
   return;
 }
 
@@ -293,6 +299,32 @@ void TIMER16_1_IRQHandler(void)
 
   /* Increment timer counter by 1 (it will automatically roll back to 0) */
   timer16_1_counter++;
+
+  #ifdef CFG_PWM
+  /* Check if the PWM output should be disabled after pwmMaxPulses pulses */
+  /* See "drivers/pwm/pwm.c" */
+  if (TMR_TMR16B1IR & TMR_TMR16B1IR_MR3)
+  {
+    /* Clear the interrupt flag */
+    TMR_TMR16B1IR = TMR_TMR16B1IR_MR3;
+
+    if (pwmMaxPulses > 0)
+    {
+      pwmCounter++;
+      if (pwmCounter == pwmMaxPulses)
+      {
+        /* Disable interrupt on MR3 */
+        TMR_TMR16B1MCR  &= ~(TMR_TMR16B1MCR_MR3_INT_MASK);
+        /* Disable Timer */
+        TMR_TMR16B1TCR &= ~(TMR_TMR16B1TCR_COUNTERENABLE_MASK);
+        /* Reset the counter variables */
+        pwmCounter = 0;
+        pwmMaxPulses = 0;
+      }
+    }
+  }
+  #endif
+
   return;
 }
 

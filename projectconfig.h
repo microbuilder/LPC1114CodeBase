@@ -111,6 +111,8 @@
     CFG_SDCARD_CDPIN          The card detect pin number
 
     NOTE: CFG_SDCARD =        ~7.2 KB Flash and 0.6 KB SRAM (-Os)
+
+    DEPENDENCIES:             SDCARD requires the use of SSP1.
     -----------------------------------------------------------------------*/
     // #define CFG_SDCARD
     #define CFG_SDCARD_CDPORT           (2)
@@ -171,6 +173,30 @@
 
 
 /*=========================================================================
+    PWM SETTINGS
+    -----------------------------------------------------------------------
+
+    CFG_PWM                     If this is defined, a basic PWM driver
+                                will be included using 16-bit Timer 1 and
+                                Pin 1.9 (MAT0) for the PWM output.  In
+                                order to allow for a fixed number of
+                                pulses to be generated, some PWM-specific
+                                code is required in the 16-Bit Timer 1
+                                ISR.  See "core/timer16/timer16.c" for
+                                more information.
+    CFG_PWM_DEFAULT_PULSEWIDTH  The default pulse width in ticks
+    CFG_PWM_DEFAULT_DUTYCYCLE   The default duty cycle in percent
+
+    DEPENDENCIES:               PWM output requires the use of 16-bit
+                                timer 1 and pin 1.9 (CT16B1_MAT0).
+    -----------------------------------------------------------------------*/
+    // #define CFG_PWM
+    #define CFG_PWM_DEFAULT_PULSEWIDTH  (CFG_CPU_CCLK / 1000)
+    #define CFG_PWM_DEFAULT_DUTYCYCLE   (50)
+/*=========================================================================*/
+
+
+/*=========================================================================
     EEPROM
     -----------------------------------------------------------------------
 
@@ -217,6 +243,10 @@
 
     NOTE: CFG_CHIBI =           ~4.0 KB Flash and 184 bytes SRAM* (-Os)
                                 * 128 byte buffer
+
+    DEPENDENCIES:               Chibi requires the use of SSP0, and pins 
+                                3.1, 3.2, 3.3.  It also requires the
+                                presence of CFG_I2CEEPROM.
     -----------------------------------------------------------------------*/
     // #define CFG_CHIBI
     #define CFG_CHIBI_MODE              (OQPSK_868MHZ)      // See chb_drvr.h for possible values
@@ -238,6 +268,9 @@
 
     Note:                     LPC1114 @ 36MHz and the ST7565 with the
                               backlight enabled consumes ~35mA
+
+    DEPENDENCIES:             ST7565 requires the use of pins 2.4, 2.5,
+                              2.6, 2.7, 2.8 and 2.9.
     -----------------------------------------------------------------------*/
     // #define CFG_ST7565
 /*=========================================================================*/

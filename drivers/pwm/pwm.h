@@ -42,8 +42,9 @@
 void pwmInit( void );
 void pwmStart( void );
 void pwmStop( void );
+void pwmStartFixed( uint32_t pulses );
 int  pwmSetDutyCycle( uint32_t percentage );
-int  pwmSetFrequencyInTicks( uint16_t frequency );
-int  pwmSetFrequencyInMicroseconds(uint16_t frequency);
+int  pwmSetFrequencyInTicks( uint16_t ticks );
+int  pwmSetFrequencyInMicroseconds(uint16_t us );
 
 #endif

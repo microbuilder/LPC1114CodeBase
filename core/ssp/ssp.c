@@ -2,8 +2,6 @@
 /*! 
     @file     ssp.c
     @author   K. Townsend (microBuilder.eu)
-    @date     22 March 2010
-    @version  0.10
 
     @section DESCRIPTION
 
@@ -154,12 +152,10 @@ void SSP1_IRQHandler (void)
 
 /**************************************************************************/
 /*! 
-    @brief Initialises the SSP0 port
+    @brief Initialises the SSP port
 
-    By default, SSP0 is set to SPI frame-format with 8-bit data.  Pin 2.11
-    is routed to serve as serial clock (SCK), and SSEL (0.2) is set to
-    GPIO to allow manual control of when the SPI port is enabled or
-    disabled.  Overrun and timeout interrupts are both enabled.
+    By default, SSP is set to SPI frame-format with 8-bit data.  Overrun
+    and timeout interrupts are both enabled.
 
     @param[in]  portNum
                 The SPI port to use (0..1)
@@ -332,7 +328,7 @@ void sspInit (uint8_t portNum, sspClockPolarity_t polarity, sspClockPhase_t phas
 
 /**************************************************************************/
 /*! 
-    @brief Sends a block of data to the SSP0 port
+    @brief Sends a block of data to the SSP port
 
     @param[in]  portNum
                 The SPI port to use (0..1)
@@ -386,7 +382,7 @@ void sspSend (uint8_t portNum, uint8_t *buf, uint32_t length)
 
 /**************************************************************************/
 /*! 
-    @brief Receives a block of data from the SSP0 port
+    @brief Receives a block of data from the SSP port
 
     @param[in]  portNum
                 The SPI port to use (0..1)
