@@ -41,7 +41,7 @@
 
 #include "projectconfig.h"
 
-#define TIMER16_DEFAULTINTERVAL	(0xFFFF)    // ~5.46mS @ 12MHz, ~1.37mS @ 48MHz
+#define TIMER16_DEFAULTINTERVAL	(0xFFFF)    // ~5.46mS @ 12MHz, ~1.82mS @ 36MHz, ~1.37mS @ 48MHz
 
 #define TIMER16_CCLK_100US      ((CFG_CPU_CCLK/SCB_SYSAHBCLKDIV) / 10000)
 #define TIMER16_CCLK_1MS        ((CFG_CPU_CCLK/SCB_SYSAHBCLKDIV) / 1000)

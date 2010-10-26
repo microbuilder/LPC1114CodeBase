@@ -132,30 +132,6 @@
           <file file_name="../../project/commands/cmd_i2ceeprom_write.c"/>
           <file file_name="../../project/commands/cmd_lm75b_gettemp.c"/>
           <file file_name="../../project/commands/cmd_sd_dir.c"/>
-          <file file_name="../../project/commands/cmd_wireless_eepromdefaults.c"/>
-        </folder>
-        <file file_name="../../project/constants.h"/>
-        <folder Name="wireless">
-          <folder Name="frames">
-            <folder Name="requestresponse">
-              <file file_name="../../project/wireless/frames/requestresponse/analogdata.c"/>
-              <file file_name="../../project/wireless/frames/requestresponse/battery.c"/>
-              <file file_name="../../project/wireless/frames/requestresponse/binarydata.c"/>
-              <file file_name="../../project/wireless/frames/requestresponse/datastorage.c"/>
-              <file file_name="../../project/wireless/frames/requestresponse/nodedetails.c"/>
-              <file file_name="../../project/wireless/frames/requestresponse/numericdata.c"/>
-              <file file_name="../../project/wireless/frames/requestresponse/position.c"/>
-              <file file_name="../../project/wireless/frames/requestresponse/textdata.c"/>
-              <file file_name="../../project/wireless/frames/requestresponse/time.c"/>
-            </folder>
-          </folder>
-          <file file_name="../../project/wireless/msgkey.h"/>
-          <file file_name="../../project/wireless/router.c"/>
-          <file file_name="../../project/wireless/routing_tbl.h"/>
-          <file file_name="../../project/wireless/serialise.c"/>
-          <folder Name="endpoints">
-            <file file_name="../../project/wireless/endpoints/ep_nodedetails.c"/>
-          </folder>
         </folder>
       </folder>
     </folder>

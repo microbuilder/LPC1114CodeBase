@@ -1,6 +1,7 @@
 v0.31 - Ongoing
 ===============
-
+- Added a table to projectconfig.h to try to keep track of pin and peripheral usage by drivers
+  and the included SW examples.
 - Added a simple pwm driver using 16-bit timer 1 and p1.9 (MAT0).  The code can be found
   in "/core/pwm".
 - Added a bi-polar stepper motor driver based on the Arduino library.  Basic position data was added

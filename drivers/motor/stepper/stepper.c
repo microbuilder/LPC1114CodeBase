@@ -23,21 +23,19 @@
     systemInit();             // Configure cpu and mandatory peripherals
 
     stepperInit(200);         // Initialise driver for 200-step motor
-    stepperSetSpeed(120);     // Set speed to 120 rpm (2 revolutions per second)
+    stepperSetSpeed(60);      // Set speed to 120 rpm (2 revolutions per second)
 
-    uint32_t counter = 0;
     while (1)
     {
       stepperStep(400);       // Move forward 400 steps
       stepperStep(-200);      // Move backward 200 steps
       systickDelay(1000);     // Wait one second
 
-      counter++;              // Increment the counter
-      if (counter == 10)
+      // Move 'home' after 10 loops (current position = 2000)
+      if (stepperGetPosition() == 2000)
       {
         stepperMoveHome();    // Move back to the starting position
         systickDelay(1000);   // Wait one second
-        counter = 0;          // Reset counter
       }
     }
 

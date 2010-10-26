@@ -2,8 +2,6 @@
 /*! 
     @file     timer16.c
     @author   K. Townsend (microBuilder.eu)
-    @date     22 March 2010
-    @version  0.10
 
     @section DESCRIPTION
 

@@ -4,7 +4,7 @@
     @author   K. Townsend (microBuilder.eu)
 
     @brief    Simple PWM example that can be used to control a motor, dim
-              an LED, etc.
+              an LED, etc.  Uses 16-bit Timer 1 and P1.9 for PWM output.
 
     @section Example
 
@@ -162,6 +162,9 @@ void pwmStartFixed(uint32_t pulses)
     @param[in]  percentage
                 The duty-cycle in percentage (the amount of time that
                 the signal is 'high' relative to the time its 'low').
+
+    @returns    -1 if an invalid percentage was supplied.  Value must be
+                between 1 and 100.
 */
 /**************************************************************************/
 int pwmSetDutyCycle(uint32_t percentage)
@@ -185,6 +188,8 @@ int pwmSetDutyCycle(uint32_t percentage)
 
     @param[in]  ticks
                 The duration in clock ticks of each full pulse.
+
+    @returns    -1 if a zero-value was provided for ticks.
 */
 /**************************************************************************/
 int pwmSetFrequencyInTicks(uint16_t ticks)
@@ -210,6 +215,15 @@ int pwmSetFrequencyInTicks(uint16_t ticks)
 
     @param[in]  us
                 The duration in microseconds of each full pulse.
+
+    @returns    -1 if the supplied value exceeds the limits of the 16-bit
+                timer, or if a zero-value was provided.
+
+    @Warning    Because a 16-bit timer is used here by default, the
+                maximum frequency is quite small.  Running at 36MHz, the
+                largest possible pulse-width/frequency is ~1,82mS or
+                1820 microSeconds.  At 12MHz its 5461 uS, and at 48MHz
+                its 1365 uS.
 */
 /**************************************************************************/
 int pwmSetFrequencyInMicroseconds(uint16_t us)

@@ -41,6 +41,42 @@
 #include "sysdefs.h"
 #include "drivers/chibi/chb_drvr.h"
 
+/**************************************************************************
+
+    This table tries to give an indication of which GPIO pins and 
+    peripherals are used by the available drivers and SW examples.  Only
+    dedicated GPIO pins available on the LPC1114 Reference Board are shown
+    below.  Any unused peripheral blocks like I2C, SSP, ADC, etc., can
+    also be used as GPIO if they are available.
+
+                PORT 0    PORT 1    PORT 2               PORT 3
+                =======   ======    =================    ======
+                3 11      2 8 9     4 5 6 7 8 9 10 11    1 2 3
+
+    SDCARD      X X       . . .     . . . . . . .  .     . . .
+    PWM         . .       . . X     . . . . . . .  .     . . .
+    STEPPER     . .       . . .     . . . . X X X  X     . . .
+    CHIBI       . .       . . .     . . . . . . .  .     X X X
+    ST7565      . .       . . .     X X X X X X .  .     . . .
+
+                TIMERS                      SSP       ADC
+                ======================      ===       ======
+                16B0  16B1  32B0  32B1      0 1       1 2 6 7
+
+    SDCARD      .     .     .     .         . X       . . . .
+    PWM         .     X     .     .         . .       . . . .
+    PMU [1]     .     .     X     .         . .       . . . .
+    STEPPER     X     .     .     .         . .       . . . .
+    CHIBI       .     .     .     .         X .       . . . .
+    ST7565      .     .     .     .         . .       . . . .
+
+    [1]  PMU uses 32-bit Timer 0 for SW wakeup from deep-sleep.  This timer
+         can safely be used by other peripherals, but may need to be
+         reconfigured when you wakeup from deep-sleep.
+
+ **************************************************************************/
+
+
 /*=========================================================================
     CORE CPU SETTINGS
     -----------------------------------------------------------------------
@@ -115,10 +151,10 @@
     DEPENDENCIES:             SDCARD requires the use of SSP1.
     -----------------------------------------------------------------------*/
     // #define CFG_SDCARD
-    #define CFG_SDCARD_CDPORT           (2)
-    #define CFG_SDCARD_CDPIN            (4)
-    #define CFG_SDCARD_ENPORT           (2)
-    #define CFG_SDCARD_ENPIN            (5)
+    #define CFG_SDCARD_CDPORT           (0)
+    #define CFG_SDCARD_CDPIN            (3)
+    #define CFG_SDCARD_ENPORT           (0)
+    #define CFG_SDCARD_ENPIN            (11)
 /*=========================================================================*/
 
 
@@ -190,9 +226,24 @@
     DEPENDENCIES:               PWM output requires the use of 16-bit
                                 timer 1 and pin 1.9 (CT16B1_MAT0).
     -----------------------------------------------------------------------*/
-    #define CFG_PWM
+    // #define CFG_PWM
     #define CFG_PWM_DEFAULT_PULSEWIDTH  (CFG_CPU_CCLK / 1000)
     #define CFG_PWM_DEFAULT_DUTYCYCLE   (50)
+/*=========================================================================*/
+
+
+/*=========================================================================
+    STEPPER MOTOR SETTINGS
+    -----------------------------------------------------------------------
+
+    CFG_STEPPER                 If this is defined, a simple bi-polar 
+                                stepper motor will be included for common
+                                H-bridge chips like the L293D or SN754410N
+
+    DEPENDENCIES:               STEPPER requires the use of pins 2.8-11 and
+                                16-bit timer 0.
+    -----------------------------------------------------------------------*/
+    // #define CFG_STEPPER
 /*=========================================================================*/
 
 
@@ -269,8 +320,7 @@
     Note:                     LPC1114 @ 36MHz and the ST7565 with the
                               backlight enabled consumes ~35mA
 
-    DEPENDENCIES:             ST7565 requires the use of pins 2.4, 2.5,
-                              2.6, 2.7, 2.8 and 2.9.
+    DEPENDENCIES:             ST7565 requires the use of pins 2.4-9.
     -----------------------------------------------------------------------*/
     // #define CFG_ST7565
 /*=========================================================================*/
@@ -289,6 +339,12 @@
 #ifdef CFG_CHIBI
   #if !defined CFG_I2CEEPROM
     #error "CFG_CHIBI requires CFG_I2CEEPROM to store and retrieve addresses"
+  #endif
+#endif
+
+#ifdef CFG_ST7565
+  #ifdef CFG_STEPPER
+    #error "CFG_ST7565 and CFG_STEPPER can not be defined at the same time since they both use pins 2.8 and 2.9."
   #endif
 #endif
 
