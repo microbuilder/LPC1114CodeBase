@@ -38,7 +38,25 @@
 #include "projectconfig.h"
 #include "eeprom.h"
 
+#include "drivers/eeprom/mcp24aa/mcp24aa.h"
+
 static uint8_t buf[32];
+
+/**************************************************************************/
+/*! 
+    @brief Checks whether the supplied address is within the valid range
+
+    @param[in]  addr
+                The 16-bit address to check
+
+    @return     Zero if the address is valid, otherwise 1
+*/
+/**************************************************************************/
+bool eepromCheckAddress(uint16_t addr)
+{
+  // Check for invalid values
+  return addr <= MCP24AA_MAXADDR ? FALSE : TRUE;
+}
 
 /**************************************************************************/
 /*! 
@@ -227,6 +245,30 @@ int64_t eepromReadS64(uint16_t addr)
 
   memcpy(&results, buf, sizeof(int64_t));
   return results;
+}
+
+/**************************************************************************/
+/*! 
+    @brief Reads a variabls length buffer from EEPROM
+
+    @param[in]  addr
+                The 16-bit address to write to in EEPROM
+    @param[out] buffer
+                Pointer to the buffer that will store any retrieved bytes
+    @param[in]  bufferLength
+                The number of bytes to read
+*/
+/**************************************************************************/
+void eepromReadBuffer(uint16_t addr, uint8_t *buffer, uint32_t bufferLength)
+{
+  // Instantiate error message placeholder
+  mcp24aaError_e error = MCP24AA_ERROR_OK;
+  
+  // Read the contents of address
+  error = mcp24aaReadBuffer(addr, buffer, bufferLength);
+
+  // ToDo: Handle any errors
+  if (error) { };
 }
 
 /**************************************************************************/

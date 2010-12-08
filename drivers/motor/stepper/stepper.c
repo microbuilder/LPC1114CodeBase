@@ -9,6 +9,7 @@
               Arduino stepper library by Tom Igoe.  Includes simple
               position handling methods to keep track of the motor's
               relative position and the spindle's current rotation.
+              Requires an H-Bridge such as the L293D or SN754410N.
 
     @section Example
 

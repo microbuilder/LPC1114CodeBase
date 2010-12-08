@@ -20,7 +20,7 @@ OBJS = main.o
 ##########################################################################
 
 VPATH += project
-OBJS += commands.o eeprom.o
+OBJS += commands.o
 
 VPATH += project/commands
 OBJS += cmd_chibi_addr.o cmd_chibi_tx.o cmd_deepsleep.o cmd_hello.o
@@ -36,8 +36,8 @@ VPATH += drivers/chibi
 OBJS += chb.o chb_buf.o chb_drvr.o chb_eeprom.o chb_spi.o
 
 # 4K EEPROM
-VPATH += drivers/eeprom/mcp24aa
-OBJS += mcp24aa.o
+VPATH += drivers/eeprom drivers/eeprom/mcp24aa
+OBJS += eeprom.o mcp24aa.o
 
 # LM75B temperature sensor
 VPATH += drivers/sensors/lm75b
@@ -54,6 +54,14 @@ OBJS += ff.o mmc.o
 # Motors
 VPATH += drivers/motor/stepper
 OBJS += stepper.o
+
+# RSA Encryption/Descryption
+VPATH += drivers/rsa
+OBJS += rsa.o
+
+# DAC
+VPATH += drivers/dac/mcp4725
+OBJS += mcp4725.o
 
 ##########################################################################
 # Library files 

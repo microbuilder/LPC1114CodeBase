@@ -40,11 +40,10 @@
 
 #include "projectconfig.h"
 #include "core/cmd/cmd.h"
-#include "commands.h"       // Generic helper functions
+#include "project/commands.h"       // Generic helper functions
 
 #ifdef CFG_I2CEEPROM
-  #include "drivers/eeprom/mcp24aa/mcp24aa.h"
-  #include "eeprom.h"
+  #include "drivers/eeprom/eeprom.h"
 
 /**************************************************************************/
 /*! 
@@ -61,15 +60,15 @@ void cmd_i2ceeprom_read(uint8_t argc, char **argv)
   getNumber (argv[0], &addr32);
   
   // Check for invalid values (getNumber may complain about this as well)
-  if (addr32 < 0 || addr32 > MCP24AA_MAXADDR)
+  if (addr32 < 0 || eepromCheckAddress(addr32))
   {
-    printf("Address out of range: Value from 0-%d or 0x0000-0x%04X required.%s", MCP24AA_MAXADDR, MCP24AA_MAXADDR, CFG_PRINTF_NEWLINE);
+    printf("EEPROM Address out of range %s", CFG_PRINTF_NEWLINE);
     return;
   }
 
   // Address seems to be OK
   addr = (uint16_t)addr32;
-  mcp24aaReadByte(addr, &value);
+  value = eepromReadU8(addr);
 
   printf("0x%02X%s", value, CFG_PRINTF_NEWLINE);
 }

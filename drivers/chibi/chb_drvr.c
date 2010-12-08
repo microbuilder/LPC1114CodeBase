@@ -39,6 +39,11 @@
 #include "chb_eeprom.h"
 
 #include "core/systick/systick.h"
+#include "core/timer16/timer16.h"
+
+// store string messages in flash rather than RAM
+const char chb_err_overflow[] = "BUFFER FULL. TOSSING INCOMING DATA\n";
+const char chb_err_init[] = "RADIO NOT INITIALIZED PROPERLY\n";
 
 /**************************************************************************/
 /*!
@@ -67,14 +72,31 @@ static U8 chb_get_status()
 /**************************************************************************/
 static void chb_delay_us(U16 usec)
 {
-  U8 ticks = CFG_CPU_CCLK / 1000000;
+  // Determine maximum delay using a 16 bit timer
+  // ToDo: Move this to a macro or fixed value!
+  uint32_t maxus = 0xFFFF / (CFG_CPU_CCLK / 1000000);
+
+  // Check if delay can be done in one operation
+  if (usec <= maxus)
+  {
+    timer16DelayUS(0, usec);
+    return;
+  }
+
+  // Split delay into several steps (to stay within limit of 16-bit timer)
   do
   {
-    do 
+    if (usec >= maxus)
     {
-      __asm volatile("nop");
-    } while (--ticks);
-  } while (--usec);
+      timer16DelayUS(0, maxus);
+      usec -= maxus;
+    }
+    else
+    {
+      timer16DelayUS(0, usec);
+      usec = 0;
+    }
+  } while (usec > 0);
 }
 
 /**************************************************************************/
@@ -275,18 +297,35 @@ static void chb_frame_read()
     len = chb_xfer_byte(0);
 
     /*Check for correct frame length.*/
-
-    // TODO: CHECK FOR THE CRC VALID BIT TO QUALIFY THE FRAME
-    // check the length of the frame to make sure the incoming frame
-    // doesn't overflow the buffer
     if ((len >= CHB_MIN_FRAME_LENGTH) && (len <= CHB_MAX_FRAME_LENGTH))
     {
-        chb_buf_write(len);
-        
-        for (i=0; i<len; i++)
+        // check to see if there is room to write the frame in the buffer. if not, then drop it
+        if (len < (CFG_CHIBI_BUFFERSIZE - chb_buf_get_len()))
         {
-            data = chb_xfer_byte(0);
-            chb_buf_write(data);
+            chb_buf_write(len);
+            
+            for (i=0; i<len; i++)
+            {
+                data = chb_xfer_byte(0);
+                chb_buf_write(data);
+            }
+        }
+                else
+        {
+            // we've overflowed the buffer. toss the data and do some housekeeping
+            chb_pcb_t *pcb = chb_get_pcb();
+
+            // read out the data and throw it away
+            for (i=0; i<len; i++)
+            {
+                data = chb_xfer_byte(0);
+            }
+
+            // Increment the overflow stat
+            pcb->overflow++;
+
+            // print the error message
+            printf(chb_err_overflow);
         }
     }
 
@@ -460,10 +499,6 @@ U8 chb_set_channel(U8 channel)
 void chb_set_pwr(U8 val)
 {
     chb_reg_write(PHY_TX_PWR, val);
-
-    // Confirm value
-    U8 check;
-    check = chb_reg_read(PHY_TX_PWR);
 }
 
 /**************************************************************************/
@@ -515,8 +550,8 @@ U8 chb_set_state(U8 state)
         if (curr_state == TX_ARET_ON)
         {
             /* First do intermediate state transition to RX_ON, then to RX_AACK_ON. */
-            chb_reg_read_mod_write(TRX_STATE, CMD_RX_ON, 0x1f);
-            chb_delay_us(TIME_PLL_ON_RX_ON);
+            chb_reg_read_mod_write(TRX_STATE, CMD_PLL_ON, 0x1f);
+            chb_delay_us(TIME_RX_ON_PLL_ON);
         }
         break;
     }
@@ -629,25 +664,8 @@ U8 chb_tx(U8 *hdr, U8 *data, U8 len)
     // write frame to buffer. first write header into buffer (add 1 for len byte), then data. 
     chb_frame_write(hdr, CHB_HDR_SZ + 1, data, len);
 
-    // TEST - check data in buffer
-    //{
-    //    U8 i, len, tmp[30];
-    //    
-    //    len = 1 + CHB_HDR_SZ + len;
-    //    chb_sram_read(0, len, tmp);
-    //    for (i=0; i<len; i++)
-    //    {
-    //        printf("%02X ", tmp[i]);
-    //    }
-    //    printf("\n");
-    //    state = chb_get_state();
-    //    printf("State = %02X.\n", state);
-    //}
-    //TEST
-
-    //Do frame transmission. Toggle the SLP_TR pin to initiate the frame transmission.
-    CHB_SLPTR_ENABLE();
-    CHB_SLPTR_DISABLE();
+    //Do frame transmission
+    chb_reg_read_mod_write(TRX_STATE, CMD_TX_START, 0x1F);
 
     // wait for the transmission to end, signalled by the TRX END flag
     while (!pcb->tx_end);
@@ -748,7 +766,11 @@ static void chb_radio_init()
     gpioIntEnable (CHB_EINTPORT,
                    CHB_EINTPIN); 
 
-    while (chb_get_state() != RX_AACK_ON);
+    if (chb_get_state() != RX_AACK_ON)
+    {
+        // ERROR occurred initializing the radio. Print out error message.
+        printf(chb_err_init);
+    }
 }
 
 /**************************************************************************/
@@ -763,6 +785,10 @@ void chb_drvr_init()
 
     // config SPI for at86rf230 access
     chb_spi_init();
+
+    // Setup 16-bit timer 0 (used for us delays)
+    timer16Init(0, 0xFFFF);
+    timer16Enable(0);
 
     // Set sleep and reset as output
     gpioSetDir(CHB_SLPTRPORT, CHB_SLPTRPIN, 1);

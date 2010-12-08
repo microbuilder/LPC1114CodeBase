@@ -41,8 +41,11 @@
 #include "projectconfig.h"
 #include "core/cmd/cmd.h"
 #include "commands.h"
-
 #include "core/pmu/pmu.h"
+
+#ifdef CFG_CHIBI
+  #include "drivers/chibi/chb_drvr.h"
+#endif
 
 /**************************************************************************/
 /*! 

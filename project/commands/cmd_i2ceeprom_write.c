@@ -40,11 +40,10 @@
 
 #include "projectconfig.h"
 #include "core/cmd/cmd.h"
-#include "commands.h"       // Generic helper functions
+#include "project/commands.h"       // Generic helper functions
 
 #ifdef CFG_I2CEEPROM
-  #include "drivers/eeprom/mcp24aa/mcp24aa.h"
-  #include "eeprom.h"
+  #include "drivers/eeprom/eeprom.h"
 
 /**************************************************************************/
 /*! 
@@ -61,25 +60,11 @@ void cmd_i2ceeprom_write(uint8_t argc, char **argv)
   getNumber (argv[0], &addr32);
   
   // Check for invalid values (getNumber may complain about this as well)
-  if (addr32 < 0 || addr32 > MCP24AA_MAXADDR)
+  if (addr32 < 0 || eepromCheckAddress(addr32))
   {
-    printf("Address out of range: Value from 0-%d or 0x0000-0x%04X required.%s", MCP24AA_MAXADDR, MCP24AA_MAXADDR, CFG_PRINTF_NEWLINE);
+    printf("EEPROM Address out of range %s", CFG_PRINTF_NEWLINE);
     return;
   }
-
-  // If Chibi is enabled, make sure we are not overwriting the short or IEEE address in EEPROM
-  #ifdef CFG_CHIBI
-  if ((addr32 >= CFG_CHIBI_EEPROM_IEEEADDR) && (addr32 <= CFG_CHIBI_EEPROM_IEEEADDR + 7))
-  {
-    printf("Reserved Address: 0x%04X to 0x%04X is reserved for Chibi IEEE address%s", CFG_CHIBI_EEPROM_IEEEADDR, CFG_CHIBI_EEPROM_IEEEADDR + 7, CFG_PRINTF_NEWLINE);
-    return;
-  }
-  if ((addr32 >= CFG_CHIBI_EEPROM_SHORTADDR) && (addr32 <= CFG_CHIBI_EEPROM_SHORTADDR + 1))
-  {
-    printf("Reserved Address: 0x%04X to 0x%04X is reserved for Chibi address%s", CFG_CHIBI_EEPROM_SHORTADDR, CFG_CHIBI_EEPROM_SHORTADDR + 1, CFG_PRINTF_NEWLINE);
-    return;
-  }
-  #endif
 
   // Address seems to be OK
   addr = (uint16_t)addr32;
@@ -98,26 +83,8 @@ void cmd_i2ceeprom_write(uint8_t argc, char **argv)
   // Data seems to be OK
   val = (uint8_t)val32;
 
-  // Instantiate error message placeholder
-  mcp24aaError_e error = MCP24AA_ERROR_OK;
-
   // Write data at supplied address
-  error = mcp24aaWriteByte(addr, val);
-  if (error)
-  {
-    // Handle any errors
-    switch (error)
-    {
-      case (MCP24AA_ERROR_I2CINIT):
-        printf("Error: Unable to initialised I2C%s", CFG_PRINTF_NEWLINE);
-        return;
-      case (MCP24AA_ERROR_ADDRERR):
-        printf("Error: Supplied address is out of range%s", CFG_PRINTF_NEWLINE);
-        return;
-      default:
-        break;
-    }
-  }
+  eepromWriteU8(addr, val);
 
   // Write successful
   printf("EEPROM: 0x%02X written at address 0x%04X%s", val, addr, CFG_PRINTF_NEWLINE);

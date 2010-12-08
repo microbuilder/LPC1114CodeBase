@@ -126,7 +126,7 @@ void cmd_sd_dir(uint8_t argc, char **argv)
       printf("       %-25s %12d KB %s", "Total Folder Size: ", (int)(folderBytes / 1024), CFG_PRINTF_NEWLINE);
 
       // Get free disk space (only available if FATFS was compiled with _FS_MINIMIZE set to 0)
-      #if _FS_MINIMIZE == 0
+      #if _FS_MINIMIZE == 0 && _FS_READONLY == 0
         FATFS *fs = &Fatfs[0];
         DWORD clust;
       

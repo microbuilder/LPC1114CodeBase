@@ -110,6 +110,8 @@ extern volatile uint32_t  I2CReadLength, I2CWriteLength;
 
 uint32_t i, timeout;
 
+static bool _mcp24aaInitialised = false;
+
 /**************************************************************************/
 /*! 
     @brief  Initialises the I2C block
@@ -122,6 +124,10 @@ mcp24aaError_e mcp24aaInit()
   {
     return MCP24AA_ERROR_I2CINIT;    /* Fatal error */
   }
+
+  // Set initialisation flag
+  _mcp24aaInitialised = true;
+
   return MCP24AA_ERROR_OK;
 }
 
@@ -143,6 +149,8 @@ mcp24aaError_e mcp24aaInit()
 /**************************************************************************/
 mcp24aaError_e mcp24aaReadBuffer (uint16_t address, uint8_t *buffer, uint32_t bufferLength)
 {
+  if (!_mcp24aaInitialised) mcp24aaInit();
+
   if (address >= MCP24AA_MAXADDR)
   {
     return MCP24AA_ERROR_ADDRERR;
@@ -204,6 +212,8 @@ mcp24aaError_e mcp24aaReadBuffer (uint16_t address, uint8_t *buffer, uint32_t bu
 /**************************************************************************/
 mcp24aaError_e mcp24aaWriteBuffer (uint16_t address, uint8_t *buffer, uint32_t bufferLength)
 {
+  if (!_mcp24aaInitialised) mcp24aaInit();
+
   if (address >= MCP24AA_MAXADDR)
   {
     return MCP24AA_ERROR_ADDRERR;
@@ -277,6 +287,8 @@ mcp24aaError_e mcp24aaWriteBuffer (uint16_t address, uint8_t *buffer, uint32_t b
 /**************************************************************************/
 mcp24aaError_e mcp24aaReadByte (uint16_t address, uint8_t *buffer)
 {
+  if (!_mcp24aaInitialised) mcp24aaInit();
+
   return mcp24aaReadBuffer(address, buffer, 1);
 }
 
@@ -315,6 +327,8 @@ mcp24aaError_e mcp24aaReadByte (uint16_t address, uint8_t *buffer)
 /**************************************************************************/
 mcp24aaError_e mcp24aaWriteByte (uint16_t address, uint8_t value)
 {
+  if (!_mcp24aaInitialised) mcp24aaInit();
+
   // Set read buffer
   uint8_t wBuffer[1];
 

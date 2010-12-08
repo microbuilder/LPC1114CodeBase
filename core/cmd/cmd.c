@@ -188,7 +188,8 @@ void cmdParse(char *cmd)
         return;
       }
   }
-  printf("Command not recognized: '%s'%s", cmd, CFG_PRINTF_NEWLINE);
+  printf("Command not recognized: '%s'%s%s", cmd, CFG_PRINTF_NEWLINE, CFG_PRINTF_NEWLINE);
+  printf("Type 'help' for a list of all available commands%s", CFG_PRINTF_NEWLINE);
 
   cmdMenu();
 }

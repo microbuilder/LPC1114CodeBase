@@ -65,6 +65,8 @@
 
 #include "adc.h"
 
+static bool _adcInitialised = false;
+
 /**************************************************************************/
 /*! 
     @brief Returns the conversion results on the specified ADC channel.
@@ -86,6 +88,8 @@
 /**************************************************************************/
 uint32_t adcRead (uint8_t channelNum)
 {
+  if (!_adcInitialised) adcInit();
+
   uint32_t regVal, adcData;
 
   /* make sure that channel number is 0..7 */
@@ -220,6 +224,9 @@ void adcInit (void)
               ADC_AD0CR_CLKS_10BITS |                  /* CLKS = 0, 11 clocks/10 bits */
               ADC_AD0CR_START_NOSTART |                /* START = 0 A/D conversion stops */
               ADC_AD0CR_EDGE_RISING);                  /* EDGE = 0 (CAP/MAT signal falling, trigger A/D conversion) */ 
+
+  /* Set initialisation flag */
+  _adcInitialised = true;
 
   return;
 }

@@ -89,6 +89,13 @@ extern volatile uint32_t  I2CReadLength, I2CWriteLength;
 
 uint32_t i;
 
+static bool _lm75bInitialised = false;
+
+/**************************************************************************/
+/*! 
+    @brief  Writes an 8 bit values over I2C
+*/
+/**************************************************************************/
 static lm75bError_e lm75bWrite8 (uint8_t reg, uint32_t value)
 {
   // Clear write buffers
@@ -106,6 +113,11 @@ static lm75bError_e lm75bWrite8 (uint8_t reg, uint32_t value)
   return LM75B_ERROR_OK;
 }
 
+/**************************************************************************/
+/*! 
+    @brief  Reads a 16 bit values over I2C
+*/
+/**************************************************************************/
 static lm75bError_e lm75bRead16(uint8_t reg, int32_t *value)
 {
   // Clear write buffers
@@ -147,6 +159,8 @@ lm75bError_e lm75bInit(void)
     return LM75B_ERROR_I2CINIT;    /* Fatal error */
   }
   
+  _lm75bInitialised = true;
+
   return LM75B_ERROR_OK;
   
   // Set device to shutdown mode by default (saves power)
@@ -166,6 +180,8 @@ lm75bError_e lm75bInit(void)
 /**************************************************************************/
 lm75bError_e lm75bGetTemperature (int32_t *temp)
 {
+  if (!_lm75bInitialised) lm75bInit();
+
   // Turn device on
   // lm75bConfigWrite (LM75B_CONFIG_SHUTDOWN_POWERON);
 
@@ -186,5 +202,7 @@ lm75bError_e lm75bGetTemperature (int32_t *temp)
 /**************************************************************************/
 lm75bError_e lm75bConfigWrite (uint8_t configValue)
 {
+  if (!_lm75bInitialised) lm75bInit();
+
   return lm75bWrite8 (LM75B_REGISTER_CONFIGURATION, configValue);
 }

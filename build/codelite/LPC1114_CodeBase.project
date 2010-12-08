@@ -72,6 +72,8 @@
         <File Name="../../drivers/eeprom/mcp24aa/mcp24aa.c"/>
         <File Name="../../drivers/eeprom/mcp24aa/mcp24aa.h"/>
       </VirtualDirectory>
+      <File Name="../../drivers/eeprom/eeprom.c"/>
+      <File Name="../../drivers/eeprom/eeprom.h"/>
     </VirtualDirectory>
     <VirtualDirectory Name="chibi">
       <File Name="../../drivers/chibi/chb.c"/>
@@ -106,6 +108,16 @@
         <File Name="../../drivers/motor/stepper/stepper.h"/>
       </VirtualDirectory>
     </VirtualDirectory>
+    <VirtualDirectory Name="rsa">
+      <File Name="../../drivers/rsa/rsa.c"/>
+      <File Name="../../drivers/rsa/rsa.h"/>
+    </VirtualDirectory>
+    <VirtualDirectory Name="dac">
+      <VirtualDirectory Name="mcp4725">
+        <File Name="../../drivers/dac/mcp4725/mcp4725.c"/>
+        <File Name="../../drivers/dac/mcp4725/mcp4725.h"/>
+      </VirtualDirectory>
+    </VirtualDirectory>
   </VirtualDirectory>
   <VirtualDirectory Name="lpc1xxx">
     <File Name="../../lpc1xxx/linkscript.ld"/>
@@ -125,8 +137,6 @@
   <VirtualDirectory Name="project">
     <File Name="../../project/cmd_tbl.h"/>
     <File Name="../../project/commands.c"/>
-    <File Name="../../project/eeprom.c"/>
-    <File Name="../../project/eeprom.h"/>
     <File Name="../../project/commands.h"/>
     <VirtualDirectory Name="commands">
       <File Name="../../project/commands/cmd_chibi_addr.c"/>

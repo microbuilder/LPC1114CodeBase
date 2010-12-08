@@ -39,7 +39,6 @@
 
 #include "lpc111x.h"
 #include "sysdefs.h"
-#include "drivers/chibi/chb_drvr.h"
 
 /**************************************************************************
 
@@ -58,23 +57,34 @@
     STEPPER     . .       . . .     . . . . X X X  X     . . .
     CHIBI       . .       . . .     . . . . . . .  .     X X X
     ST7565      . .       . . .     X X X X X X .  .     . . .
+    INTERFACE   . .       . . .     . . . . . . .  .     . . .
 
-                TIMERS                      SSP       ADC
-                ======================      ===       ======
-                16B0  16B1  32B0  32B1      0 1       1 2 6 7
+                TIMERS                      SSP       ADC       UART
+                ======================      ===       ======    ====
+                16B0  16B1  32B0  32B1      0 1       1 2 6 7   0
 
-    SDCARD      .     .     .     .         . X       . . . .
-    PWM         .     X     .     .         . .       . . . .
-    PMU [1]     .     .     X     .         . .       . . . .
-    STEPPER     X     .     .     .         . .       . . . .
-    CHIBI       .     .     .     .         X .       . . . .
-    ST7565      .     .     .     .         . .       . . . .
+    SDCARD      .     .     .     .         . X       . . . .   .
+    PWM         .     X     .     .         . .       . . . .   .
+    PMU [1]     .     .     X     .         . .       . . . .   .
+    STEPPER     X     .     .     .         . .       . . . .   .
+    CHIBI       x     .     .     .         X .       . . . .   .
+    ST7565      .     .     .     .         . .       . . . .   .
+    INTERFACE   .     .     .     .         . .       . . . .   x
 
     [1]  PMU uses 32-bit Timer 0 for SW wakeup from deep-sleep.  This timer
          can safely be used by other peripherals, but may need to be
          reconfigured when you wakeup from deep-sleep.
 
  **************************************************************************/
+
+
+/*=========================================================================
+    FIRMWARE VERSION SETTINGS
+    -----------------------------------------------------------------------*/
+    #define CFG_FIRMWARE_VERSION_MAJOR            (0)
+    #define CFG_FIRMWARE_VERSION_MINOR            (5)
+    #define CFG_FIRMWARE_VERSION_REVISION         (0)
+/*=========================================================================*/
 
 
 /*=========================================================================
@@ -143,6 +153,9 @@
 
     CFG_SDCARD                If this field is defined SD Card and Fat32
                               file system support will be included
+    CFG_SDCARD_READONLY       If this is set to 1, all commands to
+                              write to the SD card will be removed
+                              saving some flash space (-Os).
     CFG_SDCARD_CDPORT         The card detect port number
     CFG_SDCARD_CDPIN          The card detect pin number
 
@@ -151,6 +164,7 @@
     DEPENDENCIES:             SDCARD requires the use of SSP1.
     -----------------------------------------------------------------------*/
     // #define CFG_SDCARD
+    #define CFG_SDCARD_READONLY         (0)   // Must be 0 or 1
     #define CFG_SDCARD_CDPORT           (0)
     #define CFG_SDCARD_CDPIN            (3)
     #define CFG_SDCARD_ENPORT           (0)
@@ -202,7 +216,7 @@
                               this varies with the number of commands
                               present
     -----------------------------------------------------------------------*/
-    // #define CFG_INTERFACE
+    #define CFG_INTERFACE
     #define CFG_INTERFACE_MAXMSGSIZE    (80)
     #define CFG_INTERFACE_PROMPT        "LPC1114 >> "
 /*=========================================================================*/
@@ -295,14 +309,14 @@
     NOTE: CFG_CHIBI =           ~4.0 KB Flash and 184 bytes SRAM* (-Os)
                                 * 128 byte buffer
 
-    DEPENDENCIES:               Chibi requires the use of SSP0, and pins 
-                                3.1, 3.2, 3.3.  It also requires the
-                                presence of CFG_I2CEEPROM.
+    DEPENDENCIES:               Chibi requires the use of SSP0, 16-bit timer
+                                0 and pins 3.1, 3.2, 3.3.  It also requires
+                                the presence of CFG_I2CEEPROM.
     -----------------------------------------------------------------------*/
     // #define CFG_CHIBI
-    #define CFG_CHIBI_MODE              (OQPSK_868MHZ)      // See chb_drvr.h for possible values
-    #define CFG_CHIBI_POWER             (CHB_PWR_EU2_3DBM)  // See chb_drvr.h for possible values
-    #define CFG_CHIBI_CHANNEL           (0)                 // 0 = 868-868.6 MHz, 1-10 = 915MHz
+    #define CFG_CHIBI_MODE              (0)                 // OQPSK_868MHZ
+    #define CFG_CHIBI_POWER             (0xE9)              // CHB_PWR_EU2_3DBM
+    #define CFG_CHIBI_CHANNEL           (0)                 // 868-868.6 MHz
     #define CFG_CHIBI_PANID             (0x1234)
     #define CFG_CHIBI_BUFFERSIZE        (128)
     #define CFG_CHIBI_EEPROM_IEEEADDR   (uint16_t)(0x0000)
@@ -326,6 +340,26 @@
 /*=========================================================================*/
 
 
+/*=========================================================================
+    RSA Encryption
+    -----------------------------------------------------------------------
+
+    CFG_RSA                     If defined, support for basic RSA
+                                encryption will be included.
+    CFG_RSA_BITS                Indicates the number of bits used for
+                                RSA encryption keys.  To keep code size
+                                reasonable, RSA encryption is currently
+                                limited to using 64-bit or 32-bit numbers,
+                                with 64-bit providing higher security, and
+                                32-bit providing smaller encrypted text
+                                size.  Please note that Printf can not be
+                                used to display 64-bit values (%lld)!
+    -----------------------------------------------------------------------*/
+    // #define CFG_RSA
+    #define CFG_RSA_BITS                  (32)
+/*=========================================================================*/
+
+
 
 // #####################
 // Config error-checking
@@ -340,11 +374,20 @@
   #if !defined CFG_I2CEEPROM
     #error "CFG_CHIBI requires CFG_I2CEEPROM to store and retrieve addresses"
   #endif
+  #ifdef CFG_STEPPER
+    #error "CFG_CHIBI and CFG_STEPPER can not be defined at the same tim since they both use CT16B0"
+  #endif
 #endif
 
 #ifdef CFG_ST7565
   #ifdef CFG_STEPPER
-    #error "CFG_ST7565 and CFG_STEPPER can not be defined at the same time since they both use pins 2.8 and 2.9."
+    #error "CFG_ST7565 and CFG_STEPPER can not be defined at the same time since they both use pins 2.8 and 2.9"
+  #endif
+#endif
+
+#ifdef CFG_RSA
+  #if CFG_RSA_BITS != 64 && CFG_RSA_BITS != 32
+    #error "CFG_RSA_BITS must be equal to either 32 or 64."
   #endif
 #endif
 

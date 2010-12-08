@@ -9,6 +9,7 @@
 #ifndef _FFCONFIG
 #define _FFCONFIG 0x007E
 
+#include "projectconfig.h"
 
 /*---------------------------------------------------------------------------/
 / Function and Buffer Configurations
@@ -20,7 +21,7 @@
 /  data transfer. This reduces memory consumption 512 bytes each file object. */
 
 
-#define _FS_READONLY	0	/* 0 or 1 */
+#define _FS_READONLY	CFG_SDCARD_READONLY // 0	/* 0 or 1 */
 /* Setting _FS_READONLY to 1 defines read only configuration. This removes
 /  writing functions, f_write, f_sync, f_unlink, f_mkdir, f_chmod, f_rename,
 /  f_truncate and useless f_getfree. */

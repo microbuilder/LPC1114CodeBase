@@ -39,6 +39,9 @@
 #include "chb_buf.h"
 
 static chb_pcb_t pcb;
+// these are for the duplicate checking and rejection
+static U8 prev_seq = 0xFF;
+static U16 prev_src_addr = 0xFFFE;
 
 /**************************************************************************/
 /*!
@@ -111,10 +114,10 @@ U8 chb_write(U16 addr, U8 *data, U8 len)
         frm_len = (len > CHB_MAX_PAYLOAD) ? CHB_MAX_PAYLOAD : len;
 
         // gen frame header
-        hdr_len = chb_gen_hdr(hdr, addr, len);
+        hdr_len = chb_gen_hdr(hdr, addr, frm_len);
 
         // send data to chip
-        status = chb_tx(hdr, data, len);
+        status = chb_tx(hdr, data, frm_len);
     
         if (status != CHB_SUCCESS)
         {
@@ -157,7 +160,7 @@ U8 chb_write(U16 addr, U8 *data, U8 len)
 /**************************************************************************/
 U8 chb_read(chb_rx_data_t *rx)
 {
-    U8 i, len, *data_ptr;
+    U8 i, len, seq, *data_ptr;
 
     data_ptr = rx->data;
 
@@ -180,22 +183,41 @@ U8 chb_read(chb_rx_data_t *rx)
     // we'll use it as temp storage to parse the frame. then move the frame
     // down so that only the payload will be in the buffer.
 
+    // extract the sequence number
+    data_ptr = rx->data + 3;    // location of sequence number
+    seq = *data_ptr;
+
     // parse the buffer and extract the dest and src addresses
     data_ptr = rx->data + 6;                // location of dest addr
     rx->dest_addr = *(U16 *)data_ptr;
     data_ptr += sizeof(U16);
     rx->src_addr = *(U16 *)data_ptr;
     data_ptr += sizeof(U16);
-
-    // move the payload down to the beginning of the data buffer
-    memmove(rx->data, data_ptr, len - CHB_HDR_SZ);
-
+    
     // if the data in the rx buf is 0, then clear the rx_flag. otherwise, keep it raised
     if (!chb_buf_get_len())
     {
         pcb.data_rcv = false;
     }
 
+    // duplicate frame check (dupe check). we want to remove frames that have been already been received since they 
+    // are just retries. 
+    // note: this dupe check only removes duplicate frames from the previous transfer. if another frame from a different
+    // node comes in between the dupes, then the dupe will show up as a received frame.
+    if ((seq == prev_seq) && (rx->src_addr == prev_src_addr))
+    {
+        // this is a duplicate frame from a retry. the remote node thinks we didn't receive 
+        // it properly. discard.
+        return 0;
+    }
+    else
+    {
+        prev_seq = seq;
+        prev_src_addr = rx->src_addr;
+    }
+
+    // move the payload down to the beginning of the data buffer
+    memmove(rx->data, data_ptr, len - CHB_HDR_SZ);
     // finally, return the len of the payload
     return len - CHB_HDR_SZ - CHB_FCS_LEN;
 }

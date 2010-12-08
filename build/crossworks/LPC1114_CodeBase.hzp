@@ -55,6 +55,7 @@
           <folder Name="mcp24aa">
             <file file_name="../../drivers/eeprom/mcp24aa/mcp24aa.c"/>
           </folder>
+          <file file_name="../../drivers/eeprom/eeprom.c"/>
         </folder>
         <folder Name="chibi">
           <file file_name="../../drivers/chibi/chb.c">
@@ -81,7 +82,7 @@
         <folder Name="sensors">
           <folder Name="lm75b">
             <file file_name="../../drivers/sensors/lm75b/lm75b.c">
-              <configuration Name="THUMB Flash Debug" build_exclude_from_build="Yes"/>
+              <configuration Name="THUMB Flash Debug" build_exclude_from_build="No"/>
             </file>
           </folder>
         </folder>
@@ -102,6 +103,9 @@
                 <configuration Name="THUMB Flash Debug" build_exclude_from_build="Yes"/>
               </file>
             </folder>
+            <folder Name="SH1101A">
+              <file file_name="../../drivers/lcd/bitmap/sh1101a/sh1101a.c"/>
+            </folder>
           </folder>
           <file file_name="../../drivers/lcd/smallfonts.c">
             <configuration Name="THUMB Flash Debug" build_exclude_from_build="Yes"/>
@@ -110,6 +114,14 @@
         <folder Name="motor">
           <folder Name="stepper">
             <file file_name="../../drivers/motor/stepper/stepper.c"/>
+          </folder>
+        </folder>
+        <folder Name="rsa">
+          <file file_name="../../drivers/rsa/rsa.c"/>
+        </folder>
+        <folder Name="dac">
+          <folder Name="mcp4725">
+            <file file_name="../../drivers/dac/mcp4725/mcp4725.c"/>
           </folder>
         </folder>
       </folder>
@@ -121,7 +133,6 @@
       <folder Name="project">
         <file file_name="../../project/cmd_tbl.h"/>
         <file file_name="../../project/commands.c"/>
-        <file file_name="../../project/eeprom.c"/>
         <folder Name="commands">
           <file file_name="../../project/commands/cmd_hello.c"/>
           <file file_name="../../project/commands/cmd_sysinfo.c"/>

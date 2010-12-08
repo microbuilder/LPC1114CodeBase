@@ -77,6 +77,7 @@ typedef struct
     U16 txd_success;
     U16 txd_noack;
     U16 txd_channel_fail;
+    U16 overflow;
     U16 underrun;
     U8 battlow;
     U8 ed;
