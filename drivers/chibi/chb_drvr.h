@@ -324,6 +324,13 @@ enum
   CHB_PWR_CHINA_0DBM = 0xAA
 };
 
+// define receive state based on promiscuous mode setting
+#if (CFG_CHIBI_PROMISCUOUS == 1)
+    #define RX_STATE RX_ON
+#else
+    #define RX_STATE RX_AACK_ON
+#endif
+
 // init 
 void chb_drvr_init();
 
@@ -347,7 +354,7 @@ U16 chb_get_short_addr();
 U8 chb_set_state(U8 state);
 
 // Power management
-U8 chb_radio_sleep(void);
+void chb_sleep(U8 enb);
 
 // data transmit
 U8 chb_tx(U8 *hdr, U8 *data, U8 len);

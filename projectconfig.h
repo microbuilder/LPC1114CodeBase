@@ -52,12 +52,14 @@
                 =======   ======    =================    ======
                 3 11      2 8 9     4 5 6 7 8 9 10 11    1 2 3
 
-    SDCARD      X X       . . .     . . . . . . .  .     . . .
+    SDCARD      . .       . . .     X X . . . . .  .     . . .
     PWM         . .       . . X     . . . . . . .  .     . . .
     STEPPER     . .       . . .     . . . . X X X  X     . . .
     CHIBI       . .       . . .     . . . . . . .  .     X X X
     ST7565      . .       . . .     X X X X X X .  .     . . .
+    SSD1306     . .       . . .     X X X . X X .  .     . . .
     INTERFACE   . .       . . .     . . . . . . .  .     . . .
+    BATTERY     . X       . . .     . . . . . . .  X     . . .
 
                 TIMERS                      SSP       ADC       UART
                 ======================      ===       ======    ====
@@ -69,6 +71,7 @@
     STEPPER     X     .     .     .         . .       . . . .   .
     CHIBI       x     .     .     .         X .       . . . .   .
     ST7565      .     .     .     .         . .       . . . .   .
+    SSD1306     .     .     .     .         . .       . . . .   .
     INTERFACE   .     .     .     .         . .       . . . .   x
 
     [1]  PMU uses 32-bit Timer 0 for SW wakeup from deep-sleep.  This timer
@@ -82,7 +85,7 @@
     FIRMWARE VERSION SETTINGS
     -----------------------------------------------------------------------*/
     #define CFG_FIRMWARE_VERSION_MAJOR            (0)
-    #define CFG_FIRMWARE_VERSION_MINOR            (5)
+    #define CFG_FIRMWARE_VERSION_MINOR            (6)
     #define CFG_FIRMWARE_VERSION_REVISION         (0)
 /*=========================================================================*/
 
@@ -96,6 +99,7 @@
                     should be indicated here since CFG_CPU_CCLK is used by
                     other peripherals to determine timing.
 
+    Note:           At 36MHz 1 tick = ~27.777ns or 0.02777us
     -----------------------------------------------------------------------*/
     #define CFG_CPU_CCLK                (36000000)
 /*=========================================================================*/
@@ -107,7 +111,7 @@
 
     CFG_SYSTICK_DELAY_IN_MS   The number of milliseconds between each tick
                               of the systick timer.
-
+							  
     -----------------------------------------------------------------------*/
     #define CFG_SYSTICK_DELAY_IN_MS     (1)
 /*=========================================================================*/
@@ -148,6 +152,33 @@
 
 
 /*=========================================================================
+    BATTERY
+    -----------------------------------------------------------------------
+
+    CFG_BAT                   If this field is defined it indicates
+                              that a user sleectable voltage divider is
+                              connected to the batter/power supply
+    CFG_BAT_ENPORT            The port to enable to battery voltage divider
+    CFG_BAT_ENPIN             The pin to enable the battery voltage divider
+    CFG_BAT_ADC               The adc port where that the battery is connected
+    CFG_BAT_MULTIPLIER        Multiplier to convert the adc result to
+                              battery voltage - ((R1 + R2) / R2) * 1000
+
+    Note:                     For an example of using this information to
+                              determine the battery/power-supply voltage
+                              level see 'projects/commands/cmd_sysinfo.c'
+
+                              These settings are not relevant to all boards!
+    -----------------------------------------------------------------------*/
+    // #define CFG_BAT
+    #define CFG_BAT_ENPORT              (2)
+    #define CFG_BAT_ENPIN               (11)
+    #define CFG_BAT_ADC                 (0)
+    #define CFG_BAT_MULTIPLIER          (3127)  // ((10.0 + 14.7) / 4.7) * 1000
+/*=========================================================================*/
+
+
+/*=========================================================================
     MICRO-SD CARD
     -----------------------------------------------------------------------
 
@@ -158,17 +189,17 @@
                               saving some flash space (-Os).
     CFG_SDCARD_CDPORT         The card detect port number
     CFG_SDCARD_CDPIN          The card detect pin number
-
-    NOTE: CFG_SDCARD =        ~7.2 KB Flash and 0.6 KB SRAM (-Os)
+    CFG_SDCARD_ENPORT         The power enable port number
+    CFG_SDCARD_ENPIN          The power enable pin number
 
     DEPENDENCIES:             SDCARD requires the use of SSP1.
     -----------------------------------------------------------------------*/
     // #define CFG_SDCARD
     #define CFG_SDCARD_READONLY         (0)   // Must be 0 or 1
-    #define CFG_SDCARD_CDPORT           (0)
-    #define CFG_SDCARD_CDPIN            (3)
-    #define CFG_SDCARD_ENPORT           (0)
-    #define CFG_SDCARD_ENPIN            (11)
+    #define CFG_SDCARD_CDPORT           (2)
+    #define CFG_SDCARD_CDPIN            (4)
+    #define CFG_SDCARD_ENPORT           (2)
+    #define CFG_SDCARD_ENPIN            (5)
 /*=========================================================================*/
 
 
@@ -211,12 +242,8 @@
                               USB-CDC or UART depending on whether
                               CFG_PRINTF_UART or CFG_PRINTF_USBCDC are 
                               selected.
-
-    NOTE: CFG_INTERFACE =     ~6.0 KB Flash and 240 bytes SRAM (-Os), but
-                              this varies with the number of commands
-                              present
     -----------------------------------------------------------------------*/
-    #define CFG_INTERFACE
+    // #define CFG_INTERFACE
     #define CFG_INTERFACE_MAXMSGSIZE    (80)
     #define CFG_INTERFACE_PROMPT        "LPC1114 >> "
 /*=========================================================================*/
@@ -300,14 +327,15 @@
                                 chb_drvr.h for possible values
     CFG_CHIBI_CHANNEL           802.15.4 Channel (0 = 868MHz, 1-10 = 915MHz)
     CFG_CHIBI_PANID             16-bit PAN Identifier (ex.0x1234)
+    CFG_CHIBI_PROMISCUOUS       Set to 1 to enabled promiscuous mode or
+                                0 to disable it.  If promiscuous mode is
+                                enabled be sure to set CFG_CHIBI_BUFFERSIZE
+                                to an appropriately large value (ex. 1024)
     CFG_CHIBI_BUFFERSIZE        The size of the message buffer in bytes
     CFG_CHIBI_EEPROM_IEEEADDR   Start location in EEPROM for the full IEEE
                                 address of this node
     CFG_CHIBI_EEPROM_SHORTADDR  Start location in EEPROM for the short (16-bit)
                                 address of this node
-
-    NOTE: CFG_CHIBI =           ~4.0 KB Flash and 184 bytes SRAM* (-Os)
-                                * 128 byte buffer
 
     DEPENDENCIES:               Chibi requires the use of SSP0, 16-bit timer
                                 0 and pins 3.1, 3.2, 3.3.  It also requires
@@ -318,6 +346,7 @@
     #define CFG_CHIBI_POWER             (0xE9)              // CHB_PWR_EU2_3DBM
     #define CFG_CHIBI_CHANNEL           (0)                 // 868-868.6 MHz
     #define CFG_CHIBI_PANID             (0x1234)
+    #define CFG_CHIBI_PROMISCUOUS       (0)
     #define CFG_CHIBI_BUFFERSIZE        (128)
     #define CFG_CHIBI_EEPROM_IEEEADDR   (uint16_t)(0x0000)
     #define CFG_CHIBI_EEPROM_SHORTADDR  (uint16_t)(0x0009)
@@ -325,18 +354,23 @@
 
 
 /*=========================================================================
-    ST7565 128x64 Graphic LCD
+    128x64 Graphic LCDs
     -----------------------------------------------------------------------
 
     CFG_ST7565                If defined, this will cause drivers for
                               the 128x64 pixel ST7565 LCD to be included
+    CFG_SSD1306               If defined, this will cause drivers for
+                              the 128x64 pixel SSD1306 OLED display to be
+                              included
 
     Note:                     LPC1114 @ 36MHz and the ST7565 with the
                               backlight enabled consumes ~35mA
 
     DEPENDENCIES:             ST7565 requires the use of pins 2.4-9.
+    DEPENDENCIES:             SSD1306 requires the use of pins 2.4-9.
     -----------------------------------------------------------------------*/
     // #define CFG_ST7565
+    // #define CFG_SSD1306
 /*=========================================================================*/
 
 
@@ -375,13 +409,22 @@
     #error "CFG_CHIBI requires CFG_I2CEEPROM to store and retrieve addresses"
   #endif
   #ifdef CFG_STEPPER
-    #error "CFG_CHIBI and CFG_STEPPER can not be defined at the same tim since they both use CT16B0"
+    #error "CFG_CHIBI and CFG_STEPPER can not be defined at the same time since they both use CT16B0"
+  #endif
+  #if CFG_CHIBI_PROMISCUOUS != 0 && CFG_CHIBI_PROMISCUOUS != 1
+    #error "CFG_CHIBI_PROMISCUOUS must be equal to either 1 or 0"
+  #endif
+  #if CFG_CHIBI_PROMISCUOUS == 1 && defined CFG_INTERFACE
+    #error "CFG_CHIBI_PROMISCUOUS can not be enabled at the same time as CFG_INTERFACE"
   #endif
 #endif
 
 #ifdef CFG_ST7565
   #ifdef CFG_STEPPER
     #error "CFG_ST7565 and CFG_STEPPER can not be defined at the same time since they both use pins 2.8 and 2.9"
+  #endif
+  #ifdef CFG_SSD1306
+    #error "CFG_ST7565 and CFG_SSD1306 can not be defined at the same time"
   #endif
 #endif
 

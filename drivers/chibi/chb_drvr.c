@@ -42,8 +42,8 @@
 #include "core/timer16/timer16.h"
 
 // store string messages in flash rather than RAM
-const char chb_err_overflow[] = "BUFFER FULL. TOSSING INCOMING DATA\n";
-const char chb_err_init[] = "RADIO NOT INITIALIZED PROPERLY\n";
+const char chb_err_overflow[] = "BUFFER FULL. TOSSING INCOMING DATA\r\n";
+const char chb_err_init[] = "RADIO NOT INITIALIZED PROPERLY\r\n";
 
 /**************************************************************************/
 /*!
@@ -289,7 +289,6 @@ static void chb_frame_read()
 {
     U8 i, len, data;
 
-    CHB_ENTER_CRIT();
     CHB_SPI_ENABLE();
 
     /*Send frame read command and read the length.*/
@@ -712,8 +711,10 @@ static void chb_radio_init()
     // re-enable intps while we config the radio
     chb_reg_write(IRQ_MASK, (1<<IRQ_RX_START) | (1<<IRQ_TRX_END));
 
-    // set autocrc mode
-    chb_reg_read_mod_write(TRX_CTRL_1, 1 << CHB_AUTO_CRC_POS, 1 << CHB_AUTO_CRC_POS);
+    #if (CFG_CHIBI_PROMISCUOUS == 0)
+      // set autocrc mode
+      chb_reg_read_mod_write(TRX_CTRL_1, 1 << CHB_AUTO_CRC_POS, 1 << CHB_AUTO_CRC_POS);
+    #endif
 
     // set up default phy modulation, data rate and power (Ex. OQPSK, 100 kbps, 868 MHz, 3dBm)
     chb_set_mode(CFG_CHIBI_MODE);       // Defined in projectconfig.h
@@ -722,7 +723,7 @@ static void chb_radio_init()
 
     // set fsm state
     // put trx in rx auto ack mode
-    chb_set_state(RX_AACK_ON);
+    chb_set_state(RX_STATE);
 
     // set pan ID
     chb_reg_write16(PAN_ID_0, CFG_CHIBI_PANID);  // Defiend in projectconfig.h
@@ -766,7 +767,7 @@ static void chb_radio_init()
     gpioIntEnable (CHB_EINTPORT,
                    CHB_EINTPIN); 
 
-    if (chb_get_state() != RX_AACK_ON)
+    if (chb_get_state() != RX_STATE)
     {
         // ERROR occurred initializing the radio. Print out error message.
         printf(chb_err_init);
@@ -808,33 +809,31 @@ void chb_drvr_init()
 
 /**************************************************************************/
 /*!
-
+    Enable or disable the radio's sleep mode.
 */
 /**************************************************************************/
-U8 chb_radio_sleep(void)
+void chb_sleep(U8 enb)
 {
-  uint32_t timeout = 0;
-
-  // Set mode to TRX_OFF
-  while ( timeout < 10 )
+  if (enb)
   {
-    uint8_t status = chb_set_state(TRX_OFF);
-    if (status == RADIO_SUCCESS)
-    {
-      break;
-    }
-    timeout++;
-  }
+    // first we need to go to TRX OFF state
+    chb_set_state(TRX_OFF);
 
-  if ( timeout == 10 )
-  {
-    return 1;
+    // set the SLPTR pin
+    // CHB_SLPTR_PORT |= _BV(CHB_SLPTR_PIN);
+    CHB_SLPTR_ENABLE();
   }
   else
   {
-    // Set SLP_TR high to enter sleep mode (stops after 35 clock cycles)
-    CHB_SLPTR_ENABLE();
-    return 0;
+    // make sure the SLPTR pin is low first
+    // CHB_SLPTR_PORT &= ~(_BV(CHB_SLPTR_PIN));
+    CHB_SLPTR_DISABLE();
+
+    // we need to allow some time for the PLL to lock
+    chb_delay_us(TIME_SLEEP_TO_TRX_OFF);
+
+    // Turn the transceiver back on
+    chb_set_state(RX_STATE);
   }
 }
 
@@ -892,7 +891,7 @@ void chb_ISR_Handler (void)
                 pcb->tx_end = true;
             }
             intp_src &= ~CHB_IRQ_TRX_END_MASK;
-            while (chb_set_state(RX_AACK_ON) != RADIO_SUCCESS);
+            while (chb_set_state(RX_STATE) != RADIO_SUCCESS);
         }
         else if (intp_src & CHB_IRQ_TRX_UR_MASK)
         {

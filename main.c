@@ -33,15 +33,12 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 /**************************************************************************/
-
+#include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 
 #include "projectconfig.h"
 #include "sysinit.h"
-
-#include "core/gpio/gpio.h"
-#include "core/systick/systick.h"
 
 #ifdef CFG_INTERFACE
   #include "core/cmd/cmd.h"
@@ -75,7 +72,7 @@ void delayms(uint32_t ms)
     begin here.
 */
 /**************************************************************************/
-int main (void)
+int main(void)
 {
   // Configure cpu and mandatory peripherals
   systemInit();

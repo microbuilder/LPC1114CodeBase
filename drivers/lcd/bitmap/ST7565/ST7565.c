@@ -124,7 +124,7 @@ void sendByte(uint8_t byte)
     @brief  Draws a single graphic character using the supplied font
 */
 /**************************************************************************/
-static void drawChar(uint16_t x, uint16_t y, uint8_t c, struct FONT_DEF font)
+void drawChar(uint16_t x, uint16_t y, uint8_t c, struct FONT_DEF font)
 {
   uint8_t col, column[font.u8Width];
 
@@ -231,22 +231,12 @@ void st7565Init(void)
 
 /**************************************************************************/
 /*! 
-    @brief Enables the backlight
+    @brief Enables or disables the backlight
 */
 /**************************************************************************/
-void st7565BLEnable(void)
+void st7565Backlight(bool state)
 {
-  gpioSetValue( ST7565_BL_PORT, ST7565_BL_PIN, 0 );
-}
-
-/**************************************************************************/
-/*! 
-    @brief Disables the backlight
-*/
-/**************************************************************************/
-void st7565BLDisable(void)
-{
-  gpioSetValue( ST7565_BL_PORT, ST7565_BL_PIN, 1 );
+  gpioSetValue( ST7565_BL_PORT, ST7565_BL_PIN, state ? 0 : 1 );
 }
 
 /**************************************************************************/
@@ -269,19 +259,6 @@ void st7565ClearScreen(void)
 {
   memset(&buffer, 0x00, 128*64/8);
   st7565Refresh();
-
-//  uint8_t p, c;
-//  
-//  for(p = 0; p < 8; p++) 
-//  {
-//    CMD(ST7565_CMD_SET_PAGE | p);
-//    for(c = 0; c < 129; c++) 
-//    {
-//      CMD(ST7565_CMD_SET_COLUMN_LOWER | (c & 0xf));
-//      CMD(ST7565_CMD_SET_COLUMN_UPPER | ((c >> 4) & 0xf));
-//      DATA(0xC);
-//    }     
-//  }
 }
 
 /**************************************************************************/

@@ -43,9 +43,10 @@ OBJS += eeprom.o mcp24aa.o
 VPATH += drivers/sensors/lm75b
 OBJS += lm75b.o
 
-# Bitmap LCD support (ST7565)
-VPATH += drivers/lcd drivers/lcd/bitmap/st7565
-OBJS += smallfonts.o ST7565.o
+# Bitmap LCD support (ST7565, SSD1306)
+VPATH += drivers/lcd drivers/lcd/bitmap/ST7565
+VPATH += drivers/lcd/bitmap/ssd1306
+OBJS += smallfonts.o ST7565.o ssd1306.o
 
 # ChaN FatFS and SD card support
 VPATH += drivers/fatfs

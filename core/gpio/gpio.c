@@ -189,49 +189,26 @@ void gpioSetDir (uint32_t portNum, uint32_t bitPos, gpioDirection_t dir)
 {
   if (!_gpioInitialised) gpioInit();
 
+  // Get the appropriate register (handled this way to optimise code size)
+  REG32 *gpiodir = &GPIO_GPIO0DIR;
   switch (portNum)
   {
     case 0:
-      if (gpioDirection_Output == dir)
-      {
-        GPIO_GPIO0DIR |= (1 << bitPos);
-      }
-      else
-      {
-        GPIO_GPIO0DIR &= ~(1 << bitPos);
-      }
+      gpiodir = &GPIO_GPIO0DIR;
       break;
     case 1:
-      if (gpioDirection_Output == dir)
-      {
-        GPIO_GPIO1DIR |= (1 << bitPos);
-      }
-      else
-      {
-        GPIO_GPIO1DIR &= ~(1 << bitPos);
-      }
+      gpiodir = &GPIO_GPIO1DIR;
       break;
     case 2:
-      if (gpioDirection_Output == dir)
-      {
-        GPIO_GPIO2DIR |= (1 << bitPos);
-      }
-      else
-      {
-        GPIO_GPIO2DIR &= ~(1 << bitPos);
-      }
+      gpiodir = &GPIO_GPIO2DIR;
       break;
     case 3:
-      if (gpioDirection_Output == dir)
-      {
-        GPIO_GPIO3DIR |= (1 << bitPos);
-      }
-      else
-      {
-        GPIO_GPIO3DIR &= ~(1 << bitPos);
-      }
+      gpiodir = &GPIO_GPIO3DIR;
       break;
   }
+
+  // Toggle dir
+  dir == gpioDirection_Output ? (*gpiodir |= (1 << bitPos)) : (*gpiodir &= ~(1 << bitPos));
 }
 
 /**************************************************************************/
@@ -291,51 +268,27 @@ void gpioSetValue (uint32_t portNum, uint32_t bitPos, uint32_t bitVal)
 {
   if (!_gpioInitialised) gpioInit();
 
+
+  // Get the appropriate register (handled this way to optimise code size)
+  REG32 *gpiodata = &GPIO_GPIO0DATA;
   switch (portNum)
   {
     case 0:
-      if (1 == bitVal)
-      {
-        GPIO_GPIO0DATA |= (1 << bitPos);
-      }
-      else
-      {
-        GPIO_GPIO0DATA &= ~(1 << bitPos);
-      }
+      gpiodata = &GPIO_GPIO0DATA;
       break;
     case 1:
-      if (1 == bitVal)
-      {
-        GPIO_GPIO1DATA |= (1 << bitPos);
-      }
-      else
-      {
-        GPIO_GPIO1DATA &= ~(1 << bitPos);
-      }
+      gpiodata = &GPIO_GPIO1DATA;
       break;
     case 2:
-      if (1 == bitVal)
-      {
-        GPIO_GPIO2DATA |= (1 << bitPos);
-      }
-      else
-      {
-        GPIO_GPIO2DATA &= ~(1 << bitPos);
-      }
+      gpiodata = &GPIO_GPIO2DATA;
       break;
     case 3:
-      if (1 == bitVal)
-      {
-        GPIO_GPIO3DATA |= (1 << bitPos);
-      }
-      else
-      {
-        GPIO_GPIO3DATA &= ~(1 << bitPos);
-      }
-      break;
-    default:
+      gpiodata = &GPIO_GPIO3DATA;
       break;
   }
+
+  // Toggle value
+  bitVal == 1 ? (*gpiodata |= (1 << bitPos)) : (*gpiodata &= ~(1 << bitPos));
 }
 
 /**************************************************************************/
@@ -379,119 +332,47 @@ void gpioSetInterrupt (uint32_t portNum, uint32_t bitPos, gpioInterruptSense_t s
 {
   if (!_gpioInitialised) gpioInit();
 
+  // Get the appropriate register (handled this way to optimise code size)
+  REG32 *gpiois  = &GPIO_GPIO0IS;
+  REG32 *gpioibe = &GPIO_GPIO0IBE;
+  REG32 *gpioiev = &GPIO_GPIO0IEV;
   switch (portNum)
   {
     case 0:
-      if (gpioInterruptSense_Edge)
-      {
-        GPIO_GPIO0IS &= ~(0x1<<bitPos);
-        /* single or double only applies when sense is 0(edge trigger). */
-        if  (gpioInterruptEdge_Single)
-        {
-          GPIO_GPIO0IBE &= ~(0x1<<bitPos);
-        }
-        else
-        {
-          GPIO_GPIO0IBE |= (0x1<<bitPos);
-        }
-      }
-      else
-      {
-        GPIO_GPIO0IS |= (0x1<<bitPos);
-      }
-      if (gpioInterruptEvent_ActiveHigh)
-      {
-        GPIO_GPIO0IEV &= ~(0x1<<bitPos);
-      }
-      else
-      {
-        GPIO_GPIO0IEV |= (0x1<<bitPos);
-      }
+      gpiois  = &GPIO_GPIO0IS;
+      gpioibe = &GPIO_GPIO0IBE;
+      gpioiev = &GPIO_GPIO0IEV;
       break;
     case 1:
-      if (gpioInterruptSense_Edge)
-      {
-        GPIO_GPIO1IS &= ~(0x1<<bitPos);
-        /* single or double only applies when sense is 0(edge trigger). */
-        if  (gpioInterruptEdge_Single)
-        {
-          GPIO_GPIO1IBE &= ~(0x1<<bitPos);
-        }
-        else
-        {
-          GPIO_GPIO1IBE |= (0x1<<bitPos);
-        }
-      }
-      else
-      {
-        GPIO_GPIO1IS |= (0x1<<bitPos);
-      }
-      if (gpioInterruptEvent_ActiveHigh)
-      {
-        GPIO_GPIO1IEV &= ~(0x1<<bitPos);
-      }
-      else
-      {
-        GPIO_GPIO1IEV |= (0x1<<bitPos);  
-      }
+      gpiois  = &GPIO_GPIO1IS;
+      gpioibe = &GPIO_GPIO1IBE;
+      gpioiev = &GPIO_GPIO1IEV;
       break;
     case 2:
-      if (gpioInterruptSense_Edge)
-      {
-        GPIO_GPIO2IS &= ~(0x1<<bitPos);
-        /* single or double only applies when sense is 0(edge trigger). */
-        if  (gpioInterruptEdge_Single)
-        {
-          GPIO_GPIO2IBE &= ~(0x1<<bitPos);
-        }
-        else
-        {
-          GPIO_GPIO2IBE |= (0x1<<bitPos);
-        }
-      }
-      else
-      {
-        GPIO_GPIO2IS |= (0x1<<bitPos);
-      }
-      if (gpioInterruptEvent_ActiveHigh)
-      {
-        GPIO_GPIO2IEV &= ~(0x1<<bitPos);
-      }
-      else
-      {
-        GPIO_GPIO2IEV |= (0x1<<bitPos);  
-      }
+      gpiois  = &GPIO_GPIO2IS;
+      gpioibe = &GPIO_GPIO2IBE;
+      gpioiev = &GPIO_GPIO2IEV;
       break;
     case 3:
-      if (gpioInterruptSense_Edge)
-      {
-        GPIO_GPIO3IS &= ~(0x1<<bitPos);
-        /* single or double only applies when sense is 0(edge trigger). */
-        if  (gpioInterruptEdge_Single)
-        {
-          GPIO_GPIO3IBE &= ~(0x1<<bitPos);
-        }
-        else
-        {
-          GPIO_GPIO3IBE |= (0x1<<bitPos);
-        }
-      }
-      else
-      {
-        GPIO_GPIO3IS |= (0x1<<bitPos);
-      }
-      if (gpioInterruptEvent_ActiveHigh)
-      {
-        GPIO_GPIO3IEV &= ~(0x1<<bitPos);
-      }
-      else
-      {
-        GPIO_GPIO3IEV |= (0x1<<bitPos);	  
-      }
-      break;
-    default:
+      gpiois  = &GPIO_GPIO3IS;
+      gpioibe = &GPIO_GPIO3IBE;
+      gpioiev = &GPIO_GPIO3IEV;
       break;
   }
+
+  if (gpioInterruptSense_Edge)
+  {
+    *gpiois &= ~(0x1<<bitPos);
+    /* single or double only applies when sense is 0(edge trigger). */
+    gpioInterruptEdge_Single ? (*gpioibe &= ~(0x1<<bitPos)) : (*gpioibe |= (0x1<<bitPos));
+  }
+  else
+  {
+    *gpiois |= (0x1<<bitPos);
+  }
+
+  gpioInterruptEvent_ActiveHigh ? (*gpioiev &= ~(0x1<<bitPos)) : (*gpioiev |= (0x1<<bitPos));
+
   return;
 }
 

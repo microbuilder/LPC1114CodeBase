@@ -118,6 +118,21 @@
         <File Name="../../drivers/dac/mcp4725/mcp4725.h"/>
       </VirtualDirectory>
     </VirtualDirectory>
+    <VirtualDirectory Name="lcd">
+      <File Name="../../drivers/lcd/smallfonts.c"/>
+      <File Name="../../drivers/lcd/smallfonts.h"/>
+      <VirtualDirectory Name="bitmap">
+        <VirtualDirectory Name="ST7565">
+          <File Name="../../drivers/lcd/bitmap/ST7565/ST7565.c"/>
+          <File Name="../../drivers/lcd/bitmap/ST7565/ST7565.h"/>
+        </VirtualDirectory>
+        <File Name="../../drivers/lcd/bitmap/readme.txt"/>
+        <VirtualDirectory Name="ssd1306">
+          <File Name="../../drivers/lcd/bitmap/ssd1306/ssd1306.c"/>
+          <File Name="../../drivers/lcd/bitmap/ssd1306/ssd1306.h"/>
+        </VirtualDirectory>
+      </VirtualDirectory>
+    </VirtualDirectory>
   </VirtualDirectory>
   <VirtualDirectory Name="lpc1xxx">
     <File Name="../../lpc1xxx/linkscript.ld"/>

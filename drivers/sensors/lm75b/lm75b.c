@@ -82,6 +82,7 @@
 /**************************************************************************/
 
 #include "lm75b.h"
+#include "core/systick/systick.h"
 
 extern volatile uint8_t   I2CMasterBuffer[I2C_BUFSIZE];
 extern volatile uint8_t   I2CSlaveBuffer[I2C_BUFSIZE];
@@ -154,17 +155,15 @@ static lm75bError_e lm75bRead16(uint8_t reg, int32_t *value)
 lm75bError_e lm75bInit(void)
 {
   // Initialise I2C
-  if (i2cInit(I2CMODE_MASTER) == false)
+  if (i2cInit(I2CMASTER) == false)
   {
     return LM75B_ERROR_I2CINIT;    /* Fatal error */
   }
   
   _lm75bInitialised = true;
 
-  return LM75B_ERROR_OK;
-  
-  // Set device to shutdown mode by default (saves power)
-  // return lm75bConfigWrite (LM75B_CONFIG_SHUTDOWN_SHUTDOWN);
+  // Set device to shutdown mode by default (saves 100uA power)
+  return lm75bConfigWrite (LM75B_CONFIG_SHUTDOWN_SHUTDOWN);
 }
 
 /**************************************************************************/
@@ -172,7 +171,7 @@ lm75bError_e lm75bInit(void)
     @brief  Reads the current temperature from the LM75B
 
     @note   This method will assign a signed 32-bit value (int32) to 'temp',
-            where each unit represents +/- 0.125Â°C.  To convert the numeric
+            where each unit represents +/- 0.125°C.  To convert the numeric
             value to degrees celsius, you must divide the value of 'temp'
             by 8.  This conversion is not done automatically, since you may
             or may not want to use floating point math for the calculations.
@@ -183,14 +182,17 @@ lm75bError_e lm75bGetTemperature (int32_t *temp)
   if (!_lm75bInitialised) lm75bInit();
 
   // Turn device on
-  // lm75bConfigWrite (LM75B_CONFIG_SHUTDOWN_POWERON);
+  lm75bConfigWrite (LM75B_CONFIG_SHUTDOWN_POWERON);
+
+  // You need a small delay between power on and read
+  systickDelay(15);
 
   // Read temperature
   lm75bError_e error = LM75B_ERROR_OK;
   error = lm75bRead16 (LM75B_REGISTER_TEMPERATURE, temp);
 
   // Shut device back down
-  // lm75bConfigWrite (LM75B_CONFIG_SHUTDOWN_SHUTDOWN);
+  lm75bConfigWrite (LM75B_CONFIG_SHUTDOWN_SHUTDOWN);
 
   return error;
 }

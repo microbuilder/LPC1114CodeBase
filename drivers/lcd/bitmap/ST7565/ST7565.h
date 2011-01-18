@@ -97,8 +97,7 @@ void st7565Data( uint8_t d );
 void st7565SetBrightness( uint8_t val );
 
 // Backlight Prototypes
-void st7565BLEnable( void );
-void st7565BLDisable( void );
+void st7565Backlight(bool state);
 
 // Drawing Prototypes
 void st7565ClearScreen( void );

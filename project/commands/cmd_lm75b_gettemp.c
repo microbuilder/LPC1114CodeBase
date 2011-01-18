@@ -61,7 +61,7 @@ void cmd_lm75b_gettemp(uint8_t argc, char **argv)
   temp *= 125;
 
   // Use modulus operator to display decimal value
-  printf("Current Temperature: %d.%d C%s", temp / 1000, temp % 1000, CFG_PRINTF_NEWLINE);
+  printf("Current Temperature: %d.%d C%s", (int)(temp / 1000), (int)(temp % 1000), CFG_PRINTF_NEWLINE);
 }
 
 #endif

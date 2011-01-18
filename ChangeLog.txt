@@ -1,3 +1,71 @@
+v0.60 - Ongoing
+===============
+
+- Added the battery/supply voltage to the 'sysinfo'
+  command (only applies to LPC1114 wireless board)
+- Made a number of changes for deep-sleep mode to
+  reduce power consumption (pmu.c updated, including
+  a bug fix that prevented the code from exiting
+  deep sleep twice from SW).
+- Added experimental driver for SSD1306-based 128x64
+  OLED displays (courtesy Adafruit Industries who have
+  a convenient breakout board for these displays).
+- Added 'chb_libpcap' to log raw 802.15.4 frames
+  to libpcap binary files.  This allows wireless
+  traffic to be stored for debugging and analysis
+  in Wireshark or other libpcap compatible
+  protocol analysers.  Based on wsbridge by Freaklabs.
+- Added a 'tools' folder with schematics and common
+  open-source tools that can be used with the code base
+- Modified 'core/gpio/gpio.c' to reduce the compiled code
+  size. Repetitive switches where only the registers
+  change were modified to use temporary registers and
+  execute the code only once.
+- Updated Chibi to v0.91 (adds sleep method and
+  promiscuous mode to allow Chibi to act as an
+  802.15.4 packet sniffer, etc.).  To enable
+  promiscuous mode, set CFG_CHIBI_PROMISCUOUS to 1
+  and change the buffer size to 1024 to handle
+  a larger amount of incoming traffic.  The following
+  code will send all incoming bytes to UART for
+  processing on the PC using WSBridge (available
+  in the '/tools' folder or from www.freaklabs.org):
+
+    #include "drivers/chibi/chb.h"
+    #include "drivers/chibi/chb_drvr.h"
+    static chb_rx_data_t rx_data;
+
+    ...
+
+    chb_pcb_t *pcb = chb_get_pcb();
+    while(1)
+    {
+      // Check for incoming messages 
+      while (pcb->data_rcv) 
+      { 
+        // get the length of the data
+        rx_data.len = chb_read(&rx_data);
+        // make sure the length is nonzero
+        if (rx_data.len)
+        {
+          // Enable LED to indicate message reception 
+          gpioSetValue (CFG_LED_PORT, CFG_LED_PIN, CFG_LED_ON); 
+
+          // Send raw data to UART for processing on
+          // the PC (requires WSBridge - www.freaklabs.org)
+          uint8_t i;
+          for (i=0; i<rx_data.len; i++)
+          {
+            // Send output to UART
+            uartSendByte(rx_data.data[i]);
+          }
+
+          // Disable LED
+          gpioSetValue (CFG_LED_PORT, CFG_LED_PIN, CFG_LED_OFF); 
+        }
+      }
+    }
+
 v0.50 - 8 December 2010
 =======================
 

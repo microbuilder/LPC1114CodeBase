@@ -1,98 +1,83 @@
-/**************************************************************************/
-/*! 
-    @file     i2c.h
-    @author   K. Townsend (microBuilder.eu)
-    @date     22 March 2010
-    @version  0.10
-
-    @section LICENSE
-
-    Software License Agreement (BSD License)
-
-    Copyright (c) 2010, microBuilder SARL
-    All rights reserved.
-
-    Redistribution and use in source and binary forms, with or without
-    modification, are permitted provided that the following conditions are met:
-    1. Redistributions of source code must retain the above copyright
-    notice, this list of conditions and the following disclaimer.
-    2. Redistributions in binary form must reproduce the above copyright
-    notice, this list of conditions and the following disclaimer in the
-    documentation and/or other materials provided with the distribution.
-    3. Neither the name of the copyright holders nor the
-    names of its contributors may be used to endorse or promote products
-    derived from this software without specific prior written permission.
-
-    THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS ''AS IS'' AND ANY
-    EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-    DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER BE LIABLE FOR ANY
-    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
-    (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
-    ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-    SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-*/
-/**************************************************************************/
-
-#ifndef _I2C_H_
-#define _I2C_H_
-
-#define I2C_FAST_MODE_PLUS      0
-
-#define I2C_BUFSIZE             12
-#define I2C_MAX_TIMEOUT         0xFF
-
-#define I2C_SLAVEADDR           0xA0
-
-#define I2C_SCLH_SCLH           0x00000180  /* I2C SCL Duty Cycle High Reg */
-#define I2C_SCLL_SCLL           0x00000180  /* I2C SCL Duty Cycle Low Reg */
-#define I2C_SCLH_HS_SCLH        0x00000030  /* Fast Plus I2C SCL Duty Cycle High Reg */
-#define I2C_SCLL_HS_SCLL        0x00000030  /* Fast Plus I2C SCL Duty Cycle Low Reg */
+/*****************************************************************************
+ *   i2c.h:  Header file for NXP LPC11xx Family Microprocessors
+ *
+ *   Copyright(C) 2006, NXP Semiconductor
+ *   parts of this code are (C) 2010, MyVoice CAD/CAM Services
+ *   All rights reserved.
+ *
+ *   History
+ *   2006.07.19  ver 1.00    Preliminary version, first Release
+ *   2010.07.19  ver 1.10    Rob Jansen - MyVoice CAD/CAM Services
+ *                           Updated to reflect new code
+ *
+******************************************************************************/
+#ifndef __I2C_H 
+#define __I2C_H
 
 #include "projectconfig.h"
 
-typedef enum i2cMode_e
-{
-  I2CMODE_MASTER              = 0x01,
-  I2CMODE_SLAVE               = 0x02
-} 
-i2cMode_t;
+/*
+ * These are states returned by the I2CEngine:
+ *
+ * IDLE     - is never returned but only used internally
+ * PENDING  - is never returned but only used internally in the I2C functions
+ * ACK      - The transaction finished and the slave returned ACK (on all bytes)
+ * NACK     - The transaction is aborted since the slave returned a NACK
+ * SLA_NACK - The transaction is aborted since the slave returned a NACK on the SLA
+ *            this can be intentional (e.g. an 24LC08 EEPROM states it is busy)
+ *            or the slave is not available/accessible at all.
+ * ARB_LOSS - Arbitration loss during any part of the transaction.
+ *            This could only happen in a multi master system or could also
+ *            identify a hardware problem in the system.
+ */
+#define I2CSTATE_IDLE     0x000
+#define I2CSTATE_PENDING  0x001
+#define I2CSTATE_ACK      0x101
+#define I2CSTATE_NACK     0x102
+#define I2CSTATE_SLA_NACK 0x103
+#define I2CSTATE_ARB_LOSS 0x104
 
-typedef enum i2cErr_e
-{
-  I2CERR_BUSERROR             = 0x00,
-  I2CERR_STARTTX              = 0x08,
-  I2CERR_REPEATEDSTARTTX      = 0x10,
-  I2CERR_SLAWTX_ACKRX         = 0x18,
-  I2CERR_SLAWTX_NACKRX        = 0x20,
-  I2CERR_DATTX_ACKRX          = 0x28,
-  I2CERR_DATTX_NACKRX         = 0x30,
-  I2CERR_ARBLOST              = 0x38,
-  I2CERR_SLARTX_ACKRX         = 0x40,
-  I2CERR_SLARTX_NACKRX        = 0x48,
-  I2CERR_DATRX_ACKTX          = 0x50,
-  I2CERR_DATRX_NACKTX         = 0x58,
-  I2CERR_NOINFO               = 0xf8
-}
-i2cErr_t;
+#define FAST_MODE_PLUS    0
 
-typedef enum i2cState_e
-{
-  I2CSTATE_IDLE               = 0,
-  I2CSTATE_STARTED,
-  I2CSTATE_RESTARTED,
-  I2CSTATE_REPEATED_START,
-  I2CSTATE_DATA_ACK,
-  I2CSTATE_DATA_NACK
-}
-i2cState_t;
+#define I2C_BUFSIZE       6
+#define MAX_TIMEOUT       0x00FFFFFF
+
+#define I2CMASTER         0x01
+#define I2CSLAVE          0x02
+
+#define SLAVE_ADDR        0xA0
+#define READ_WRITE        0x01
+
+#define RD_BIT            0x01
+
+#define I2CONSET_I2EN     0x00000040  /* I2C Control Set Register */
+#define I2CONSET_AA       0x00000004
+#define I2CONSET_SI       0x00000008
+#define I2CONSET_STO      0x00000010
+#define I2CONSET_STA      0x00000020
+
+#define I2CONCLR_AAC      0x00000004  /* I2C Control clear Register */
+#define I2CONCLR_SIC      0x00000008
+#define I2CONCLR_STAC     0x00000020
+#define I2CONCLR_I2ENC    0x00000040
+
+#define I2DAT_I2C         0x00000000  /* I2C Data Reg */
+#define I2ADR_I2C         0x00000000  /* I2C Slave Address Reg */
+#define I2SCLH_SCLH       58          /* I2C SCL Duty Cycle High Reg */
+#define I2SCLL_SCLL       57          /* I2C SCL Duty Cycle Low Reg */
+#define I2SCLH_HS_SCLH    0x00000020  /* Fast Plus I2C SCL Duty Cycle High Reg */
+#define I2SCLL_HS_SCLL    0x00000020  /* Fast Plus I2C SCL Duty Cycle Low Reg */
+
+
+extern volatile uint8_t I2CMasterBuffer[I2C_BUFSIZE];
+extern volatile uint8_t I2CSlaveBuffer[I2C_BUFSIZE];
+extern volatile uint32_t I2CReadLength, I2CWriteLength;
 
 extern void I2C_IRQHandler( void );
-extern uint32_t i2cInit( i2cMode_t mode );
-extern uint32_t i2cStart( void );
-extern uint32_t i2cStop( void );
+extern uint32_t i2cInit( uint32_t I2cMode );
 extern uint32_t i2cEngine( void );
 
-#endif
+#endif /* end __I2C_H */
+/****************************************************************************
+**                            End Of File
+*****************************************************************************/

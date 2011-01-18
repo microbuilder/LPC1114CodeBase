@@ -78,6 +78,7 @@
             <configuration Name="THUMB Flash Debug" build_exclude_from_build="No"/>
             <configuration Name="THUMB RAM Debug" build_exclude_from_build="Yes"/>
           </file>
+          <file file_name="../../drivers/chibi/chb_libpcap.c"/>
         </folder>
         <folder Name="sensors">
           <folder Name="lm75b">
@@ -98,17 +99,17 @@
         </folder>
         <folder Name="lcd">
           <folder Name="bitmap">
-            <folder Name="ST7565">
+            <folder Name="st7565">
               <file file_name="../../drivers/lcd/bitmap/ST7565/ST7565.c">
-                <configuration Name="THUMB Flash Debug" build_exclude_from_build="Yes"/>
+                <configuration Name="THUMB Flash Debug" build_exclude_from_build="No"/>
               </file>
             </folder>
-            <folder Name="SH1101A">
-              <file file_name="../../drivers/lcd/bitmap/sh1101a/sh1101a.c"/>
+            <folder Name="ssd1306">
+              <file file_name="../../drivers/lcd/bitmap/ssd1306/ssd1306.c"/>
             </folder>
           </folder>
           <file file_name="../../drivers/lcd/smallfonts.c">
-            <configuration Name="THUMB Flash Debug" build_exclude_from_build="Yes"/>
+            <configuration Name="THUMB Flash Debug" build_exclude_from_build="No"/>
           </file>
         </folder>
         <folder Name="motor">
@@ -123,6 +124,9 @@
           <folder Name="mcp4725">
             <file file_name="../../drivers/dac/mcp4725/mcp4725.c"/>
           </folder>
+        </folder>
+        <folder Name="gsm">
+          <file file_name="../../drivers/gsm/gsm.h"/>
         </folder>
       </folder>
       <file file_name="../../sysdefs.h"/>

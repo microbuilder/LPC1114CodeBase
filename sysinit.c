@@ -60,6 +60,14 @@
   #include "drivers/lcd/bitmap/st7565/st7565.h"
 #endif
 
+#ifdef CFG_SSD1306
+  #include "drivers/lcd/bitmap/ssd1306/ssd1306.h"
+#endif
+
+#ifdef CFG_LM75B
+  #include "drivers/sensors/lm75b/lm75b.h"
+#endif
+
 #ifdef CFG_CHIBI
   #include "drivers/chibi/chb.h"
 #endif
@@ -120,8 +128,12 @@ void systemInit()
   #ifdef CFG_ST7565
     st7565Init();
     st7565ClearScreen();    // Clear the screen  
-    st7565BLEnable();       // Enable the backlight
-    st7565Refresh();        // Refresh the screen
+    st7565Backlight(1);     // Enable the backlight
+  #endif
+
+  #ifdef CFG_SSD1306
+    ssd1306Init(SSD1306_SWITCHCAPVCC);
+    ssd1306ClearScreen();   // Clear the screen  
   #endif
 
   // Initialise EEPROM
@@ -137,27 +149,40 @@ void systemInit()
     // mcp24aaWriteBuffer(CFG_CHIBI_EEPROM_SHORTADDR, (uint8_t *)&addr_short, 2);
     // mcp24aaWriteBuffer(CFG_CHIBI_EEPROM_IEEEADDR, (uint8_t *)&addr_ieee, 8);
     chb_init();
-    chb_pcb_t *pcb = chb_get_pcb();
-    printf("%-40s : 0x%04X%s", "Chibi Initialised", pcb->src_addr, CFG_PRINTF_NEWLINE);
   #endif
 
   // Initialise SD Card
+  // Normaly this should be handled on demand later, but you may wish to
+  // initialise the SD card here in some situations
   #ifdef CFG_SDCARD
-    DSTATUS stat;
-    stat = disk_initialize(0);
-    if (stat & STA_NOINIT) 
-    {
-      printf("%-40s : %s\n", "SD", "Not Initialised");
-    }
-    if (stat & STA_NODISK) 
-    {
-      printf("%-40s : %s\n", "SD", "No Disk");
-    }
-    if (stat == 0)
-    {
-      // SD Card Initialised
-      printf("%-40s : %s\n", "SD", "Initialised");
-    }
+    // Turn off SD card by default (saves power)
+    gpioSetDir( CFG_SDCARD_ENPORT, CFG_SDCARD_ENPIN, gpioDirection_Output ); /* Set enable pin to output */
+    gpioSetValue( CFG_SDCARD_ENPORT, CFG_SDCARD_ENPIN, 0 ); /* Disable card by setting ENPIN low */
+    // DSTATUS stat;
+    // stat = disk_initialize(0);
+    // if (stat & STA_NOINIT) 
+    // {
+    //  // Not initialised
+    // }
+    // if (stat & STA_NODISK) 
+    // {
+    //  // No disk
+    // }
+    // if (stat == 0)
+    // {
+    //  // SD card sucessfully initialised
+    // }
+  #endif
+
+  #ifdef CFG_LM75B
+    // Turn on LM75B (and put it in sleep mode by default to save power)
+    lm75bInit();
+  #endif
+
+  #ifdef CFG_BAT
+    // Turn off battery voltage divider by default
+    gpioSetDir(CFG_BAT_ENPORT, CFG_BAT_ENPIN, gpioDirection_Output );   // Set voltage divider enable pin to output
+    gpioSetValue(CFG_BAT_ENPORT, CFG_BAT_ENPIN, 0 );                    // Disable the voltage divider by default
   #endif
 
   // Start the command line interface (if requested)

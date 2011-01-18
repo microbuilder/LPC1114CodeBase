@@ -2,8 +2,6 @@
 /*! 
     @file     pmu.c
     @author   K. Townsend (microBuilder.eu)
-    @date     22 March 2010
-    @version  0.10
 
     @section DESCRIPTION
 
@@ -48,7 +46,14 @@
 #include "core/timer32/timer32.h"
 #include "pmu.h"
 
-#define PMU_WDTCLOCKSPEED_HZ 10000
+#ifdef CFG_CHIBI
+  #include "drivers/chibi/chb_drvr.h"
+#endif
+
+#define PMU_WDTCLOCKSPEED_HZ 7812
+
+void pmuSetupHW(void);
+void pmuRestoreHW(void);
 
 /**************************************************************************/
 /*! 
@@ -58,6 +63,18 @@
 void WAKEUP_IRQHandler(void)
 {
   uint32_t regVal;
+
+  // Reconfigure system clock/PLL
+  cpuPllSetup(CPU_MULTIPLIER_3);
+
+  // Clear match bit on timer
+  TMR_TMR32B0EMR = 0;
+
+  // Clear pending bits
+  SCB_STARTRSRP0CLR = SCB_STARTRSRP0CLR_MASK;
+
+  // Clear SLEEPDEEP bit
+  SCB_SCR &= ~SCB_SCR_SLEEPDEEP;
 
   // Disable the deep sleep timer
   TMR_TMR32B0TCR = TMR_TMR32B0TCR_COUNTERENABLE_DISABLED;
@@ -70,12 +87,12 @@ void WAKEUP_IRQHandler(void)
     SCB_STARTRSRP0CLR = regVal;
   }
 
-  // Reconfigure system clock/PLL
-  cpuPllSetup(CPU_MULTIPLIER_3);
-
   // Reconfigure CT32B0
   timer32Init(0, TIMER32_DEFAULTINTERVAL);
   timer32Enable(0);
+
+  // Perform peripheral specific and custom wakeup tasks
+  pmuRestoreHW();
 
   /* See tracker for bug report. */
   __asm volatile ("NOP");
@@ -85,31 +102,19 @@ void WAKEUP_IRQHandler(void)
 
 /**************************************************************************/
 /*! 
-    Setup the clock for the watchdog timer.  The default setting is 10kHz.
+    Setup the clock for the watchdog timer.  The default setting is 7.8kHz.
 */
 /**************************************************************************/
 static void pmuWDTClockInit (void)
 {
-  /* Configure watchdog clock */
-  /* Freq. = 0.5MHz, div = 50: WDT_OSC = 10kHz  */
-  SCB_WDTOSCCTRL = SCB_WDTOSCCTRL_FREQSEL_0_5MHZ | 
-                   SCB_WDTOSCCTRL_DIVSEL_DIV50;
-
-  /* Set clock source (use internal oscillator) */
-  // SCB_WDTCLKSEL = SCB_WDTCLKSEL_SOURCE_INPUTCLOCK;
-  SCB_WDTCLKSEL = SCB_WDTCLKSEL_SOURCE_INTERNALOSC;
-  SCB_WDTCLKUEN = SCB_WDTCLKUEN_UPDATE;
-  SCB_WDTCLKUEN = SCB_WDTCLKUEN_DISABLE;
-  SCB_WDTCLKUEN = SCB_WDTCLKUEN_UPDATE;
-
-  /* Wait until updated */
-  while (!(SCB_WDTCLKUEN & SCB_WDTCLKUEN_UPDATE));
-
-  /* Set divider */
-  SCB_WDTCLKDIV = SCB_WDTCLKDIV_DIV1;
-
   /* Enable WDT clock */
   SCB_PDRUNCFG &= ~(SCB_PDRUNCFG_WDTOSC);
+
+  /* Configure watchdog clock */
+  /* Freq. = 0.5MHz, div = 64: WDT_OSC = 7.8125kHz  */
+  /* Make sure this value is also reflected in PMU_WDTCLOCKSPEED_HZ */
+  SCB_WDTOSCCTRL = SCB_WDTOSCCTRL_FREQSEL_0_5MHZ | 
+                   SCB_WDTOSCCTRL_DIVSEL_DIV64;
 
   // Switch main clock to WDT output
   SCB_MAINCLKSEL = SCB_MAINCLKSEL_SOURCE_WDTOSC;
@@ -211,6 +216,10 @@ void pmuSleep()
 /**************************************************************************/
 void pmuDeepSleep(uint32_t sleepCtrl, uint32_t wakeupSeconds)
 {
+  // Setup the board for deep sleep mode, shutting down certain
+  // peripherals and remapping pins for lower power
+  pmuSetupHW();
+
   SCB_PDAWAKECFG = SCB_PDRUNCFG;
   sleepCtrl &= ~(1 << 9);               // MAIN_REGUL_PD
   sleepCtrl |= (1 << 11) | (1 << 12);   // LP_REGUL_PD
@@ -228,9 +237,6 @@ void pmuDeepSleep(uint32_t sleepCtrl, uint32_t wakeupSeconds)
 
     // Disable internal pullup on 0.1
     gpioSetPullup(&IOCON_PIO0_1, gpioPullupMode_Inactive);
-
-    // Reconfigure clock to run from WDTOSC
-    pmuWDTClockInit();
 
     /* Enable the clock for CT32B0 */
     SCB_SYSAHBCLKCTRL |= (SCB_SYSAHBCLKCTRL_CT32B0);
@@ -250,19 +256,7 @@ void pmuDeepSleep(uint32_t sleepCtrl, uint32_t wakeupSeconds)
     TMR_TMR32B0EMR |= TMR_TMR32B0EMR_EMC2_HIGH;     // Set MR2 (0.1) high on match
 
     /* Enable wakeup interrupt (P0.1..11 and P1.0 can be used) */
-    //NVIC_EnableIRQ(WAKEUP0_IRQn);    // P0.0
     NVIC_EnableIRQ(WAKEUP1_IRQn);      // P0.1  (CT32B0_MAT2)
-    //NVIC_EnableIRQ(WAKEUP2_IRQn);    // P0.2
-    //NVIC_EnableIRQ(WAKEUP3_IRQn);    // P0.3
-    //NVIC_EnableIRQ(WAKEUP4_IRQn);    // P0.4
-    //NVIC_EnableIRQ(WAKEUP5_IRQn);    // P0.5
-    //NVIC_EnableIRQ(WAKEUP6_IRQn);    // P0.6
-    //NVIC_EnableIRQ(WAKEUP7_IRQn);    // P0.7
-    //NVIC_EnableIRQ(WAKEUP8_IRQn);    // P0.8
-    //NVIC_EnableIRQ(WAKEUP9_IRQn);    // P0.9
-    //NVIC_EnableIRQ(WAKEUP10_IRQn);   // P0.10
-    //NVIC_EnableIRQ(WAKEUP11_IRQn);   // P0.11 (CT32B0_MAT3)
-    //NVIC_EnableIRQ(WAKEUP12_IRQn);   // P1.0
 
     /* Use RISING EDGE for wakeup detection. */
     SCB_STARTAPRP0 |= SCB_STARTAPRP0_APRPIO0_1;
@@ -272,7 +266,10 @@ void pmuDeepSleep(uint32_t sleepCtrl, uint32_t wakeupSeconds)
 
     /* Enable Port 0.1 as wakeup source. */
     SCB_STARTERP0 |= SCB_STARTERP0_ERPIO0_1;
-  
+
+    // Reconfigure clock to run from WDTOSC
+    pmuWDTClockInit();
+	
     /* Start the timer */
     TMR_TMR32B0TCR = TMR_TMR32B0TCR_COUNTERENABLE_ENABLED;
   }
@@ -323,6 +320,9 @@ void pmuPowerDown( void )
 {
   uint32_t regVal;
 
+  // Make sure HW and external devices are in low power mode
+  pmuSetupHW();
+
   if ( (PMU_PMUCTRL & ((0x1<<8) | (PMU_PMUCTRL_DPDFLAG))) != 0x0 )
   {
     /* Check sleep and deep power down bits. If sleep and/or
@@ -352,3 +352,63 @@ void pmuPowerDown( void )
   }
   return;
 }
+
+/**************************************************************************/
+/*! 
+    @brief  Configures parts and system peripherals to use lower power
+            before entering sleep mode
+*/
+/**************************************************************************/
+void pmuSetupHW(void)
+{
+  #ifdef CFG_CHIBI
+    chb_sleep(TRUE);
+  #endif
+
+  #ifdef CFG_SDCARD
+    // Turn off SD card
+    gpioSetDir( CFG_SDCARD_ENPORT, CFG_SDCARD_ENPIN, gpioDirection_Output );
+    gpioSetValue( CFG_SDCARD_ENPORT, CFG_SDCARD_ENPIN, 0 );
+    gpioSetDir(CFG_SDCARD_CDPORT, CFG_SDCARD_CDPIN, gpioDirection_Output);
+    gpioSetValue(CFG_SDCARD_CDPORT, CFG_SDCARD_CDPIN, 0);
+    // Set SSP1 pins to GPIO and output since the SD card can
+    // draw current from these pins (saves 500-700uA when card inserted)
+    IOCON_PIO2_0 = IOCON_PIO2_0_FUNC_GPIO;
+    IOCON_PIO2_1 = IOCON_PIO2_1_FUNC_GPIO;
+    IOCON_PIO2_2 = IOCON_PIO2_2_FUNC_GPIO;
+    IOCON_PIO2_3 = IOCON_PIO2_3_FUNC_GPIO;
+    gpioSetDir(2, 0, gpioDirection_Output);
+    gpioSetValue(2, 0, 0);
+    gpioSetDir(2, 1, gpioDirection_Output);
+    gpioSetValue(2, 1, 0);
+    gpioSetDir(2, 2, gpioDirection_Output);
+    gpioSetValue(2, 2, 0);
+    gpioSetDir(2, 3, gpioDirection_Output);
+    gpioSetValue(2, 3, 0);
+  #endif
+
+  #ifdef CFG_BAT
+    // Make sure that the battery voltage divider is turned off
+    gpioSetValue(CFG_BAT_ENPORT, CFG_BAT_ENPIN, 0 );
+  #endif
+}
+
+/**************************************************************************/
+/*! 
+    @brief  Restores parts and system peripherals to an appropriate
+            state after waking up from deep-sleep mode
+*/
+/**************************************************************************/
+void pmuRestoreHW(void)
+{
+  #ifdef CFG_CHIBI
+    // ToDo: Reinitialise Chibi after wakeup?
+  #endif
+
+  #ifdef CFG_SDCARD
+    // ToDo: Reconfigure FATFS
+    // At present, the first read attempt will throw a no disk error,
+    // but the second will pass
+  #endif
+}
+

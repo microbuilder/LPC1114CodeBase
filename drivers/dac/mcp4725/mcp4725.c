@@ -70,7 +70,7 @@ static bool _mcp4725Initialised = false;
 int mcp4725Init()
 {
   // Initialise I2C
-  if (i2cInit(I2CMODE_MASTER) == false)
+  if (i2cInit(I2CMASTER) == false)
   {
     /* Fatal error */
     return -1;

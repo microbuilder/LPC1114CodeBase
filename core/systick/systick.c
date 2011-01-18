@@ -68,7 +68,7 @@
   volatile uint32_t fatTicks = 0;
 #endif
 
-volatile uint32_t systickTicks;             //  systick tick counter
+volatile uint32_t systickTicks;
 
 /**************************************************************************/
 /*! 

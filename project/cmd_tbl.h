@@ -98,7 +98,7 @@ cmd_t cmd_tbl[] =
   #endif
 
   #ifdef CFG_LM75B
-  { "lm75b-read",     0,  0,  0,  cmd_lm75b_gettemp     , "Gets the current temperature in degrees celsius"     , "'lm75b-read' has no parameters" },
+  { "temp",           0,  0,  0,  cmd_lm75b_gettemp     , "Gets the current temperature in degrees celsius"     , "'lm75b-read' has no parameters" },
   #endif
 
   #ifdef CFG_SDCARD

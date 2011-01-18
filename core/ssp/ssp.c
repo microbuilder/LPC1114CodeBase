@@ -208,7 +208,7 @@ void sspInit (uint8_t portNum, sspClockPolarity_t polarity, sspClockPhase_t phas
     gpioSetValue(SSP0_CSPORT, SSP0_CSPIN, 1);
     gpioSetPullup(&IOCON_PIO0_2, gpioPullupMode_Inactive);  // Board has external pull-up
   
-    /* (PCLK / (CPSDVSR × [SCR+1])) = (12000000 / (2 x [8 + 1])) = 0.66 MHz */
+    /* (PCLK / (CPSDVSR × [SCR+1])) = (36000000 / (2 x [8 + 1])) = 2.00 MHz */
     uint32_t configReg = ( SSP_SSP0CR0_DSS_8BIT    // Data size = 8-bit
                   | SSP_SSP0CR0_FRF_SPI       // Frame format = SPI
                   | SSP_SSP0CR0_SCR_8);       // Serial clock rate = 8
@@ -281,7 +281,7 @@ void sspInit (uint8_t portNum, sspClockPolarity_t polarity, sspClockPhase_t phas
     gpioSetValue(SSP1_CSPORT, SSP1_CSPIN, 1);
     gpioSetPullup(&IOCON_PIO2_0, gpioPullupMode_Inactive);  // Board has external pull-up
   
-    /* (PCLK / (CPSDVSR × [SCR+1])) = (7,200,000 / (2 x [8 + 1])) = 0.4 MHz */
+    /* (PCLK / (CPSDVSR × [SCR+1])) = (36,000,000 / (2 x [8 + 1])) = 2.0 MHz */
     uint32_t configReg = ( SSP_SSP1CR0_DSS_8BIT    // Data size = 8-bit
                   | SSP_SSP1CR0_FRF_SPI       // Frame format = SPI
                   | SSP_SSP1CR0_SCR_8);       // Serial clock rate = 8

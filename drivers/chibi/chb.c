@@ -40,8 +40,10 @@
 
 static chb_pcb_t pcb;
 // these are for the duplicate checking and rejection
-static U8 prev_seq = 0xFF;
-static U16 prev_src_addr = 0xFFFE;
+#ifdef CFG_CHIBI
+  static U8 prev_seq = 0xFF;
+  static U16 prev_src_addr = 0xFFFE;
+#endif
 
 /**************************************************************************/
 /*!
@@ -200,6 +202,11 @@ U8 chb_read(chb_rx_data_t *rx)
         pcb.data_rcv = false;
     }
 
+#if (CFG_CHIBI_PROMISCUOUS == 1)
+    // if we're in promiscuous mode, we don't want to do any duplicate rejection and we don't want to move the payload
+    // to the front of the buffer. We want to capture the full frame so just keep the frame intact and return the length.
+    return len;
+#else
     // duplicate frame check (dupe check). we want to remove frames that have been already been received since they 
     // are just retries. 
     // note: this dupe check only removes duplicate frames from the previous transfer. if another frame from a different
@@ -220,5 +227,6 @@ U8 chb_read(chb_rx_data_t *rx)
     memmove(rx->data, data_ptr, len - CHB_HDR_SZ);
     // finally, return the len of the payload
     return len - CHB_HDR_SZ - CHB_FCS_LEN;
+#endif
 }
 

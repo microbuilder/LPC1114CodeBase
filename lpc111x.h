@@ -4,7 +4,7 @@
     @author   K. Townsend (microBuilder.eu)
     @version  1.0
 
-    LPC1114 header file, based on V0.10 of the LPC1114 User Manual.
+    LPC1114 header file
 
     @section LICENSE
 
@@ -1260,7 +1260,7 @@
 
 #define IOCON_PIO2_3                              (*(pREG32 (0x4004408C)))
 #define IOCON_PIO2_3_FUNC_MASK                    ((unsigned int) 0x00000007)
-#define IOCON_PIO2_3_FUNC_GPIO_MOSI1              ((unsigned int) 0x00000000)
+#define IOCON_PIO2_3_FUNC_GPIO                    ((unsigned int) 0x00000000)
 #define IOCON_PIO2_3_FUNC_RI                      ((unsigned int) 0x00000001)
 #define IOCON_PIO2_3_FUNC_MOSI1                   ((unsigned int) 0x00000002)
 #define IOCON_PIO2_3_MODE_MASK                    ((unsigned int) 0x00000018)
@@ -1441,7 +1441,7 @@
 #define IOCON_PIO3_5_HYS_DISABLE                  ((unsigned int) 0x00000000)
 #define IOCON_PIO3_5_HYS_ENABLE                   ((unsigned int) 0x00000020)
 
-#define IOCON_SCKLOC                              (*(pREG32 (0x400440B0))) // (*(pREG32 (0x40044110)))
+#define IOCON_SCKLOC                              (*(pREG32 (0x400440B0)))    // (*(pREG32 (0x40044110)))
 #define IOCON_SCKLOC_SCKPIN_PIO0_10               ((unsigned int) 0x00000000) // Set SCK function to pin 0.10
 #define IOCON_SCKLOC_SCKPIN_PIO2_11               ((unsigned int) 0x00000001) // Set SCK function to pin 2.11
 #define IOCON_SCKLOC_SCKPIN_PIO0_6                ((unsigned int) 0x00000003) // Set SCK function to pin 0.6
@@ -1465,8 +1465,6 @@
 /*##############################################################################
 ## Nested Vectored Interrupt Controller
 ##############################################################################*/
-
-/* Interrupts are handled by CMSIS code */
 
 #define NVIC_BASE_ADDRESS                         (0xE000E100)
 

@@ -41,11 +41,9 @@
 #include "projectconfig.h"
 #include "core/cmd/cmd.h"
 #include "commands.h"
+
 #include "core/pmu/pmu.h"
 
-#ifdef CFG_CHIBI
-  #include "drivers/chibi/chb_drvr.h"
-#endif
 
 /**************************************************************************/
 /*! 
@@ -54,14 +52,8 @@
 /**************************************************************************/
 void cmd_deepsleep(uint8_t argc, char **argv)
 {
-  printf("Entering Deep Sleep mode%s", CFG_PRINTF_NEWLINE);
-
-  #ifdef CFG_CHIBI
-  if (chb_radio_sleep() == 1)
-  {
-    printf("Unable to put RF transceiver into sleep mode%s", CFG_PRINTF_NEWLINE);
-  }
-  #endif
+  // ToDo: Some peripherals may need to be manually disabled for the
+  // lowest possible power consumption in deep sleep mode
 
   // Put peripherals into sleep mode
   uint32_t pmuRegVal;
@@ -80,6 +72,7 @@ void cmd_deepsleep(uint8_t argc, char **argv)
   // Note that the exact delay is variable since the internal WDT oscillator
   // is used for lowest possible power consumption and because it requires
   // no external components, but it only has +-/40% accuracy
+  printf("Entering Deep Sleep mode for 10 seconds%s", CFG_PRINTF_NEWLINE);
   pmuDeepSleep(pmuRegVal, 10);
 
   // On wakeup, the WAKEUP interrupt will be fired, which is handled

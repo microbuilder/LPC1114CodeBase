@@ -73,7 +73,7 @@ static void FCLK_SLOW()
                   | SSP_SSP1CR0_SCR_8);           // Serial clock rate = 8
 
     // Set clock polarity (low between frames)
-    // configReg &= ~SSP_SSP1CR0_CPOL_MASK;    
+    // configReg &= ~SSP_SSP1CR0_CPOL_MASK;
     // configReg |= SSP_SSP1CR0_CPOL_LOW;
 
     // Set edge transition (leading edge)
@@ -97,13 +97,13 @@ static void FCLK_FAST()
     /* Divide by 1 (SSPCLKDIV also enables to SSP CLK) */
     SCB_SSP1CLKDIV = SCB_SSP1CLKDIV_DIV1;
   
-    /* (PCLK / (CPSDVSR × [SCR+1])) = (36,000,000 / (2 x [1 + 1])) = 9.0 MHz */
+    /* (PCLK / (CPSDVSR * [SCR+1])) = (36,000,000 / (2 x [8 + 1])) = 2.0 MHz */
     uint32_t configReg = ( SSP_SSP1CR0_DSS_8BIT   // Data size = 8-bit
                   | SSP_SSP1CR0_FRF_SPI           // Frame format = SPI
-                  | SSP_SSP1CR0_SCR_1);           // Serial clock rate = 1
+                  | SSP_SSP1CR0_SCR_8);           // Serial clock rate = 8
   
     // Set clock polarity (low between frames)
-    // configReg &= ~SSP_SSP1CR0_CPOL_MASK;    
+    // configReg &= ~SSP_SSP1CR0_CPOL_MASK;
     // configReg |= SSP_SSP1CR0_CPOL_LOW;
 
     // Set edge transition (leading edge)
@@ -212,20 +212,19 @@ BOOL select (void)	/* TRUE:Successful, FALSE:Timeout */
 static
 void power_on (void)
 {
-  gpioSetValue( CFG_SDCARD_ENPORT, CFG_SDCARD_ENPIN, 0 ); /* Enable card by setting ENPIN low */
+  gpioSetValue( CFG_SDCARD_ENPORT, CFG_SDCARD_ENPIN, 1 ); /* Enable card by setting ENPIN high */
 }
 
 static
 void power_off (void)
 {
-  gpioSetValue( CFG_SDCARD_ENPORT, CFG_SDCARD_ENPIN, 1 ); /* Disable card by setting ENPIN high */
+  gpioSetValue( CFG_SDCARD_ENPORT, CFG_SDCARD_ENPIN, 0 ); /* Disable card by setting ENPIN low */
 }
 
 static
 int chk_power(void)		/* Socket power state: 0=off, 1=on */
 {
-  uint32_t value = gpioGetValue( CFG_SDCARD_ENPORT, CFG_SDCARD_ENPIN );
-  return value == 0 ? 1 : 0;
+  return gpioGetValue( CFG_SDCARD_ENPORT, CFG_SDCARD_ENPIN );
 }
 
 
@@ -366,15 +365,15 @@ DSTATUS disk_initialize (
         sspInit(1, sspClockPolarity_Low, sspClockPhase_RisingEdge);
 
         // SSEL
-        gpioSetDir( SSP1_CSPORT, SSP1_CSPIN, 1 ); /* CS */
+        gpioSetDir( SSP1_CSPORT, SSP1_CSPIN, gpioDirection_Output ); /* CS */
 
         // Card Detect
-        gpioSetDir( CFG_SDCARD_CDPORT, CFG_SDCARD_CDPIN, 0 ); /* Card Detect */
+        gpioSetDir( CFG_SDCARD_CDPORT, CFG_SDCARD_CDPIN, gpioDirection_Input ); /* Card Detect */
 
         // SD Enable (Power)
         gpioSetDir( CFG_SDCARD_ENPORT, CFG_SDCARD_ENPIN, gpioDirection_Output ); /* SD Enable Pin */
-        gpioSetValue( CFG_SDCARD_ENPORT, CFG_SDCARD_ENPIN, 1 ); /* Disable card (by setting ENPIN high, turned on below) */
         gpioSetPullup( &IOCON_PIO2_5, gpioPullupMode_Inactive );  /* Disable internal pullup */
+        power_off(); /* Disable card (by setting ENPIN high, turned on below) */
 
 	if (drv) return STA_NOINIT;			/* Supports only single drive */
 	if (Stat & STA_NODISK) return Stat;	/* No card in the socket */
@@ -656,35 +655,35 @@ DRESULT disk_ioctl (
 
 void disk_timerproc (void)
 {
-  // static BYTE pv;
+  static BYTE pv;
   BYTE n;
-  // BYTE s;
+  BYTE s;
 
   n = Timer1;						/* 100Hz decrement timer */
   if (n) Timer1 = --n;
   n = Timer2;
   if (n) Timer2 = --n;
 
-  //  n = pv;
-  //  pv = 0;
-  //  // pv = SOCKPORT & (SOCKWP | SOCKINS);	/* Sample socket switch */
-  //  pv = gpioGetValue(CFG_SDCARD_CDPORT, CFG_SDCARD_CDPIN);
-  //  
-  //  /* Have contacts stabled? */
-  //  if (n == pv) 
-  //  {
-  //    s = Stat;
-  //    
-  //    /* write protect NOT supported */
-  //    
-  //    /* check card detect */
-  //    if (!pv)			       /* (Socket empty) */
-  //            s |= (STA_NODISK | STA_NOINIT);
-  //    else				       /* (Card inserted) */
-  //            s &= ~STA_NODISK;
-  //    
-  //    Stat = s;
-  //  }
+  n = pv;
+  pv = 0;
+  /* Sample card detect pin */
+  pv = gpioGetValue(CFG_SDCARD_CDPORT, CFG_SDCARD_CDPIN);
+    
+  /* Have contacts stabled? */
+  if (n == pv) 
+  {
+    s = Stat;
+      
+    /* write protect NOT supported */
+      
+    /* check card detect */
+    if (!pv)                            /* (Socket empty) */
+      s |= (STA_NODISK | STA_NOINIT);
+    else				/* (Card inserted) */
+      s &= ~STA_NODISK;
+    
+    Stat = s;
+  }
 }
 
 
