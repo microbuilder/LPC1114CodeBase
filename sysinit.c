@@ -131,6 +131,7 @@ void systemInit()
     st7565Backlight(1);     // Enable the backlight
   #endif
 
+  // Initialise the SSD1306 OLED display
   #ifdef CFG_SSD1306
     ssd1306Init(SSD1306_SWITCHCAPVCC);
     ssd1306ClearScreen();   // Clear the screen  
@@ -151,27 +152,11 @@ void systemInit()
     chb_init();
   #endif
 
-  // Initialise SD Card
-  // Normaly this should be handled on demand later, but you may wish to
-  // initialise the SD card here in some situations
+  // Setup SD Card
   #ifdef CFG_SDCARD
     // Turn off SD card by default (saves power)
     gpioSetDir( CFG_SDCARD_ENPORT, CFG_SDCARD_ENPIN, gpioDirection_Output ); /* Set enable pin to output */
     gpioSetValue( CFG_SDCARD_ENPORT, CFG_SDCARD_ENPIN, 0 ); /* Disable card by setting ENPIN low */
-    // DSTATUS stat;
-    // stat = disk_initialize(0);
-    // if (stat & STA_NOINIT) 
-    // {
-    //  // Not initialised
-    // }
-    // if (stat & STA_NODISK) 
-    // {
-    //  // No disk
-    // }
-    // if (stat == 0)
-    // {
-    //  // SD card sucessfully initialised
-    // }
   #endif
 
   #ifdef CFG_LM75B
@@ -187,7 +172,7 @@ void systemInit()
 
   // Start the command line interface (if requested)
   #ifdef CFG_INTERFACE
-    printf("%sType 'help' for a list of available commands%s", CFG_PRINTF_NEWLINE, CFG_PRINTF_NEWLINE);
+    printf("%sType '?' for a list of available commands%s", CFG_PRINTF_NEWLINE, CFG_PRINTF_NEWLINE);
     cmdInit();
   #endif
 }

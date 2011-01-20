@@ -47,7 +47,6 @@
 
 // Function prototypes for the command table
 void cmd_help(uint8_t argc, char **argv);         // handled by core/cmd/cmd.c
-void cmd_hello(uint8_t argc, char **argv);
 void cmd_sysinfo(uint8_t argc, char **argv);
 
 #ifdef CFG_CHIBI
@@ -82,30 +81,29 @@ void cmd_deepsleep(uint8_t argc, char **argv);
 /**************************************************************************/
 cmd_t cmd_tbl[] = 
 {
-  // command name, min args, max args, hidden, function name, command description, syntax description
-  { "help",           0,  0,  0,  cmd_help              , "Displays a list of all available commands"           , "'help' has no parameters" },
-  { "hello",          0,  1,  0,  cmd_hello             , "Displays \'Hello World!\'"                           , "'hello [<name>]'" },
-  { "sysinfo",        0,  0,  0,  cmd_sysinfo           , "Displays current system configuration settings"      , "'sysinfo' has no parameters" },
+  // command name, min args, max args, hidden, function name, command description, syntax
+  { "?",    0,  0,  0, cmd_help              , "Help"                           , "'?' has no parameters" },
+  { "V",    0,  0,  0, cmd_sysinfo           , "System Info"                    , "'V' has no parameters" },
 
   #ifdef CFG_CHIBI
-  { "chb-addr",       0,  1,  0,  cmd_chibi_addr        , "Chibi - Gets/sets the 16-bit node address"           , "'chb-addr [<1-65534>|<OxFFFE>]'" },
-  { "chb-send",       2, 99,  0,  cmd_chibi_tx          , "Chibi - Transmits the supplied text/value"           , "'chb-send <destaddr> <message>'" },
+  { "A",    0,  1,  0, cmd_chibi_addr        , "Get/Set node address"           , "'A [<1-65534>|<OxFFFE>]'" },
+  { "S",    2, 99,  0, cmd_chibi_tx          , "Send msg to node(s)"            , "'S <destaddr> <msg>'" },
   #endif
 
   #ifdef CFG_I2CEEPROM
-  { "eeprom-read",    1,  1,  0,  cmd_i2ceeprom_read    , "Reads one byte from the specified EEPROM address"    , "'eeprom-read <addr>'" },
-  { "eeprom-write",   2,  2,  0,  cmd_i2ceeprom_write   , "Writes one byte to the specified EEPROM address"     , "'eeprom-write <addr> <value>'" },
+  { "e",    1,  1,  0, cmd_i2ceeprom_read    , "EEPROM Read"                    , "'e <addr>'" },
+  { "w",    2,  2,  0, cmd_i2ceeprom_write   , "EEPROM Write"                   , "'w <addr> <val>'" },
   #endif
 
   #ifdef CFG_LM75B
-  { "temp",           0,  0,  0,  cmd_lm75b_gettemp     , "Gets the current temperature in degrees celsius"     , "'lm75b-read' has no parameters" },
+  { "m",    0,  0,  0, cmd_lm75b_gettemp     , "Temperature (Celsius)"          , "'m' has no parameters" },
   #endif
 
   #ifdef CFG_SDCARD
-  { "sd-dir",         0,  1,  0,  cmd_sd_dir            , "List all files in the specified directory"           , "'sd-dir [<path>]'" },
+  { "d",    0,  1,  0,  cmd_sd_dir           , "Dir (SD Card)"                  , "'d [<path>]'" },
   #endif
 
-  { "sleep",          0,  0,  0,  cmd_deepsleep         , "Put the device into deep sleep for ~10 seconds"      , "'sleep' has no parameters" },
+  { "z",    0,  0,  0,  cmd_deepsleep        , "Deep sleep for ~10 seconds"     , "'z' has no parameters" },
 };
 
 #endif

@@ -68,7 +68,8 @@
   volatile uint32_t fatTicks = 0;
 #endif
 
-volatile uint32_t systickTicks;
+volatile uint32_t systickTicks = 0;
+volatile uint32_t systickRollovers = 0;
 
 /**************************************************************************/
 /*! 
@@ -78,6 +79,9 @@ volatile uint32_t systickTicks;
 void SysTick_Handler (void)
 {
   systickTicks++;
+
+  // Increment rollover counter
+  if (systickTicks == 0xFFFFFFFF) systickRollovers++;
 
   #ifdef CFG_SDCARD
   fatTicks++;
@@ -176,4 +180,16 @@ void systickDelay (uint32_t delayTicks)
 uint32_t systickGetTicks(void)
 {
   return systickTicks;
+}
+
+/**************************************************************************/
+/*! 
+    @brief      Returns the current value of the systick timer rollover 
+                counter. This value is incremented by one every time the
+                tick counter rolls over from 0xFFFFFFFF to 0.
+*/
+/**************************************************************************/
+uint32_t systickGetRollovers(void)
+{
+  return systickRollovers;
 }

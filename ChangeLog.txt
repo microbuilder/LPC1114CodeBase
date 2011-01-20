@@ -1,13 +1,22 @@
 v0.60 - Ongoing
 ===============
 
+- Added rollover counter to the systick timer
+- Updated schematic for wireless board in
+  tools/schematics (v1.6 which is the final
+  production version).  This schematic shows
+  the expected layout for peripherals like the
+  SD card and battery voltage divider.
+- Reduced command names in cmd_tbl.h to save
+  some flash space, and reduced text in various
+  commands (saves ~0.3kb)
 - Added the battery/supply voltage to the 'sysinfo'
   command (only applies to LPC1114 wireless board)
 - Made a number of changes for deep-sleep mode to
   reduce power consumption (pmu.c updated, including
   a bug fix that prevented the code from exiting
   deep sleep twice from SW).
-- Added experimental driver for SSD1306-based 128x64
+- Added basic driver for SSD1306-based 128x64
   OLED displays (courtesy Adafruit Industries who have
   a convenient breakout board for these displays).
 - Added 'chb_libpcap' to log raw 802.15.4 frames

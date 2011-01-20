@@ -40,10 +40,8 @@
 
 static chb_pcb_t pcb;
 // these are for the duplicate checking and rejection
-#ifdef CFG_CHIBI
-  static U8 prev_seq = 0xFF;
-  static U16 prev_src_addr = 0xFFFE;
-#endif
+static U8 prev_seq = 0xFF;
+static U16 prev_src_addr = 0xFFFE;
 
 /**************************************************************************/
 /*!

@@ -65,7 +65,7 @@ void cmd_chibi_tx(uint8_t argc, char **argv)
   // Check for invalid values (getNumber may complain about this as well)
   if (addr32 <= 0 || addr32 > 0xFFFF)
   {
-    printf("Invalid Address: Value from 1-65534 or 0x0001-0xFFFE required.%s", CFG_PRINTF_NEWLINE);
+    printf("Invalid Address: 1-65534 or 0x0001-0xFFFE required.%s", CFG_PRINTF_NEWLINE);
     return;
   }
 
@@ -84,7 +84,9 @@ void cmd_chibi_tx(uint8_t argc, char **argv)
   *data_ptr++ = '\0';
 
   // Send message
+  gpioSetValue(CFG_LED_PORT, CFG_LED_PIN, CFG_LED_ON);
   chb_write(addr, data, data_ptr - data);
+  gpioSetValue(CFG_LED_PORT, CFG_LED_PIN, CFG_LED_OFF);
 }
 
 #endif

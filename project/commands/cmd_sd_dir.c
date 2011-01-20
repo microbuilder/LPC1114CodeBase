@@ -73,11 +73,11 @@ void cmd_sd_dir(uint8_t argc, char **argv)
   stat = disk_initialize(0);
   if (stat & STA_NOINIT) 
   {
-    printf("Unable to initialise the SD card%s", CFG_PRINTF_NEWLINE);
+    printf("SD init failed%s", CFG_PRINTF_NEWLINE);
   }
   if (stat & STA_NODISK) 
   {
-    printf("NO SD card present%s", CFG_PRINTF_NEWLINE);
+    printf("NO SD card%s", CFG_PRINTF_NEWLINE);
   }
   if (stat == 0)
   {
@@ -88,7 +88,7 @@ void cmd_sd_dir(uint8_t argc, char **argv)
     res = f_mount(0, &Fatfs[0]);
     if (res != FR_OK) 
     {
-      printf("Failed to mount the primary partition%s" , CFG_PRINTF_NEWLINE);
+      printf("Failed to mount partition%s" , CFG_PRINTF_NEWLINE);
     }
     if (res == FR_OK)
     {
@@ -100,7 +100,7 @@ void cmd_sd_dir(uint8_t argc, char **argv)
       }
 
       // Display directory name
-      printf("%s Directory contents of %s %s%s", CFG_PRINTF_NEWLINE, path, CFG_PRINTF_NEWLINE, CFG_PRINTF_NEWLINE);
+      printf("%s Contents of '%s' %s%s", CFG_PRINTF_NEWLINE, path, CFG_PRINTF_NEWLINE, CFG_PRINTF_NEWLINE);
       printf("       %-25s %12s %s", "Filename", "Size", CFG_PRINTF_NEWLINE);
       printf("       %-25s %12s %s", "--------", "----", CFG_PRINTF_NEWLINE);
 
@@ -123,7 +123,7 @@ void cmd_sd_dir(uint8_t argc, char **argv)
 
       // Display folder size
       printf("%s", CFG_PRINTF_NEWLINE);
-      printf("       %-25s %12d KB %s", "Total Folder Size: ", (int)(folderBytes / 1024), CFG_PRINTF_NEWLINE);
+      printf("       %-25s %12d KB %s", "Folder Size: ", (int)(folderBytes / 1024), CFG_PRINTF_NEWLINE);
 
       // Get free disk space (only available if FATFS was compiled with _FS_MINIMIZE set to 0)
       #if _FS_MINIMIZE == 0 && _FS_READONLY == 0
@@ -134,8 +134,8 @@ void cmd_sd_dir(uint8_t argc, char **argv)
         res = f_getfree("0:", &clust, &fs);
     
         // Display total and free space
-        printf("       %-25s %12d KB %s", "Total Disk Size: ", (int)((DWORD)(fs->max_clust - 2) * fs->csize / 2), CFG_PRINTF_NEWLINE);
-        printf("       %-25s %12d KB %s", "Total Space Available: ", (int)(clust * fs->csize / 2), CFG_PRINTF_NEWLINE);
+        printf("       %-25s %12d KB %s", "Disk Size: ", (int)((DWORD)(fs->max_clust - 2) * fs->csize / 2), CFG_PRINTF_NEWLINE);
+        printf("       %-25s %12d KB %s", "Space Available: ", (int)(clust * fs->csize / 2), CFG_PRINTF_NEWLINE);
       #endif
     }
   }

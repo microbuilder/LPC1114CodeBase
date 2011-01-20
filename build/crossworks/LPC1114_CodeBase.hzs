@@ -17,6 +17,8 @@
  </Memory4>
  <Project>
   <ProjectSessionItem path="LPC1114_CodeBase" name="unnamed" />
+  <ProjectSessionItem path="LPC1114_CodeBase;LPC1114_CodeBase" name="unnamed" />
+  <ProjectSessionItem path="LPC1114_CodeBase;LPC1114_CodeBase;Source Files" name="unnamed" />
  </Project>
  <Register1>
   <RegisterWindow openNodes="CT16B1/TMR16B1PWMC;GPIO2" binaryNodes="GPIO1/GPIO1DATA" hiddenNodes="" unsignedNodes="" visibleGroups="GPIO2;CT16B1;GPIO1" decimalNodes="" octalNodes="" asciiNodes="" />
@@ -36,10 +38,10 @@
  </TraceWindow>
  <Watch1>
   <Watches active="1" update="Each Second" >
-   <Watchpoint linenumber="66" radix="10" name="msTicks" expression="msTicks" filename="c:/documents and settings/kevin/my documents/my dropbox/microbuilder/code/lpc1114/lpc1114_codebase/core/systick/systick.c" />
-   <Watchpoint linenumber="72" radix="16" name="UARTBuffer" expression="UARTBuffer" filename="c:/users/kevin/documents/my dropbox/microbuilder/code/lpc1114/lpc1114_codebase/core/uart/uart.c" />
-   <Watchpoint linenumber="80" radix="10" name="stepperPosition" expression="stepperPosition" filename="c:/users/kevin/documents/my dropbox/microbuilder/code/lpc1114/lpc1114_codebase/drivers/motor/stepper/stepper.c" />
    <Watchpoint linenumber="81" radix="10" name="stepperStepNumber" expression="stepperStepNumber" filename="c:/users/kevin/documents/my dropbox/microbuilder/code/lpc1114/lpc1114_codebase/drivers/motor/stepper/stepper.c" />
+   <Watchpoint linenumber="80" radix="10" name="stepperPosition" expression="stepperPosition" filename="c:/users/kevin/documents/my dropbox/microbuilder/code/lpc1114/lpc1114_codebase/drivers/motor/stepper/stepper.c" />
+   <Watchpoint linenumber="72" radix="16" name="UARTBuffer" expression="UARTBuffer" filename="c:/users/kevin/documents/my dropbox/microbuilder/code/lpc1114/lpc1114_codebase/core/uart/uart.c" />
+   <Watchpoint linenumber="66" radix="10" name="msTicks" expression="msTicks" filename="c:/documents and settings/kevin/my documents/my dropbox/microbuilder/code/lpc1114/lpc1114_codebase/core/systick/systick.c" />
   </Watches>
  </Watch1>
  <Watch2>
@@ -51,6 +53,8 @@
  <Watch4>
   <Watches active="0" update="Never" />
  </Watch4>
- <Files/>
+ <Files>
+  <SessionOpenFile useTextEdit="1" useBinaryEdit="0" codecName="Latin1" x="27" debugPath="C:\Users\Kevin\Documents\My Dropbox\microBuilder\Code\LPC1114\LPC1114_CodeBase\main.c" y="88" path="C:\Users\Kevin\Documents\My Dropbox\microBuilder\Code\LPC1114\LPC1114_CodeBase\main.c" left="0" selected="1" name="unnamed" top="63" />
+ </Files>
  <ARMCrossStudioWindow activeProject="LPC1114_CodeBase" autoConnectTarget="Segger J-Link" debugSearchFileMap="" fileDialogInitialDirectory="C:\Users\Kevin\Documents\My Dropbox\microBuilder\Code\LPC1114\LPC1114_CodeBase\drivers\lcd\bitmap\ssd1306" fileDialogDefaultFilter="*.c" autoConnectCapabilities="388991" debugSearchPath="" buildConfiguration="THUMB Flash Release" />
 </session>

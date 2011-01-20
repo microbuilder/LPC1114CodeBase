@@ -577,7 +577,7 @@ U8 chb_set_state(U8 state)
 /**************************************************************************/
 void chb_set_ieee_addr(U8 *addr)
 {
-    chb_eeprom_write(CHB_EEPROM_IEEE_ADDR, addr, 8); 
+    chb_eeprom_write(CFG_EEPROM_CHIBI_IEEEADDR, addr, 8); 
     chb_reg_write64(IEEE_ADDR_0, addr); 
 }
 
@@ -588,7 +588,7 @@ void chb_set_ieee_addr(U8 *addr)
 /**************************************************************************/
 void chb_get_ieee_addr(U8 *addr)
 {
-    chb_eeprom_read(CHB_EEPROM_IEEE_ADDR, addr, 8);
+    chb_eeprom_read(CFG_EEPROM_CHIBI_IEEEADDR, addr, 8);
 }
 
 /**************************************************************************/
@@ -601,7 +601,7 @@ void chb_set_short_addr(U16 addr)
     U8 *addr_ptr = (U8 *)&addr;
     chb_pcb_t *pcb = chb_get_pcb();
 
-    chb_eeprom_write(CHB_EEPROM_SHORT_ADDR, addr_ptr, 2);
+    chb_eeprom_write(CFG_EEPROM_CHIBI_SHORTADDR, addr_ptr, 2);
     chb_reg_write16(SHORT_ADDR_0, addr);
     pcb->src_addr = addr;
 }
@@ -615,7 +615,7 @@ U16 chb_get_short_addr()
 {
     int16_t addr;
 
-    chb_eeprom_read(CHB_EEPROM_SHORT_ADDR, (uint8_t*)&addr, 2);
+    chb_eeprom_read(CFG_EEPROM_CHIBI_SHORTADDR, (uint8_t*)&addr, 2);
     return addr;	
 }
 /**************************************************************************/

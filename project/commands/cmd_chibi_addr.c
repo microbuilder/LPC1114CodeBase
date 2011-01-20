@@ -65,12 +65,12 @@ void cmd_chibi_addr(uint8_t argc, char **argv)
     // Check for invalid values (getNumber may complain about this as well)
     if (addr <= 0 || addr > 0xFFFF)
     {
-      printf("Invalid Address: Value from 1-65534 or 0x0001-0xFFFE required.%s", CFG_PRINTF_NEWLINE);
+      printf("Invalid Address: 1-65534 or 0x0001-0xFFFE required.%s", CFG_PRINTF_NEWLINE);
       return;
     }
     if (addr == 0xFFFF)
     {
-      printf("Invalid Address: 0xFFFF is reserved for global transmissions.%s", CFG_PRINTF_NEWLINE);
+      printf("Invalid Address: 0xFFFF  reserved for broadcast.%s", CFG_PRINTF_NEWLINE);
       return;
     }
 

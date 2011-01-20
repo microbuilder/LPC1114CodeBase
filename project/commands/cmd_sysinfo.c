@@ -61,50 +61,67 @@
 /**************************************************************************/
 void cmd_sysinfo(uint8_t argc, char **argv)
 {
-  printf("%-30s : %d.%d MHz %s", "System Clock", CFG_CPU_CCLK / 1000000, CFG_CPU_CCLK % 1000000, CFG_PRINTF_NEWLINE);
-  printf("%-30s : %d ms %s", "Systick Timer", CFG_SYSTICK_DELAY_IN_MS, CFG_PRINTF_NEWLINE);
-  printf("%-30s : %d %s", "Systick Counter", (int)systickGetTicks(), CFG_PRINTF_NEWLINE);
-  printf("%-30s : v%d.%d.%d %s", "Firmware", CFG_FIRMWARE_VERSION_MAJOR, CFG_FIRMWARE_VERSION_MINOR, CFG_FIRMWARE_VERSION_REVISION, CFG_PRINTF_NEWLINE);
+  printf("%-25s : %d.%d MHz %s", "System Clock", CFG_CPU_CCLK / 1000000, CFG_CPU_CCLK % 1000000, CFG_PRINTF_NEWLINE);
+  printf("%-25s : %d.%d.%d %s", "Firmware", CFG_FIRMWARE_VERSION_MAJOR, CFG_FIRMWARE_VERSION_MINOR, CFG_FIRMWARE_VERSION_REVISION, CFG_PRINTF_NEWLINE);
 
   // Check the battery voltage
-  gpioSetDir(CFG_BAT_ENPORT, CFG_BAT_ENPIN, gpioDirection_Output );   // Set voltage divider enable pin to output
-  gpioSetValue(CFG_BAT_ENPORT, CFG_BAT_ENPIN, 1 );                    // Enable the voltage divider
-  systickDelay(5);
-  // Read ADC several times
-  uint32_t i, c, ctotal;
-  c = ctotal = 0;
-  for (i = 0; i < 5; i++)
-  {
-    c = adcRead(CFG_BAT_ADC);
-    ctotal += c;
-  }
-  // Get average of all readings
-  uint32_t v = ctotal / 5;
-  v = ((v * 1000) / 1024);                 
-  v = (v * 3300) / 1000;                // Value in millivolts relative to supply voltage
-  v = (v * CFG_BAT_MULTIPLIER) / 1000;  // Regular battery voltage in millivolts
-  // Turn the voltage divider back off
-  gpioSetValue(CFG_BAT_ENPORT, CFG_BAT_ENPIN, 1 );
-  printf("%-30s : %d.%d V %s", "Supply Voltage", (int)(v / 1000), (int)(v % 1000), CFG_PRINTF_NEWLINE);
+  #ifdef CFG_BAT
+    gpioSetDir(CFG_BAT_ENPORT, CFG_BAT_ENPIN, gpioDirection_Output );   // Set voltage divider enable pin to output
+    gpioSetValue(CFG_BAT_ENPORT, CFG_BAT_ENPIN, 1 );                    // Enable the voltage divider
+    systickDelay(5);
+    // Read ADC several times
+    uint32_t i, c, ctotal;
+    c = ctotal = 0;
+    for (i = 0; i < 5; i++)
+    {
+      c = adcRead(CFG_BAT_ADC);
+      ctotal += c;
+    }
+    // Get average of all readings
+    uint32_t v = ctotal / 5;
+    v = ((v * 1000) / 1024);                 
+    v = (v * 3300) / 1000;                // Value in millivolts relative to supply voltage
+    v = (v * CFG_BAT_MULTIPLIER) / 1000;  // Regular battery voltage in millivolts
+    // Turn the voltage divider back off
+    gpioSetValue(CFG_BAT_ENPORT, CFG_BAT_ENPIN, 1 );
+    printf("%-25s : %u.%u V %s", "Supply Voltage", (unsigned int)(v / 1000), (unsigned int)(v % 1000), CFG_PRINTF_NEWLINE);
+  #endif
 
   // Wireless Settings (if CFG_CHIBI enabled)
   #ifdef CFG_CHIBI
     chb_pcb_t *pcb = chb_get_pcb();
-    printf("%-30s : %s %s", "Wireless", "AT86RF212", CFG_PRINTF_NEWLINE);
-    printf("%-30s : 0x%04X (%d) %s", "802.15.4 PAN ID", CFG_CHIBI_PANID, CFG_CHIBI_PANID, CFG_PRINTF_NEWLINE);
-    printf("%-30s : 0x%04X (%d) %s", "802.15.4 Node Address", pcb->src_addr, pcb->src_addr, CFG_PRINTF_NEWLINE);
-    printf("%-30s : %d %s", "802.15.4 Channel", CFG_CHIBI_CHANNEL, CFG_PRINTF_NEWLINE);
+    printf("%-25s : %s %s", "RF Transceiver", "AT86RF212", CFG_PRINTF_NEWLINE);
+    #if CFG_CHIBI_PROMISCUOUS == 1
+      printf("%-25s : %s %s", "RF Receive Mode", "Promiscuous", CFG_PRINTF_NEWLINE);
+    #else
+      printf("%-25s : %s %s", "RF Receive Mode", "Normal", CFG_PRINTF_NEWLINE);
+    #endif
+    printf("%-25s : 0x%04X (%d) %s", "802.15.4 PAN ID", CFG_CHIBI_PANID, CFG_CHIBI_PANID, CFG_PRINTF_NEWLINE);
+    printf("%-25s : 0x%04X (%d) %s", "802.15.4 Node Address", pcb->src_addr, pcb->src_addr, CFG_PRINTF_NEWLINE);
+    printf("%-25s : %d %s", "802.15.4 Channel", CFG_CHIBI_CHANNEL, CFG_PRINTF_NEWLINE);
   #endif
+
+  // CLI and buffer Settings
+  #ifdef CFG_INTERFACE
+    printf("%-25s : %d bytes %s", "Max CLI Command", CFG_INTERFACE_MAXMSGSIZE, CFG_PRINTF_NEWLINE);
+  #endif
+
+  // System Uptime (based on systick timer)
+  uint32_t currentTick = systickGetTicks();
+  uint32_t rollovers = systickGetRollovers();
+  uint32_t secsActive = currentTick / (1000 / CFG_SYSTICK_DELAY_IN_MS);
+  secsActive += rollovers * (0xFFFFFFFF / (1000 / CFG_SYSTICK_DELAY_IN_MS));
+  printf("%-25s : %u s %s", "System Uptime", (unsigned int)secsActive, CFG_PRINTF_NEWLINE);
 
   // System Temperature (if LM75B Present)
   #ifdef CFG_LM75B
     int32_t temp = 0;
     lm75bGetTemperature(&temp);
     temp *= 125;
-    printf("%-30s : %d.%d C %s", "System Temperature", (int)(temp / 1000), (int)(temp % 1000), CFG_PRINTF_NEWLINE);
+    printf("%-25s : %d.%d C %s", "Temperature", (int)(temp / 1000), (int)(temp % 1000), CFG_PRINTF_NEWLINE);
   #endif
 
-
-
-  // printf("%-30s : %s", "<Property Name>", CFG_PRINTF_NEWLINE);
+  #ifdef CFG_SDCARD
+    printf("%-25s : %s %s", "SD Card Present", gpioGetValue(CFG_SDCARD_CDPORT, CFG_SDCARD_CDPIN) ? "True" : "False", CFG_PRINTF_NEWLINE);
+  #endif
 }

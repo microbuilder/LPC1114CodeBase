@@ -62,13 +62,19 @@ void cmd_i2ceeprom_write(uint8_t argc, char **argv)
   // Check for invalid values (getNumber may complain about this as well)
   if (addr32 < 0 || eepromCheckAddress(addr32))
   {
-    printf("EEPROM Address out of range %s", CFG_PRINTF_NEWLINE);
+    printf("Address out of range %s", CFG_PRINTF_NEWLINE);
     return;
   }
 
   // Address seems to be OK
   addr = (uint16_t)addr32;
 
+  // Make sure this isn't in the reserved system config space
+  if (addr <= CFG_EEPROM_RESERVED)
+  {
+    printf("ERROR: Reserved address (0x%04X-0x%04X)%s", 0, CFG_EEPROM_RESERVED, CFG_PRINTF_NEWLINE);
+    return;
+  }
   // Try to convert supplied data to an integer
   int32_t val32;
   getNumber (argv[1], &val32);
@@ -76,7 +82,7 @@ void cmd_i2ceeprom_write(uint8_t argc, char **argv)
   // Check for invalid values (getNumber may complain about this as well)
   if (val32 < 0 || val32 > 0xFF)
   {
-    printf("Invalid Data: Value from 0-255 or 0x00-0xFF required.%s", CFG_PRINTF_NEWLINE);
+    printf("Invalid Data: 0-255 or 0x00-0xFF required.%s", CFG_PRINTF_NEWLINE);
     return;
   }
 
@@ -87,7 +93,7 @@ void cmd_i2ceeprom_write(uint8_t argc, char **argv)
   eepromWriteU8(addr, val);
 
   // Write successful
-  printf("EEPROM: 0x%02X written at address 0x%04X%s", val, addr, CFG_PRINTF_NEWLINE);
+  printf("0x%02X written at 0x%04X%s", val, addr, CFG_PRINTF_NEWLINE);
 }
 
 #endif

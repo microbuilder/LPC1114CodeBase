@@ -33,12 +33,13 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 /**************************************************************************/
-#include <stdlib.h>
 #include <stdio.h>
-#include <string.h>
 
 #include "projectconfig.h"
 #include "sysinit.h"
+
+#include "core/gpio/gpio.h"
+#include "core/systick/systick.h"
 
 #ifdef CFG_INTERFACE
   #include "core/cmd/cmd.h"
@@ -79,6 +80,8 @@ int main(void)
 
   while (1)
   {
+    // Poll CLI or blink an LED depending on whether or not
+    // CFG_INTERFACE is commented out in projectconfig.h
     #ifdef CFG_INTERFACE 
       // Handle any incoming command line input 
       cmdPoll(); 

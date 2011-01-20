@@ -169,6 +169,8 @@
                               level see 'projects/commands/cmd_sysinfo.c'
 
                               These settings are not relevant to all boards!
+                              'tools/schematics/AT86RF212LPC1114_v1.6.pdf'
+                              show how 'BAT' is meant to be connected/used
     -----------------------------------------------------------------------*/
     // #define CFG_BAT
     #define CFG_BAT_ENPORT              (2)
@@ -193,6 +195,10 @@
     CFG_SDCARD_ENPIN          The power enable pin number
 
     DEPENDENCIES:             SDCARD requires the use of SSP1.
+
+    Note:                     These settings are not relevant to all boards!
+                              'tools/schematics/AT86RF212LPC1114_v1.6.pdf'
+                              show how SDCARD is meant to be connected/used
     -----------------------------------------------------------------------*/
     // #define CFG_SDCARD
     #define CFG_SDCARD_READONLY         (0)   // Must be 0 or 1
@@ -243,8 +249,8 @@
                               CFG_PRINTF_UART or CFG_PRINTF_USBCDC are 
                               selected.
     -----------------------------------------------------------------------*/
-    // #define CFG_INTERFACE
-    #define CFG_INTERFACE_MAXMSGSIZE    (80)
+    #define CFG_INTERFACE
+    #define CFG_INTERFACE_MAXMSGSIZE    (256)
     #define CFG_INTERFACE_PROMPT        "LPC1114 >> "
 /*=========================================================================*/
 
@@ -303,6 +309,44 @@
 
 
 /*=========================================================================
+    EEPROM MEMORY MAP
+    -----------------------------------------------------------------------
+    EEPROM is used to persist certain user modifiable values to make
+    sure that these changes remain in effect after a reset or hard
+    power-down.  The addresses in EEPROM for these various system
+    settings/values are defined below.  The first 256 bytes of EEPROM
+    are reserved for this (0x0000..0x00FF).
+
+    CFG_EEPROM_RESERVED       The last byte of reserved EEPROM memory
+
+          EEPROM Address (0x0000..0x00FF)
+          ===============================
+          0 1 2 3 4 5 6 7 8 9 A B C D E F
+    000x  x x x x x x x x . x x . . . . .   Chibi
+    001x  . . . . . . . . . . . . . . . .
+    002x  . . . . . . . . . . . . . . . .
+    003x  . . . . . . . . . . . . . . . .
+    004x  . . . . . . . . . . . . . . . .
+    005x  . . . . . . . . . . . . . . . .
+    006x  . . . . . . . . . . . . . . . .
+    007x  . . . . . . . . . . . . . . . .
+    008x  . . . . . . . . . . . . . . . .
+    009x  . . . . . . . . . . . . . . . .
+    00Ax  . . . . . . . . . . . . . . . .
+    00Bx  . . . . . . . . . . . . . . . .
+    00Cx  . . . . . . . . . . . . . . . .
+    00Dx  . . . . . . . . . . . . . . . .
+    00Ex  . . . . . . . . . . . . . . . .
+    00Fx  . . . . . . . . . . . . . . . .
+
+    -----------------------------------------------------------------------*/
+    #define CFG_EEPROM_RESERVED                 (0x00FF)              // Protect first 256 bytes of memory
+    #define CFG_EEPROM_CHIBI_IEEEADDR           (uint16_t)(0x0000)    // 8
+    #define CFG_EEPROM_CHIBI_SHORTADDR          (uint16_t)(0x0009)    // 2
+/*=========================================================================*/
+
+
+/*=========================================================================
     LM75B TEMPERATURE SENSOR
     -----------------------------------------------------------------------
 
@@ -332,14 +376,14 @@
                                 enabled be sure to set CFG_CHIBI_BUFFERSIZE
                                 to an appropriately large value (ex. 1024)
     CFG_CHIBI_BUFFERSIZE        The size of the message buffer in bytes
-    CFG_CHIBI_EEPROM_IEEEADDR   Start location in EEPROM for the full IEEE
-                                address of this node
-    CFG_CHIBI_EEPROM_SHORTADDR  Start location in EEPROM for the short (16-bit)
-                                address of this node
 
     DEPENDENCIES:               Chibi requires the use of SSP0, 16-bit timer
                                 0 and pins 3.1, 3.2, 3.3.  It also requires
                                 the presence of CFG_I2CEEPROM.
+
+    NOTE:                       These settings are not relevant to all boards!
+                                'tools/schematics/AT86RF212LPC1114_v1.6.pdf'
+                                show how 'CHIBI' is meant to be connected
     -----------------------------------------------------------------------*/
     // #define CFG_CHIBI
     #define CFG_CHIBI_MODE              (0)                 // OQPSK_868MHZ
@@ -348,8 +392,6 @@
     #define CFG_CHIBI_PANID             (0x1234)
     #define CFG_CHIBI_PROMISCUOUS       (0)
     #define CFG_CHIBI_BUFFERSIZE        (128)
-    #define CFG_CHIBI_EEPROM_IEEEADDR   (uint16_t)(0x0000)
-    #define CFG_CHIBI_EEPROM_SHORTADDR  (uint16_t)(0x0009)
 /*=========================================================================*/
 
 
@@ -413,9 +455,6 @@
   #endif
   #if CFG_CHIBI_PROMISCUOUS != 0 && CFG_CHIBI_PROMISCUOUS != 1
     #error "CFG_CHIBI_PROMISCUOUS must be equal to either 1 or 0"
-  #endif
-  #if CFG_CHIBI_PROMISCUOUS == 1 && defined CFG_INTERFACE
-    #error "CFG_CHIBI_PROMISCUOUS can not be enabled at the same time as CFG_INTERFACE"
   #endif
 #endif
 

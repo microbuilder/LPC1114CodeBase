@@ -125,9 +125,6 @@
             <file file_name="../../drivers/dac/mcp4725/mcp4725.c"/>
           </folder>
         </folder>
-        <folder Name="gsm">
-          <file file_name="../../drivers/gsm/gsm.h"/>
-        </folder>
       </folder>
       <file file_name="../../sysdefs.h"/>
       <file file_name="../../lpc111x.h"/>
@@ -138,7 +135,6 @@
         <file file_name="../../project/cmd_tbl.h"/>
         <file file_name="../../project/commands.c"/>
         <folder Name="commands">
-          <file file_name="../../project/commands/cmd_hello.c"/>
           <file file_name="../../project/commands/cmd_sysinfo.c"/>
           <file file_name="../../project/commands/cmd_chibi_addr.c"/>
           <file file_name="../../project/commands/cmd_chibi_tx.c"/>

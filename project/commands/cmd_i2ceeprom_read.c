@@ -62,7 +62,7 @@ void cmd_i2ceeprom_read(uint8_t argc, char **argv)
   // Check for invalid values (getNumber may complain about this as well)
   if (addr32 < 0 || eepromCheckAddress(addr32))
   {
-    printf("EEPROM Address out of range %s", CFG_PRINTF_NEWLINE);
+    printf("Address out of range %s", CFG_PRINTF_NEWLINE);
     return;
   }
 
