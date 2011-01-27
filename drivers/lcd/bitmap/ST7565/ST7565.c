@@ -258,7 +258,6 @@ void st7565SetBrightness(uint8_t val)
 void st7565ClearScreen(void) 
 {
   memset(&buffer, 0x00, 128*64/8);
-  st7565Refresh();
 }
 
 /**************************************************************************/

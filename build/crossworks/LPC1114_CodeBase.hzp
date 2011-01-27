@@ -49,6 +49,10 @@
         <folder Name="pwm">
           <file file_name="../../core/pwm/pwm.c"/>
         </folder>
+        <folder Name="libc">
+          <file file_name="../../core/libc/stdio.c"/>
+          <file file_name="../../core/libc/string.c"/>
+        </folder>
       </folder>
       <folder Name="drivers">
         <folder Name="eeprom">
@@ -154,7 +158,7 @@
         <configuration Name="Common" file_type="Reset Script"/>
       </file>
     </folder>
-    <configuration Name="Release" build_remove_unused_symbols="Yes" c_preprocessor_definitions="STARTUP_FROM_RESET"/>
+    <configuration Name="Release" build_remove_unused_symbols="Yes" c_preprocessor_definitions="STARTUP_FROM_RESET" link_IOLibraryName="none"/>
     <configuration Name="Debug" build_remove_unused_symbols="Yes"/>
   </project>
   <configuration Name="THUMB RAM Debug" inherited_configurations="THUMB;RAM;Debug"/>

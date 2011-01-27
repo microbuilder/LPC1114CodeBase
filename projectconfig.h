@@ -215,10 +215,6 @@
 
     CFG_PRINTF_UART           Will cause all printf statements to be 
                               redirected to UART
-    CFG_PRINTF_CWDEBUG        Will cause all printf statements to be
-                              redirected to the Crossworks
-                              debug_printf statement (Crossworks only)
-                              Warning: This is very slow!
     CFG_PRINTF_NEWLINE        This should be either "\r\n" for Windows or
                               "\n" for *nix
 
@@ -228,7 +224,6 @@
     NOTE: PRINTF Support =    ~350 bytes Flash (-Os)
     -----------------------------------------------------------------------*/
     #define CFG_PRINTF_UART
-    // #define CFG_PRINTF_CWDEBUG
     #define CFG_PRINTF_NEWLINE          "\r\n"
 /*=========================================================================*/
 

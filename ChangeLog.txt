@@ -1,6 +1,9 @@
 v0.60 - Ongoing
 ===============
 
+- Modified Crossworks project to build with
+  stdio/printf in 'core/lib' (saves about
+  1.5-2K in release mode)
 - Added rollover counter to the systick timer
 - Updated schematic for wireless board in
   tools/schematics (v1.6 which is the final

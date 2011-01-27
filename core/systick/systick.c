@@ -193,3 +193,19 @@ uint32_t systickGetRollovers(void)
 {
   return systickRollovers;
 }
+
+/**************************************************************************/
+/*! 
+    @brief      Returns the approximate number of seconds that the
+                systick timer has been running.
+*/
+/**************************************************************************/
+uint32_t systickGetSecondsActive(void)
+{
+  uint32_t currentTick = systickTicks;
+  uint32_t rollovers = systickRollovers;
+  uint32_t secsActive = currentTick / (1000 / CFG_SYSTICK_DELAY_IN_MS);
+  secsActive += rollovers * (0xFFFFFFFF / (1000 / CFG_SYSTICK_DELAY_IN_MS));
+
+  return secsActive;
+}

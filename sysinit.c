@@ -39,10 +39,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#ifdef CFG_PRINTF_CWDEBUG
-  #include <cross_studio_io.h>
-#endif
-
 #include "sysinit.h"
 
 #include "core/cpu/cpu.h"
@@ -190,11 +186,6 @@ void __putchar(const char c)
   #ifdef CFG_PRINTF_UART
     // Send output to UART
     uartSendByte(c);
-  #endif
-
-  #ifdef CFG_PRINTF_CWDEBUG
-    // Send output to the Crossworks debug interface
-    debug_printf("%c", c);
   #endif
 }
 

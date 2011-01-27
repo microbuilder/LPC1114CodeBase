@@ -107,11 +107,7 @@ void cmd_sysinfo(uint8_t argc, char **argv)
   #endif
 
   // System Uptime (based on systick timer)
-  uint32_t currentTick = systickGetTicks();
-  uint32_t rollovers = systickGetRollovers();
-  uint32_t secsActive = currentTick / (1000 / CFG_SYSTICK_DELAY_IN_MS);
-  secsActive += rollovers * (0xFFFFFFFF / (1000 / CFG_SYSTICK_DELAY_IN_MS));
-  printf("%-25s : %u s %s", "System Uptime", (unsigned int)secsActive, CFG_PRINTF_NEWLINE);
+  printf("%-25s : %u s %s", "System Uptime", (unsigned int)systickGetSecondsActive(), CFG_PRINTF_NEWLINE);
 
   // System Temperature (if LM75B Present)
   #ifdef CFG_LM75B

@@ -33,8 +33,6 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 /**************************************************************************/
-#include <stdio.h>
-
 #include "projectconfig.h"
 #include "sysinit.h"
 
@@ -78,17 +76,17 @@ int main(void)
   // Configure cpu and mandatory peripherals
   systemInit();
 
+  uint32_t currentSecond, lastSecond;
+  currentSecond = lastSecond = 0;
+
   while (1)
   {
-    // Poll CLI or blink an LED depending on whether or not
-    // CFG_INTERFACE is commented out in projectconfig.h
-    #ifdef CFG_INTERFACE 
-      // Handle any incoming command line input 
-      cmdPoll(); 
-    #else 
-      // Toggle LED @ 1 Hz 
-      systickDelay(1000); 
-      if (gpioGetValue(CFG_LED_PORT, CFG_LED_PIN))
+    // Toggle LED once per second ... rollover = 136 years :)
+    currentSecond = systickGetSecondsActive();
+    if (currentSecond != lastSecond)
+    {
+      lastSecond = currentSecond;
+      if (gpioGetValue(CFG_LED_PORT, CFG_LED_PIN) == CFG_LED_OFF)
       {
         gpioSetValue (CFG_LED_PORT, CFG_LED_PIN, CFG_LED_ON); 
       }
@@ -96,9 +94,13 @@ int main(void)
       {
         gpioSetValue (CFG_LED_PORT, CFG_LED_PIN, CFG_LED_OFF); 
       }
-    #endif  
+    }
+
+    // Poll for CLI input if CFG_INTERFACE is enabled in projectconfig.h
+    #ifdef CFG_INTERFACE 
+      cmdPoll(); 
+    #endif
   }
 
   return 0;
 }
-
