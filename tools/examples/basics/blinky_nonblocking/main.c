@@ -33,10 +33,6 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 /**************************************************************************/
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
-
 #include "projectconfig.h"
 #include "sysinit.h"
 
@@ -49,30 +45,13 @@
 
 /**************************************************************************/
 /*! 
-    Approximates a 1 millisecond delay using "nop".  This is less
-    accurate than a dedicated timer, but is useful in certain situations.
+    Causes the LED to flash every second using a non-blocking delay,
+    and constantly checks if any incoming characters have arrived in
+    the UART buffer for the CLI
 
-    The number of ticks to delay depends on the optimisation level set
-    when compiling (-O).  Depending on the compiler settings, one of the
-    two defined values for 'delay' should be used.
-*/
-/**************************************************************************/
-void delayms(uint32_t ms)
-{
-  uint32_t delay = ms * ((CFG_CPU_CCLK / 100) / 45);      // Release Mode (-Os)
-  // uint32_t delay = ms * ((CFG_CPU_CCLK / 100) / 120);  // Debug Mode (No optimisations)
-
-  while (delay > 0)
-  {
-    __asm volatile ("nop");
-    delay--;
-  }
-}
-
-/**************************************************************************/
-/*! 
-    Main program entry point.  After reset, normal code execution will
-    begin here.
+    projectconfig.h settings:
+    --------------------------------------------------
+    CFG_INTERFACE -> Enabled
 */
 /**************************************************************************/
 int main(void)
@@ -83,13 +62,16 @@ int main(void)
   uint32_t currentSecond, lastSecond;
   currentSecond = lastSecond = 0;
 
+  // Toggle LED once per second and constantly check CLI input
   while (1)
   {
-    // Toggle LED once per second ... rollover = 136 years :)
+    // Get the number of seconds the CPU has been active
+    // If the value has changed we've advanced at least 1 second
     currentSecond = systickGetSecondsActive();
     if (currentSecond != lastSecond)
     {
       lastSecond = currentSecond;
+      // Toggle the LED
       if (gpioGetValue(CFG_LED_PORT, CFG_LED_PIN) == CFG_LED_OFF)
       {
         gpioSetValue (CFG_LED_PORT, CFG_LED_PIN, CFG_LED_ON); 

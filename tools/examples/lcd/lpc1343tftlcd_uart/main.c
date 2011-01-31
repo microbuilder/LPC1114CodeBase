@@ -33,46 +33,48 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 /**************************************************************************/
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
-
 #include "projectconfig.h"
 #include "sysinit.h"
 
 #include "core/gpio/gpio.h"
-#include "core/systick/systick.h"
 
-#ifdef CFG_INTERFACE
-  #include "core/cmd/cmd.h"
+#ifdef CFG_PRINTF_UART
+  #include "core/uart/uart.h"
 #endif
 
 /**************************************************************************/
 /*! 
-    Approximates a 1 millisecond delay using "nop".  This is less
-    accurate than a dedicated timer, but is useful in certain situations.
-
-    The number of ticks to delay depends on the optimisation level set
-    when compiling (-O).  Depending on the compiler settings, one of the
-    two defined values for 'delay' should be used.
+    Sends a command to the TFT LCD, blocks until the command has
+    finished executing on the LCD side, and returns any response
 */
 /**************************************************************************/
-void delayms(uint32_t ms)
+byte_t* lcd(const byte_t* command)
 {
-  uint32_t delay = ms * ((CFG_CPU_CCLK / 100) / 45);      // Release Mode (-Os)
-  // uint32_t delay = ms * ((CFG_CPU_CCLK / 100) / 120);  // Debug Mode (No optimisations)
+  byte_t abtRx[256];
+  size_t szRxLen;
 
-  while (delay > 0)
+  // Send the command to the LCD with '\n' (triggers cmd execution)
+  printf("%s\n", command);
+
+  // Wait for LCD busy pin to clear
+  while (gpioGetValue(1, 4) == 1);
+
+  // Check if there's a response on the uart buffer
+  if (uartRxBufferReadArray(abtRx,&szRxLen))
   {
-    __asm volatile ("nop");
-    delay--;
+    // ToDo: scan until \r or \n
+    // debug_printf(abtRx);
+  }
+  else
+  {
+    return "";
   }
 }
 
 /**************************************************************************/
 /*! 
-    Main program entry point.  After reset, normal code execution will
-    begin here.
+    This assumes that the LPC1343 TFTLCD board is hooked up to UART on
+    the LPC1114, and that the LCD 'busy' pin is connected to pin 1.4.
 */
 /**************************************************************************/
 int main(void)
@@ -80,30 +82,29 @@ int main(void)
   // Configure cpu and mandatory peripherals
   systemInit();
 
-  uint32_t currentSecond, lastSecond;
-  currentSecond = lastSecond = 0;
+  // Clear the UART buffer
+  uartRxBufferInit();
+  gpioSetDir(1, 4, 0);
 
-  while (1)
+  // Wait for LCD busy pin to clear (1 = active, 0 = ready)
+  while (gpioGetValue(1, 4) == 1);
+
+  lcd("clr24 255 255 255");
+  lcd("text 10 10 0x0000 1 Message received from 0xBEEF");
+  lcd("text 10 30 0x0000 1 RSSI:");
+  lcd("progress 80 25 100 15 67 0x1234 0x123F");
+  lcd("btn 10 130 220 35 0 Send Reply");
+  lcd("text 10 180 0x0000 0 THIS");
+  lcd("text 10 190 0x0000 0 is");
+  lcd("text 10 200 0x0000 0 a");
+  lcd("text 10 210 0x0000 0 TEST");
+  lcd("text 10 220 0x0000 0 WITH");
+  lcd("text 10 230 0x0000 0 multiple");
+  lcd("text 10 240 0x0000 0 command lines");
+
+  // Wait forever
+  while(1)
   {
-    // Toggle LED once per second ... rollover = 136 years :)
-    currentSecond = systickGetSecondsActive();
-    if (currentSecond != lastSecond)
-    {
-      lastSecond = currentSecond;
-      if (gpioGetValue(CFG_LED_PORT, CFG_LED_PIN) == CFG_LED_OFF)
-      {
-        gpioSetValue (CFG_LED_PORT, CFG_LED_PIN, CFG_LED_ON); 
-      }
-      else
-      {
-        gpioSetValue (CFG_LED_PORT, CFG_LED_PIN, CFG_LED_OFF); 
-      }
-    }
-
-    // Poll for CLI input if CFG_INTERFACE is enabled in projectconfig.h
-    #ifdef CFG_INTERFACE 
-      cmdPoll(); 
-    #endif
   }
 
   return 0;

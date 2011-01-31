@@ -33,46 +33,27 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 /**************************************************************************/
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
-
 #include "projectconfig.h"
 #include "sysinit.h"
 
 #include "core/gpio/gpio.h"
-#include "core/systick/systick.h"
 
-#ifdef CFG_INTERFACE
-  #include "core/cmd/cmd.h"
+#if defined CFG_CHIBI
+  #include <string.h>
+  #include <stdlib.h>
+  #include "drivers/chibi/chb.h"
+  #include "drivers/chibi/chb_drvr.h"
 #endif
 
 /**************************************************************************/
 /*! 
-    Approximates a 1 millisecond delay using "nop".  This is less
-    accurate than a dedicated timer, but is useful in certain situations.
-
-    The number of ticks to delay depends on the optimisation level set
-    when compiling (-O).  Depending on the compiler settings, one of the
-    two defined values for 'delay' should be used.
-*/
-/**************************************************************************/
-void delayms(uint32_t ms)
-{
-  uint32_t delay = ms * ((CFG_CPU_CCLK / 100) / 45);      // Release Mode (-Os)
-  // uint32_t delay = ms * ((CFG_CPU_CCLK / 100) / 120);  // Debug Mode (No optimisations)
-
-  while (delay > 0)
-  {
-    __asm volatile ("nop");
-    delay--;
-  }
-}
-
-/**************************************************************************/
-/*! 
-    Main program entry point.  After reset, normal code execution will
-    begin here.
+    Broadcast a basic message every 250 milliseconds
+  
+    projectconfig.h settings:
+    --------------------------------------------------
+    CFG_CHIBI             -> Enabled
+    CFG_CHIBI_PROMISCUOUS -> 0
+    CFG_CHIBI_BUFFERSIZE  -> 128
 */
 /**************************************************************************/
 int main(void)
@@ -80,31 +61,24 @@ int main(void)
   // Configure cpu and mandatory peripherals
   systemInit();
 
-  uint32_t currentSecond, lastSecond;
-  currentSecond = lastSecond = 0;
+  #ifdef CFG_CHIBI
+    uint32_t counter = 0;
+    chb_pcb_t *pcb = chb_get_pcb();
 
-  while (1)
-  {
-    // Toggle LED once per second ... rollover = 136 years :)
-    currentSecond = systickGetSecondsActive();
-    if (currentSecond != lastSecond)
+    while(1)
     {
-      lastSecond = currentSecond;
-      if (gpioGetValue(CFG_LED_PORT, CFG_LED_PIN) == CFG_LED_OFF)
-      {
-        gpioSetValue (CFG_LED_PORT, CFG_LED_PIN, CFG_LED_ON); 
-      }
-      else
-      {
-        gpioSetValue (CFG_LED_PORT, CFG_LED_PIN, CFG_LED_OFF); 
-      }
+      // Enable LED
+      gpioSetValue (CFG_LED_PORT, CFG_LED_PIN, CFG_LED_ON); 
+      // Create and send the message
+      char text[10];
+      counter++;
+      itoa(counter, text, 10);
+      chb_write(0xFFFF, text, strlen(text) + 1);
+      // Disable LED
+      gpioSetValue (CFG_LED_PORT, CFG_LED_PIN, CFG_LED_OFF); 
+      systickDelay(250);
     }
-
-    // Poll for CLI input if CFG_INTERFACE is enabled in projectconfig.h
-    #ifdef CFG_INTERFACE 
-      cmdPoll(); 
-    #endif
-  }
+  #endif
 
   return 0;
 }
