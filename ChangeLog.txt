@@ -1,5 +1,5 @@
-v0.60 - Ongoing
-===============
+v0.60 - 31 Jan 2011
+===================
 
 - Added a number of examples to the
   'tools/examples' folder.
