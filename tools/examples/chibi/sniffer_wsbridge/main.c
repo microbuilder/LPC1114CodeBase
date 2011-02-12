@@ -38,12 +38,12 @@
 
 #include "core/gpio/gpio.h"
 
-#if defined CFG_CHIBI && defined CFG_SDCARD 
+#if defined CFG_CHIBI
   #include <string.h>
   #include <stdlib.h>
   #include "drivers/chibi/chb.h"
   #include "drivers/chibi/chb_drvr.h"
-  #include "drivers/chibi/chb_libpcap.h"
+  #include "core/uart/uart.h"
   static chb_rx_data_t rx_data;
 #endif
 
@@ -54,7 +54,7 @@
   
     projectconfig.h settings:
     --------------------------------------------------
-    CFG_CHIBI, CFG_SDCARD -> Enabled
+    CFG_CHIBI             -> Enabled
     CFG_CHIBI_PROMISCUOUS -> 1
     CFG_CHIBI_BUFFERSIZE  -> 1024   
 */
@@ -71,41 +71,18 @@ int main(void)
   #if CFG_CHIBI_PROMISCUOUS == 0
     #error "CFG_CHIBI_PROMISCUOUS must set to 1 in projectconfig.h for this example"
   #endif
-  #if !defined CFG_SDCARD
-    #error "CFG_SDCARD must be enabled in projectconfig.h for this example"
+  #if !defined CFG_PRINTF_UART
+    #error "CFG_PRINTF_UART must be enabled in projectconfig.h for this example"
+  #endif
+  #if defined CFG_INTERFACE
+    #error "CFG_INTERFACE must be disabled in projectconfig.h for this example"
   #endif
 
-  #if defined CFG_CHIBI && defined CFG_SDCARD && CFG_CHIBI_PROMISCUOUS != 0
+  #if defined CFG_CHIBI && CFG_CHIBI_PROMISCUOUS != 0
     // Get a reference to the Chibi peripheral control block
     chb_pcb_t *pcb = chb_get_pcb();
-
-    // Create a binary file to store captured data
-    libpcap_error_t error;
-    error = libpcapInit("/capture.cap");
-    if (error)
-    {
-      // Something happened trying to create the file or access the SD card
-      switch (error)
-      {
-        case LIBPCAP_ERROR_FATFS_NODISK:
-          printf("No Disk\r\n");
-          break;
-        case LIBPCAP_ERROR_FATFS_INITFAILED:
-          printf("Init Failed\r\n");
-          break;
-        case LIBPCAP_ERROR_FATFS_FAILEDTOMOUNTDRIVE:
-          printf("Failed to mount drive\r\n");
-          break;
-        case LIBPCAP_ERROR_FATFS_UNABLETOCREATEFILE:
-          printf("Unable to create file\r\n");
-          break;
-      }
-      
-      // Quit the program
-      return -1;
-    }
     
-    // Wait for incoming frames and log them to disk in libpcap format.
+    // Wait for incoming frames and transmit the raw data over uart
     while(1)
     {
       // Check for incoming messages 
@@ -113,13 +90,21 @@ int main(void)
       { 
         // get the length of the data
         rx_data.len = chb_read(&rx_data);
-        // make sure the length is non-zero
+        // make sure the length is nonzero
         if (rx_data.len)
         {
           // Enable LED to indicate message reception 
           gpioSetValue (CFG_LED_PORT, CFG_LED_PIN, CFG_LED_ON); 
-          // Write frame content to disk
-          libpcapWriteFrame(rx_data.data, rx_data.len);
+
+          // Send raw data to UART for processing on
+          // the PC (requires WSBridge - www.freaklabs.org)
+          uint8_t i;
+          for (i=0; i<rx_data.len; i++)
+          {
+            // Send output to UART
+            uartSendByte(rx_data.data[i]);
+          }
+
           // Disable LED
           gpioSetValue (CFG_LED_PORT, CFG_LED_PIN, CFG_LED_OFF); 
         }

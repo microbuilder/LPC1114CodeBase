@@ -61,6 +61,14 @@ int main(void)
   // Configure cpu and mandatory peripherals
   systemInit();
 
+  // Make sure that projectconfig.h is properly configured for this example
+  #if !defined CFG_CHIBI
+    #error "CFG_CHIBI must be enabled in projectconfig.h for this example"
+  #endif
+  #if CFG_CHIBI_PROMISCUOUS != 0
+    #error "CFG_CHIBI_PROMISCUOUS must be set to 0 in projectconfig.h for this example"
+  #endif
+
   #ifdef CFG_CHIBI
     uint32_t counter = 0;
     chb_pcb_t *pcb = chb_get_pcb();

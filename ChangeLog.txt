@@ -1,49 +1,49 @@
+v0.61 - Ongoing
+===============
+
+- Added wsbridge example to 'tools/examples/chibi/sniffer-wsbridge'
+- Modified chb_libpcap.c to always create a new file when logging 802.15.4
+  frames to the SD card.  If a file of the same name exists, it will now be
+  overwritten by default.
+- Updated pmu to switch to 2.2V in sleep mode if a TPS780 is used for the
+  voltage regulator. (Only relevant for wireless boards).
+- Updated systeminit.c to switch to 3.3V on startup in case a TPS780 is used
+  for the voltage regulator. (Only relevant for wireless boards).
+
 v0.60 - 31 Jan 2011
 ===================
 
-- Added a number of examples to the
-  'tools/examples' folder.
-- Modified Crossworks project to build with
-  stdio/printf in 'core/lib' (saves about
-  1.5-2K in release mode)
+- Added a number of examples to the 'tools/examples' folder.
+- Modified Crossworks project to build with stdio/printf in 'core/lib' (saves
+  about 1.5-2K in release mode)
 - Added rollover counter to the systick timer
-- Updated schematic for wireless board in
-  tools/schematics (v1.6 which is the final
-  production version).  This schematic shows
-  the expected layout for peripherals like the
-  SD card and battery voltage divider.
-- Reduced command names in cmd_tbl.h to save
-  some flash space, and reduced text in various
-  commands (saves ~0.3kb)
-- Added the battery/supply voltage to the 'sysinfo'
-  command (only applies to LPC1114 wireless board)
-- Made a number of changes for deep-sleep mode to
-  reduce power consumption (pmu.c updated, including
-  a bug fix that prevented the code from exiting
+- Updated schematic for wireless board in tools/schematics (v1.6 which is the
+  final production version).  This schematic shows the expected layout for
+  peripherals like the SD card and battery voltage divider.
+- Reduced command names in cmd_tbl.h to save some flash space, and reduced
+  text in various commands (saves ~0.3kb)
+- Added the battery/supply voltage to the 'sysinfo' command (only applies to
+  LPC1114 wireless board)
+- Made a number of changes for deep-sleep mode to reduce power consumption 
+  (pmu.c updated, including a bug fix that prevented the code from exiting
   deep sleep twice from SW).
-- Added basic driver for SSD1306-based 128x64
-  OLED displays (courtesy Adafruit Industries who have
-  a convenient breakout board for these displays).
-- Added 'chb_libpcap' to log raw 802.15.4 frames
-  to libpcap binary files.  This allows wireless
-  traffic to be stored for debugging and analysis
-  in Wireshark or other libpcap compatible
-  protocol analysers.  Based on wsbridge by Freaklabs.
-- Added a 'tools' folder with schematics and common
-  open-source tools that can be used with the code base
-- Modified 'core/gpio/gpio.c' to reduce the compiled code
-  size. Repetitive switches where only the registers
-  change were modified to use temporary registers and
-  execute the code only once.
-- Updated Chibi to v0.91 (adds sleep method and
-  promiscuous mode to allow Chibi to act as an
-  802.15.4 packet sniffer, etc.).  To enable
-  promiscuous mode, set CFG_CHIBI_PROMISCUOUS to 1
-  and change the buffer size to 1024 to handle
-  a larger amount of incoming traffic.  The following
-  code will send all incoming bytes to UART for
-  processing on the PC using WSBridge (available
-  in the '/tools' folder or from www.freaklabs.org):
+- Added basic driver for SSD1306-based 128x64 OLED displays (courtesy Adafruit
+  Industries who have a convenient breakout board for these displays).
+- Added 'chb_libpcap' to log raw 802.15.4 frames to libpcap binary files.
+  This allows wireless traffic to be stored for debugging and analysis in
+  Wireshark or other libpcap compatible protocol analysers.  Based on wsbridge
+  by Freaklabs.
+- Added a 'tools' folder with schematics and common open-source tools that can
+  be used with the code base
+- Modified 'core/gpio/gpio.c' to reduce the compiled code size. Repetitive
+  switches where only the registers change were modified to use temporary
+  registers and execute the code only once.
+- Updated Chibi to v0.91 (adds sleep method and promiscuous mode to allow
+  Chibi to act as an 802.15.4 packet sniffer, etc.).  To enable promiscuous
+  mode, set CFG_CHIBI_PROMISCUOUS to 1 and change the buffer size to 1024 to
+  handle a larger amount of incoming traffic.  The following code will send
+  all incoming bytes to UART for processing on the PC using WSBridge 
+  (available in the '/tools' folder or from www.freaklabs.org):
 
     #include "drivers/chibi/chb.h"
     #include "drivers/chibi/chb_drvr.h"

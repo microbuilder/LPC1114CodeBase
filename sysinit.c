@@ -106,6 +106,13 @@ void systemInit()
   // Initialise GPIO
   gpioInit();
 
+  // Switch to 3.3V in case a TPS780 is being used
+  // It defaults to 2.20V since the pin is pulled high coming out of reset
+  // This only applies to the LPC1114 wireless board
+  gpioSetDir(2, 10, 1);
+  gpioSetValue(2, 10, 0);
+  gpioSetPullup(&IOCON_PIO2_10, gpioPullupMode_Inactive);
+
   #ifdef CFG_PRINTF_UART
     // Initialise UART with the default baud rate (set in projectconfig.h)
     uartInit(CFG_UART_BAUDRATE);

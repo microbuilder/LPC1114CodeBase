@@ -317,8 +317,8 @@ libpcap_error_t libpcapInit(char *filename)
       }
       if (res == FR_OK)
       {
-        // Create a file
-        if(f_open(&libpcapSDFile, libpcapFName, FA_READ | FA_WRITE | FA_OPEN_ALWAYS)!=FR_OK) 
+        // Create a file (overwriting any existing file!)
+        if(f_open(&libpcapSDFile, libpcapFName, FA_READ | FA_WRITE | FA_CREATE_ALWAYS)!=FR_OK) 
         {  
           return LIBPCAP_ERROR_FATFS_UNABLETOCREATEFILE; 
         }

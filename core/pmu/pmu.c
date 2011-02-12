@@ -391,6 +391,9 @@ void pmuSetupHW(void)
     // Make sure that the battery voltage divider is turned off
     gpioSetValue(CFG_BAT_ENPORT, CFG_BAT_ENPIN, 0 );
   #endif
+
+  // Switch to 2.2V during sleep mode if TPS780 if being used
+  gpioSetValue(2, 10, 1);
 }
 
 /**************************************************************************/
@@ -401,6 +404,9 @@ void pmuSetupHW(void)
 /**************************************************************************/
 void pmuRestoreHW(void)
 {
+  // Set power back to 3.3V if TPS780 if being used
+  gpioSetValue(2, 10, 0);
+
   #ifdef CFG_CHIBI
     // ToDo: Reinitialise Chibi after wakeup?
   #endif
