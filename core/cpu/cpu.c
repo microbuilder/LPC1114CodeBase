@@ -150,70 +150,6 @@ void cpuInit (void)
   GPIO_GPIO2DIR &= ~(GPIO_IO_ALL);
   GPIO_GPIO3DIR &= ~(GPIO_IO_ALL);
 
-  // Alternatively, you may want to set all pins to output and driven low
-  // for the lowest possible power consumption.  Uncommenting the code
-  // below will accomplish this.  (Note: Special care will need to be
-  // taken with the SWD/JTAG pins if you are using a HW debuggers.
-
-  // /* Disable all internal pull-ups */
-  // gpioSetPullup(&IOCON_nRESET_PIO0_0, gpioPullupMode_Inactive);
-  // gpioSetPullup(&IOCON_PIO0_1, gpioPullupMode_Inactive);
-  // gpioSetPullup(&IOCON_PIO0_2, gpioPullupMode_Inactive);
-  // gpioSetPullup(&IOCON_PIO0_3, gpioPullupMode_Inactive);
-  // gpioSetPullup(&IOCON_PIO0_4, gpioPullupMode_Inactive);
-  // gpioSetPullup(&IOCON_PIO0_5, gpioPullupMode_Inactive);
-  // gpioSetPullup(&IOCON_PIO0_6, gpioPullupMode_Inactive);
-  // gpioSetPullup(&IOCON_PIO0_7, gpioPullupMode_Inactive);
-  // gpioSetPullup(&IOCON_PIO0_8, gpioPullupMode_Inactive);
-  // gpioSetPullup(&IOCON_PIO0_9, gpioPullupMode_Inactive);
-  // gpioSetPullup(&IOCON_JTAG_TCK_PIO0_10, gpioPullupMode_Inactive);
-  // gpioSetPullup(&IOCON_JTAG_TDI_PIO0_11, gpioPullupMode_Inactive);
-  //
-  // gpioSetPullup(&IOCON_JTAG_TMS_PIO1_0, gpioPullupMode_Inactive);
-  // gpioSetPullup(&IOCON_JTAG_TDO_PIO1_1, gpioPullupMode_Inactive);
-  // gpioSetPullup(&IOCON_JTAG_nTRST_PIO1_2, gpioPullupMode_Inactive);
-  // gpioSetPullup(&IOCON_SWDIO_PIO1_3, gpioPullupMode_Inactive);
-  // gpioSetPullup(&IOCON_PIO1_4, gpioPullupMode_Inactive);
-  // gpioSetPullup(&IOCON_PIO1_5, gpioPullupMode_Inactive);
-  // gpioSetPullup(&IOCON_PIO1_6, gpioPullupMode_Inactive);
-  // gpioSetPullup(&IOCON_PIO1_7, gpioPullupMode_Inactive);
-  // gpioSetPullup(&IOCON_PIO1_8, gpioPullupMode_Inactive);
-  // gpioSetPullup(&IOCON_PIO1_9, gpioPullupMode_Inactive);
-  // gpioSetPullup(&IOCON_PIO1_10, gpioPullupMode_Inactive);
-  // gpioSetPullup(&IOCON_PIO1_11, gpioPullupMode_Inactive);
-  //
-  // gpioSetPullup(&IOCON_PIO2_0, gpioPullupMode_Inactive);
-  // gpioSetPullup(&IOCON_PIO2_1, gpioPullupMode_Inactive);
-  // gpioSetPullup(&IOCON_PIO2_2, gpioPullupMode_Inactive);
-  // gpioSetPullup(&IOCON_PIO2_3, gpioPullupMode_Inactive);
-  // gpioSetPullup(&IOCON_PIO2_4, gpioPullupMode_Inactive);
-  // gpioSetPullup(&IOCON_PIO2_5, gpioPullupMode_Inactive);
-  // gpioSetPullup(&IOCON_PIO2_6, gpioPullupMode_Inactive);
-  // gpioSetPullup(&IOCON_PIO2_7, gpioPullupMode_Inactive);
-  // gpioSetPullup(&IOCON_PIO2_8, gpioPullupMode_Inactive);
-  // gpioSetPullup(&IOCON_PIO2_9, gpioPullupMode_Inactive);
-  // gpioSetPullup(&IOCON_PIO2_10, gpioPullupMode_Inactive);
-  // gpioSetPullup(&IOCON_PIO2_11, gpioPullupMode_Inactive);
-  //
-  // gpioSetPullup(&IOCON_PIO3_0, gpioPullupMode_Inactive);
-  // gpioSetPullup(&IOCON_PIO3_1, gpioPullupMode_Inactive);
-  // gpioSetPullup(&IOCON_PIO3_2, gpioPullupMode_Inactive);
-  // gpioSetPullup(&IOCON_PIO3_3, gpioPullupMode_Inactive);
-  // gpioSetPullup(&IOCON_PIO3_4, gpioPullupMode_Inactive);
-  // gpioSetPullup(&IOCON_PIO3_5, gpioPullupMode_Inactive);
-  
-  // /* Set all GPIO pins to output */
-  // GPIO_GPIO0DIR &= ~(GPIO_IO_ALL);
-  // GPIO_GPIO1DIR &= ~(GPIO_IO_ALL);
-  // GPIO_GPIO2DIR &= ~(GPIO_IO_ALL);
-  // GPIO_GPIO3DIR &= ~(GPIO_IO_ALL);
-  
-  // /* Set all GPIO pins low */
-  // GPIO_GPIO0DATA &= ~(GPIO_IO_ALL);
-  // GPIO_GPIO1DATA &= ~(GPIO_IO_ALL);
-  // GPIO_GPIO2DATA &= ~(GPIO_IO_ALL);
-  // GPIO_GPIO3DATA &= ~(GPIO_IO_ALL);
-
   // Configure PLL and main system clock
   cpuPllSetup(CPU_MULTIPLIER_3);
 }
@@ -223,28 +159,7 @@ void cpuInit (void)
     @brief Get's the CPU Device ID
 */
 /**************************************************************************/
-cpuDeviceID_t cpuGetDeviceID (void)
+uint32_t cpuGetDeviceID (void)
 {
-  switch (SCB_DEVICEID)
-  {
-    case (SCB_DEVICEID_LPC1111_101):
-      return cpuDeviceID_LPC1111;
-    case (SCB_DEVICEID_LPC1111_201):
-      return cpuDeviceID_LPC1111;
-    case (SCB_DEVICEID_LPC1112_101):
-      return cpuDeviceID_LPC1112;
-    case (SCB_DEVICEID_LPC1112_201):
-      return cpuDeviceID_LPC1112;
-    case (SCB_DEVICEID_LPC1113_201):
-      return cpuDeviceID_LPC1113;
-    case (SCB_DEVICEID_LPC1113_301):
-      return cpuDeviceID_LPC1113;
-    case (SCB_DEVICEID_LPC1114_201):
-      return cpuDeviceID_LPC1114;
-    case (SCB_DEVICEID_LPC1114_301):
-      return cpuDeviceID_LPC1114;
-    default:
-      return cpuDeviceID_Unknown;
-  }
-  return cpuDeviceID_Unknown;
+  return SCB_DEVICEID;
 }

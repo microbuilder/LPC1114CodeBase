@@ -38,6 +38,8 @@
 #include "projectconfig.h"
 #include "core/gpio/gpio.h"
 
+#define CHB_DELAY_MAXUS         (0xFFFF / (CFG_CPU_CCLK / 1000000))   // Maximum delay in microseconds for a 16-bit timer
+
 #define CHB_CC1190_PRESENT      0       /// Set to 1 if CC1190 is being used
 #define CHB_CHINA               0
 #define CHB_EEPROM_IEEE_ADDR    CFG_CHIBI_EEPROM_IEEEADDR
@@ -85,10 +87,10 @@
     
 #define CHB_ENTER_CRIT()    __disable_irq()
 #define CHB_LEAVE_CRIT()    __enable_irq()
-#define CHB_RST_ENABLE()    do {gpioSetValue(CHB_RSTPORT, CHB_RSTPIN, 0); systickDelay(1 / CFG_SYSTICK_DELAY_IN_MS);} while (0)
-#define CHB_RST_DISABLE()   do {gpioSetValue(CHB_RSTPORT, CHB_RSTPIN, 1); systickDelay(1 / CFG_SYSTICK_DELAY_IN_MS);} while (0)
-#define CHB_SLPTR_ENABLE()  do {gpioSetValue(CHB_SLPTRPORT, CHB_SLPTRPIN, 1); systickDelay(1 / CFG_SYSTICK_DELAY_IN_MS);} while (0)
-#define CHB_SLPTR_DISABLE() do {gpioSetValue(CHB_SLPTRPORT, CHB_SLPTRPIN, 0); systickDelay(1 / CFG_SYSTICK_DELAY_IN_MS);} while (0)
+#define CHB_RST_ENABLE()    do {gpioSetValue(CHB_RSTPORT, CHB_RSTPIN, 0); } while (0)
+#define CHB_RST_DISABLE()   do {gpioSetValue(CHB_RSTPORT, CHB_RSTPIN, 1); } while (0)
+#define CHB_SLPTR_ENABLE()  do {gpioSetValue(CHB_SLPTRPORT, CHB_SLPTRPIN, 1); } while (0)
+#define CHB_SLPTR_DISABLE() do {gpioSetValue(CHB_SLPTRPORT, CHB_SLPTRPIN, 0); } while (0)
 
 // CCA constants
 enum

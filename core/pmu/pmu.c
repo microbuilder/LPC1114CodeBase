@@ -50,6 +50,10 @@
   #include "drivers/chibi/chb_drvr.h"
 #endif
 
+#ifdef CFG_SDCARD
+  #include "core/ssp/ssp.h"
+#endif
+
 #define PMU_WDTCLOCKSPEED_HZ 7812
 
 void pmuSetupHW(void);
@@ -91,7 +95,7 @@ void WAKEUP_IRQHandler(void)
   timer32Init(0, TIMER32_DEFAULTINTERVAL);
   timer32Enable(0);
 
-  // Perform peripheral specific and custom wakeup tasks
+  // Perform custom wakeup tasks
   pmuRestoreHW();
 
   /* See tracker for bug report. */
@@ -361,16 +365,21 @@ void pmuPowerDown( void )
 /**************************************************************************/
 void pmuSetupHW(void)
 {
+  // Set ADC pins to GPIO and GND them
+
+
   #ifdef CFG_CHIBI
+    // Put Chibi/AT86RF212 into sleep mode
     chb_sleep(TRUE);
   #endif
 
   #ifdef CFG_SDCARD
     // Turn off SD card
-    gpioSetDir( CFG_SDCARD_ENPORT, CFG_SDCARD_ENPIN, gpioDirection_Output );
     gpioSetValue( CFG_SDCARD_ENPORT, CFG_SDCARD_ENPIN, 0 );
+    // Set the card detect pin to output and low (saves power)
     gpioSetDir(CFG_SDCARD_CDPORT, CFG_SDCARD_CDPIN, gpioDirection_Output);
     gpioSetValue(CFG_SDCARD_CDPORT, CFG_SDCARD_CDPIN, 0);
+
     // Set SSP1 pins to GPIO and output since the SD card can
     // draw current from these pins (saves 500-700uA when card inserted)
     IOCON_PIO2_0 = IOCON_PIO2_0_FUNC_GPIO;
@@ -387,13 +396,15 @@ void pmuSetupHW(void)
     gpioSetValue(2, 3, 0);
   #endif
 
+  // Make sure that the battery voltage divider is turned off
   #ifdef CFG_BAT
-    // Make sure that the battery voltage divider is turned off
     gpioSetValue(CFG_BAT_ENPORT, CFG_BAT_ENPIN, 0 );
   #endif
 
-  // Switch to 2.2V during sleep mode if TPS780 if being used
-  gpioSetValue(2, 10, 1);
+  // Switch to alternate voltage if dual output supply is being used
+  #if defined CFG_VREG_ALT_PRESENT && CFG_VREG_ALT_PRESENT == 1
+    gpioSetValue(CFG_VREG_ALT_PORT, CFG_VREG_ALT_PIN, 1);
+  #endif
 }
 
 /**************************************************************************/
@@ -404,17 +415,14 @@ void pmuSetupHW(void)
 /**************************************************************************/
 void pmuRestoreHW(void)
 {
-  // Set power back to 3.3V if TPS780 if being used
-  gpioSetValue(2, 10, 0);
-
-  #ifdef CFG_CHIBI
-    // ToDo: Reinitialise Chibi after wakeup?
+  // Set power back to main voltage if dual output supply is being used
+  #if defined CFG_VREG_ALT_PRESENT && CFG_VREG_ALT_PRESENT == 1
+    gpioSetValue(CFG_VREG_ALT_PORT, CFG_VREG_ALT_PIN, 0);
   #endif
 
-  #ifdef CFG_SDCARD
-    // ToDo: Reconfigure FATFS
-    // At present, the first read attempt will throw a no disk error,
-    // but the second will pass
+  #ifdef CFG_CHIBI
+    // Wakeup Chibi/Transceiver
+    chb_sleep(FALSE);
   #endif
 }
 

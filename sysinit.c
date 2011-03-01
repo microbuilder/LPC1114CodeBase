@@ -43,6 +43,7 @@
 
 #include "core/cpu/cpu.h"
 #include "core/pmu/pmu.h"
+#include "core/adc/adc.h"
 
 #ifdef CFG_PRINTF_UART
   #include "core/uart/uart.h"
@@ -97,31 +98,23 @@
 /**************************************************************************/
 void systemInit()
 {
-  // Setup the cpu and core clock
   cpuInit();
-
-  // Initialise the systick timer (delay set in projectconfig.h)
   systickInit((CFG_CPU_CCLK / 1000) * CFG_SYSTICK_DELAY_IN_MS);
-
-  // Initialise GPIO
   gpioInit();
-
-  // Switch to 3.3V in case a TPS780 is being used
-  // It defaults to 2.20V since the pin is pulled high coming out of reset
-  // This only applies to the LPC1114 wireless board
-  gpioSetDir(2, 10, 1);
-  gpioSetValue(2, 10, 0);
-  gpioSetPullup(&IOCON_PIO2_10, gpioPullupMode_Inactive);
+  pmuInit();
+  adcInit();    // Init adc pins to avoid wasting 60uA in deep sleep
 
   #ifdef CFG_PRINTF_UART
     // Initialise UART with the default baud rate (set in projectconfig.h)
     uartInit(CFG_UART_BAUDRATE);
   #endif
 
-  // Printf can now be used
-
-  // Initialise power management unit
-  pmuInit();
+  // Switch to 3.3V if TPS780 (etc.) is being used
+  #if defined CFG_VREG_ALT_PRESENT && CFG_VREG_ALT_PRESENT == 1
+    gpioSetDir(CFG_VREG_ALT_PORT, CFG_VREG_ALT_PIN, gpioDirection_Output);
+    gpioSetValue(CFG_VREG_ALT_PORT, CFG_VREG_ALT_PIN, 0);
+    gpioSetPullup(&CFG_VREG_ALT_REG32, gpioPullupMode_Inactive);
+  #endif
 
   // Set LED pin as output and turn LED off
   gpioSetDir(CFG_LED_PORT, CFG_LED_PIN, 1);
@@ -158,19 +151,24 @@ void systemInit()
   // Setup SD Card
   #ifdef CFG_SDCARD
     // Turn off SD card by default (saves power)
-    gpioSetDir( CFG_SDCARD_ENPORT, CFG_SDCARD_ENPIN, gpioDirection_Output ); /* Set enable pin to output */
-    gpioSetValue( CFG_SDCARD_ENPORT, CFG_SDCARD_ENPIN, 0 ); /* Disable card by setting ENPIN low */
+    gpioSetDir(CFG_SDCARD_ENPORT, CFG_SDCARD_ENPIN, gpioDirection_Output); /* Set enable pin to output */
+    gpioSetValue(CFG_SDCARD_ENPORT, CFG_SDCARD_ENPIN, 0);                  /* Disable card by setting ENPIN low */
+    gpioSetPullup(&CFG_SDCARD_ENREG32, gpioPullupMode_Inactive);
   #endif
 
   #ifdef CFG_LM75B
-    // Turn on LM75B (and put it in sleep mode by default to save power)
+    // Initialise LM75B
     lm75bInit();
+    // Read temp once to make sure we are in sleep mode
+    int32_t temp;
+    lm75bGetTemperature(&temp);
   #endif
 
   #ifdef CFG_BAT
     // Turn off battery voltage divider by default
     gpioSetDir(CFG_BAT_ENPORT, CFG_BAT_ENPIN, gpioDirection_Output );   // Set voltage divider enable pin to output
     gpioSetValue(CFG_BAT_ENPORT, CFG_BAT_ENPIN, 0 );                    // Disable the voltage divider by default
+    gpioSetPullup(&CFG_BAT_ENREG32, gpioPullupMode_Inactive);
   #endif
 
   // Start the command line interface (if requested)

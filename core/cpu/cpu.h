@@ -50,18 +50,8 @@ typedef enum
 }
 cpuMultiplier_t;
 
-typedef enum
-{
-  cpuDeviceID_Unknown = 0,
-  cpuDeviceID_LPC1111,
-  cpuDeviceID_LPC1112,
-  cpuDeviceID_LPC1113,
-  cpuDeviceID_LPC1114
-}
-cpuDeviceID_t;
-
 void cpuPllSetup (cpuMultiplier_t multiplier);
 void cpuInit (void);
-cpuDeviceID_t cpuGetDeviceID (void);
+uint32_t cpuGetDeviceID (void);
 
 #endif

@@ -53,6 +53,9 @@
           <file file_name="../../core/libc/stdio.c"/>
           <file file_name="../../core/libc/string.c"/>
         </folder>
+        <folder Name="iap">
+          <file file_name="../../core/iap/iap.c"/>
+        </folder>
       </folder>
       <folder Name="drivers">
         <folder Name="eeprom">

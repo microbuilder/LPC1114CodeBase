@@ -1,14 +1,28 @@
 v0.61 - Ongoing
 ===============
 
+- Made a number of changes to reduce power consumption in deep sleep
+  (adjusting internal pullups, making sure peripherals are in sleep
+  mode or properly configured for lower power consumption, etc.).
+  The LPC1114 802.15.4 wireless Boards went from ~250uA to 79uA in
+  deep sleep.
+- Modified WDT code to use the WDT oscillator (rather than the
+  external crystal)
+- Fixed a bug when waking up from sleep in Chibi.  Removed systick
+  delay when toggling reset and slptr pins since this was causing
+  a blocking condition with the wakeup ISR.
+- Added a CFG_VREG section to projectconfig.h to make it easier to
+  work with dual output voltage regulators like the TPS780
+- Fixed a bug calculating the battery voltage in cmd_sysinfo.h
+- Updated SCB_DEVICEID list in lpc111x.h to include new parts from UM10398
+  Rev. 3 (14 January 2011).
 - Added wsbridge example to 'tools/examples/chibi/sniffer-wsbridge'
 - Modified chb_libpcap.c to always create a new file when logging 802.15.4
   frames to the SD card.  If a file of the same name exists, it will now be
-  overwritten by default.
+  overwritten.
 - Updated pmu to switch to 2.2V in sleep mode if a TPS780 is used for the
-  voltage regulator. (Only relevant for wireless boards).
-- Updated systeminit.c to switch to 3.3V on startup in case a TPS780 is used
-  for the voltage regulator. (Only relevant for wireless boards).
+  voltage regulator, and swtich to 3.3V on startup (only relevant for
+  wireless boards).
 
 v0.60 - 31 Jan 2011
 ===================

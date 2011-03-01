@@ -78,6 +78,6 @@ void cmd_deepsleep(uint8_t argc, char **argv)
   // On wakeup, the WAKEUP interrupt will be fired, which is handled
   // by WAKEUP_IRQHandler in 'core/pmu/pmu.c'.  This will set the CPU
   // back to an appropriate state, and execution will be returned to
-  // the point that it left off before entering deep sleep mode.
+  // the point that it left off before deep sleep mode was entered.
   printf("Woke up from deep sleep");
 }

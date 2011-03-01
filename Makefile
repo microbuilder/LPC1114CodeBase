@@ -69,10 +69,10 @@ OBJS += mcp4725.o
 ##########################################################################
 VPATH += core core/adc core/cmd core/cpu core/gpio core/i2c core/pmu
 VPATH += core/ssp core/systick core/timer16 core/timer32 core/uart
-VPATH += core/libc core/wdt core/pwm
+VPATH += core/libc core/wdt core/pwm core/iap
 OBJS += adc.o cpu.o cmd.o gpio.o i2c.o pmu.o ssp.o systick.o timer16.o
 OBJS += timer32.o uart.o uart_buf.o stdio.o string.o wdt.o sysinit.o
-OBJS += pwm.o
+OBJS += pwm.o iap.o
 
 ##########################################################################
 # GNU GCC compiler prefix and location

@@ -44,6 +44,7 @@
 #include "core/adc/adc.h"
 #include "core/systick/systick.h"
 #include "core/gpio/gpio.h"
+#include "core/iap/iap.h"
 
 #ifdef CFG_CHIBI
   #include "drivers/chibi/chb.h"
@@ -64,27 +65,27 @@ void cmd_sysinfo(uint8_t argc, char **argv)
   printf("%-25s : %d.%d MHz %s", "System Clock", CFG_CPU_CCLK / 1000000, CFG_CPU_CCLK % 1000000, CFG_PRINTF_NEWLINE);
   printf("%-25s : %d.%d.%d %s", "Firmware", CFG_FIRMWARE_VERSION_MAJOR, CFG_FIRMWARE_VERSION_MINOR, CFG_FIRMWARE_VERSION_REVISION, CFG_PRINTF_NEWLINE);
 
+  // 128-bit MCU Serial Number
+  IAP_return_t iap_return;
+  iap_return = iapReadSerialNumber();
+  if(iap_return.ReturnCode == 0)
+  {
+    printf("%-25s : %08X %08X %08X %08X %s", "Serial Number", iap_return.Result[0],iap_return.Result[1],iap_return.Result[2],iap_return.Result[3], CFG_PRINTF_NEWLINE);
+  }
+
   // Check the battery voltage
   #ifdef CFG_BAT
-    gpioSetDir(CFG_BAT_ENPORT, CFG_BAT_ENPIN, gpioDirection_Output );   // Set voltage divider enable pin to output
-    gpioSetValue(CFG_BAT_ENPORT, CFG_BAT_ENPIN, 1 );                    // Enable the voltage divider
-    systickDelay(5);
-    // Read ADC several times
     uint32_t i, c, ctotal;
-    c = ctotal = 0;
-    for (i = 0; i < 5; i++)
-    {
-      c = adcRead(CFG_BAT_ADC);
-      ctotal += c;
-    }
-    // Get average of all readings
-    uint32_t v = ctotal / 5;
-    v = ((v * 1000) / 1024);                 
-    v = (v * 3300) / 1000;                // Value in millivolts relative to supply voltage
-    v = (v * CFG_BAT_MULTIPLIER) / 1000;  // Regular battery voltage in millivolts
-    // Turn the voltage divider back off
-    gpioSetValue(CFG_BAT_ENPORT, CFG_BAT_ENPIN, 1 );
-    printf("%-25s : %u.%u V %s", "Supply Voltage", (unsigned int)(v / 1000), (unsigned int)(v % 1000), CFG_PRINTF_NEWLINE);
+    gpioSetDir(CFG_BAT_ENPORT, CFG_BAT_ENPIN, gpioDirection_Output );   
+    gpioSetValue(CFG_BAT_ENPORT, CFG_BAT_ENPIN, 1 );    // Enable the voltage divider
+    systickDelay(5);
+    c = adcRead(CFG_BAT_ADC);                           // Pre-read ADC to warm it up
+    systickDelay(10);
+    c = adcRead(CFG_BAT_ADC);
+    c = (c * CFG_VREG_VCC_MAIN) / 1000;                 // Value in millivolts relative to supply voltage
+    c = (c * CFG_BAT_MULTIPLIER) / 1000;                // Battery voltage in millivolts (depends on resistor values)
+    gpioSetValue(CFG_BAT_ENPORT, CFG_BAT_ENPIN, 0 );    // Turn the voltage divider back off to save power
+    printf("%-25s : %u.%u V %s", "Supply Voltage", (unsigned int)(c / 1000), (unsigned int)(c % 1000), CFG_PRINTF_NEWLINE);
   #endif
 
   // Wireless Settings (if CFG_CHIBI enabled)

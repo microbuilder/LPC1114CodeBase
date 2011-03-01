@@ -72,12 +72,8 @@ static U8 chb_get_status()
 /**************************************************************************/
 static void chb_delay_us(U16 usec)
 {
-  // Determine maximum delay using a 16 bit timer
-  // ToDo: Move this to a macro or fixed value!
-  uint32_t maxus = 0xFFFF / (CFG_CPU_CCLK / 1000000);
-
   // Check if delay can be done in one operation
-  if (usec <= maxus)
+  if (usec <= CHB_DELAY_MAXUS)
   {
     timer16DelayUS(0, usec);
     return;
@@ -86,10 +82,10 @@ static void chb_delay_us(U16 usec)
   // Split delay into several steps (to stay within limit of 16-bit timer)
   do
   {
-    if (usec >= maxus)
+    if (usec >= CHB_DELAY_MAXUS)
     {
-      timer16DelayUS(0, maxus);
-      usec -= maxus;
+      timer16DelayUS(0, CHB_DELAY_MAXUS);
+      usec -= CHB_DELAY_MAXUS;
     }
     else
     {
@@ -781,7 +777,6 @@ static void chb_radio_init()
 /**************************************************************************/
 void chb_drvr_init()
 {
-    // ToDo: Make sure gpioInit has been called
     // ToDo: Make sure CT32B0 has been initialised and enabled
 
     // config SPI for at86rf230 access
@@ -802,6 +797,7 @@ void chb_drvr_init()
     // Set internal resistors
     gpioSetPullup (&CHB_SLPTRPIN_IOCONREG, gpioPullupMode_Inactive);
     gpioSetPullup (&CHB_RSTPIN_IOCONREG, gpioPullupMode_Inactive);
+    gpioSetPullup (&CHB_EINTPIN_IOCONREG, gpioPullupMode_Inactive);
 
     // config radio
     chb_radio_init();
@@ -820,13 +816,11 @@ void chb_sleep(U8 enb)
     chb_set_state(TRX_OFF);
 
     // set the SLPTR pin
-    // CHB_SLPTR_PORT |= _BV(CHB_SLPTR_PIN);
     CHB_SLPTR_ENABLE();
   }
   else
   {
     // make sure the SLPTR pin is low first
-    // CHB_SLPTR_PORT &= ~(_BV(CHB_SLPTR_PIN));
     CHB_SLPTR_DISABLE();
 
     // we need to allow some time for the PLL to lock

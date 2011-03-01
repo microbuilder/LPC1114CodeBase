@@ -764,13 +764,25 @@
 
 #define SCB_DEVICEID                              (*(pREG32 (0x400483F4)))    // Device ID
 #define SCB_DEVICEID_LPC1111_101                  ((unsigned int) 0x041E502B)
+#define SCB_DEVICEID_LPC1111_102                  ((unsigned int) 0x2516902B)
 #define SCB_DEVICEID_LPC1111_201                  ((unsigned int) 0x0416502B)
+#define SCB_DEVICEID_LPC1111_202                  ((unsigned int) 0x2516D02B) 
 #define SCB_DEVICEID_LPC1112_101                  ((unsigned int) 0x042D502B)
+#define SCB_DEVICEID_LPC1112_102                  ((unsigned int) 0x2524D02B)
 #define SCB_DEVICEID_LPC1112_201                  ((unsigned int) 0x0425502B)
+#define SCB_DEVICEID_LPC1112_202                  ((unsigned int) 0x2524902B)
 #define SCB_DEVICEID_LPC1113_201                  ((unsigned int) 0x0434502B)
+#define SCB_DEVICEID_LPC1113_202                  ((unsigned int) 0x2532902B)
 #define SCB_DEVICEID_LPC1113_301                  ((unsigned int) 0x0434102B)
+#define SCB_DEVICEID_LPC1113_302                  ((unsigned int) 0x2532102B)
 #define SCB_DEVICEID_LPC1114_201                  ((unsigned int) 0x0444502B)
+#define SCB_DEVICEID_LPC1114_202                  ((unsigned int) 0x2540902B)
 #define SCB_DEVICEID_LPC1114_301                  ((unsigned int) 0x0444102B)
+#define SCB_DEVICEID_LPC1114_302                  ((unsigned int) 0x2540102B)
+#define SCB_DEVICEID_LPC11C12_301                 ((unsigned int) 0x1421102B)
+#define SCB_DEVICEID_LPC11C14_301                 ((unsigned int) 0x1440102B)
+#define SCB_DEVICEID_LPC11C22_301                 ((unsigned int) 0x1431102B)
+#define SCB_DEVICEID_LPC11C24_301                 ((unsigned int) 0X1430102B)
 
 /*  CPU ID Base Register */
 

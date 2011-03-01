@@ -60,6 +60,7 @@
     SSD1306     . .       . . .     X X X . X X .  .     . . .
     INTERFACE   . .       . . .     . . . . . . .  .     . . .
     BATTERY     . X       . . .     . . . . . . .  X     . . .
+    VREG [1]    . .       . . .     . . . . . . X  .     . . .
 
                 TIMERS                      SSP       ADC       UART
                 ======================      ===       ======    ====
@@ -67,14 +68,16 @@
 
     SDCARD      .     .     .     .         . X       . . . .   .
     PWM         .     X     .     .         . .       . . . .   .
-    PMU [1]     .     .     X     .         . .       . . . .   .
+    PMU [2]     .     .     X     .         . .       . . . .   .
     STEPPER     X     .     .     .         . .       . . . .   .
     CHIBI       x     .     .     .         X .       . . . .   .
     ST7565      .     .     .     .         . .       . . . .   .
     SSD1306     .     .     .     .         . .       . . . .   .
     INTERFACE   .     .     .     .         . .       . . . .   x
 
-    [1]  PMU uses 32-bit Timer 0 for SW wakeup from deep-sleep.  This timer
+    [1]  Only relevant of the TPS780 is used.  The GPIO pin is used to
+         switch from 3.3V to 2.2V depending on the MCUs operating mode.
+    [2]  PMU uses 32-bit Timer 0 for SW wakeup from deep-sleep.  This timer
          can safely be used by other peripherals, but may need to be
          reconfigured when you wakeup from deep-sleep.
 
@@ -102,6 +105,61 @@
     Note:           At 36MHz 1 tick = ~27.777ns or 0.02777us
     -----------------------------------------------------------------------*/
     #define CFG_CPU_CCLK                (36000000)
+/*=========================================================================*/
+
+
+/*=========================================================================
+    VOLTAGE REGULATOR
+    -----------------------------------------------------------------------
+
+    CFG_VREG_VCC_MAIN     Output voltage of the regulator in millivolts
+    CFG_VREG_ALT_PRESENT  0 if no alternative voltage is available, 1
+                          if it is available (TPS780, etc.)
+    CFG_VREG_ALT_VCC      Alternate output voltage in millivolts on the
+                          vreg in sleep or low-power mode.  (Only relevant
+                          for dual-output regulators like the TPS780, etc.)
+    CFG_VREG_ALT_PORT     GPIO port to enable alternate VREG output
+    CFG_VREG_ALT_PIN      GPIO pin to enable alternate VREG output
+    CFG_VREG_ALT_REG32    IOCON Register for the alt. output enable pin
+
+    -----------------------------------------------------------------------*/
+    #define CFG_VREG_VCC_MAIN           (3300)    // 3.3V * 1000
+    #define CFG_VREG_ALT_PRESENT        (0)       // Must be 0 or 1
+    #define CFG_VREG_ALT_VCC            (2200)    // TPS780 = 3.3V + 2.2V
+    #define CFG_VREG_ALT_PORT           (2)
+    #define CFG_VREG_ALT_PIN            (10)
+    #define CFG_VREG_ALT_REG32          (IOCON_PIO2_10)
+/*=========================================================================*/
+
+
+/*=========================================================================
+    BATTERY
+    -----------------------------------------------------------------------
+
+    CFG_BAT                   If this field is defined it indicates
+                              that a user selectable voltage divider is
+                              connected to the batter/power supply
+    CFG_BAT_ENPORT            The port to enable to battery voltage divider
+    CFG_BAT_ENPIN             The pin to enable the battery voltage divider
+    CFG_BAT_ADC               The adc port where that the battery is connected
+    CFG_BAT_SUPPLYVOLTAGE     The regulated supply voltage in millivolts
+    CFG_BAT_MULTIPLIER        Multiplier to convert the adc result to
+                              battery voltage - ((R1 + R2) / R2) * 1000
+
+    Note:                     For an example of using this information to
+                              determine the battery/power-supply voltage
+                              level see 'projects/commands/cmd_sysinfo.c'
+
+                              These settings are not relevant to all boards!
+                              'tools/schematics/AT86RF212LPC1114_v1.6.pdf'
+                              show how 'BAT' is meant to be connected/used
+    -----------------------------------------------------------------------*/
+    // #define CFG_BAT
+    #define CFG_BAT_ENPORT              (2)
+    #define CFG_BAT_ENPIN               (11)
+    #define CFG_BAT_ENREG32             (IOCON_PIO2_11)
+    #define CFG_BAT_ADC                 (0)     // AD0 = P0.11
+    #define CFG_BAT_MULTIPLIER          (3127)  // ((10.0 + 4.7) / 4.7) * 1000
 /*=========================================================================*/
 
 
@@ -152,35 +210,6 @@
 
 
 /*=========================================================================
-    BATTERY
-    -----------------------------------------------------------------------
-
-    CFG_BAT                   If this field is defined it indicates
-                              that a user sleectable voltage divider is
-                              connected to the batter/power supply
-    CFG_BAT_ENPORT            The port to enable to battery voltage divider
-    CFG_BAT_ENPIN             The pin to enable the battery voltage divider
-    CFG_BAT_ADC               The adc port where that the battery is connected
-    CFG_BAT_MULTIPLIER        Multiplier to convert the adc result to
-                              battery voltage - ((R1 + R2) / R2) * 1000
-
-    Note:                     For an example of using this information to
-                              determine the battery/power-supply voltage
-                              level see 'projects/commands/cmd_sysinfo.c'
-
-                              These settings are not relevant to all boards!
-                              'tools/schematics/AT86RF212LPC1114_v1.6.pdf'
-                              show how 'BAT' is meant to be connected/used
-    -----------------------------------------------------------------------*/
-    // #define CFG_BAT
-    #define CFG_BAT_ENPORT              (2)
-    #define CFG_BAT_ENPIN               (11)
-    #define CFG_BAT_ADC                 (0)
-    #define CFG_BAT_MULTIPLIER          (3127)  // ((10.0 + 14.7) / 4.7) * 1000
-/*=========================================================================*/
-
-
-/*=========================================================================
     MICRO-SD CARD
     -----------------------------------------------------------------------
 
@@ -191,8 +220,10 @@
                               saving some flash space (-Os).
     CFG_SDCARD_CDPORT         The card detect port number
     CFG_SDCARD_CDPIN          The card detect pin number
+    CFG_SDCARD_CDREG32        IOCON Register for the CD pin
     CFG_SDCARD_ENPORT         The power enable port number
     CFG_SDCARD_ENPIN          The power enable pin number
+    CFG_SDCARD_ENREG32        IOCON Register for the EN pin
 
     DEPENDENCIES:             SDCARD requires the use of SSP1.
 
@@ -204,8 +235,10 @@
     #define CFG_SDCARD_READONLY         (0)   // Must be 0 or 1
     #define CFG_SDCARD_CDPORT           (2)
     #define CFG_SDCARD_CDPIN            (4)
+    #define CFG_SDCARD_CDREG32          (IOCON_PIO2_4)
     #define CFG_SDCARD_ENPORT           (2)
     #define CFG_SDCARD_ENPIN            (5)
+    #define CFG_SDCARD_ENREG32          (IOCON_PIO2_5)
 /*=========================================================================*/
 
 
@@ -466,6 +499,10 @@
   #if CFG_RSA_BITS != 64 && CFG_RSA_BITS != 32
     #error "CFG_RSA_BITS must be equal to either 32 or 64."
   #endif
+#endif
+
+#if CFG_VREG_ALT_PRESENT != 1 && CFG_VREG_ALT_PRESENT != 0
+  #error "CFG_VREG_ALT_PRESENT must be equal to either 1 or 0"
 #endif
 
 #endif
