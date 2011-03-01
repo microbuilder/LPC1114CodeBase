@@ -1,6 +1,14 @@
 v0.61 - Ongoing
 ===============
 
+- Modified projectconfig.h to select the target board and configure
+  the project accordingly.  This isn't ideal, but it's a lot more
+  maintainable than have a seperate code base for every board since
+  they share 95% of the same code.
+- Fixed a bug in adcInit().  AD6 and AD7 were not being initialised
+  for the LPC1114 Reference Design Base Board.  Depending on what
+  board you are using, you will need to comment or uncomment the
+  appropriate pins in 'core/adc/adc.c'.
 - Made a number of changes to reduce power consumption in deep sleep
   (adjusting internal pullups, making sure peripherals are in sleep
   mode or properly configured for lower power consumption, etc.).

@@ -22,11 +22,6 @@
   <ProjectSessionItem path="LPC1114_CodeBase;LPC1114_CodeBase;Source Files;core" name="unnamed" />
   <ProjectSessionItem path="LPC1114_CodeBase;LPC1114_CodeBase;Source Files;core;adc" name="unnamed" />
   <ProjectSessionItem path="LPC1114_CodeBase;LPC1114_CodeBase;Source Files;core;pmu" name="unnamed" />
-  <ProjectSessionItem path="LPC1114_CodeBase;LPC1114_CodeBase;Source Files;drivers" name="unnamed" />
-  <ProjectSessionItem path="LPC1114_CodeBase;LPC1114_CodeBase;Source Files;drivers;sensors" name="unnamed" />
-  <ProjectSessionItem path="LPC1114_CodeBase;LPC1114_CodeBase;Source Files;drivers;sensors;lm75b" name="unnamed" />
-  <ProjectSessionItem path="LPC1114_CodeBase;LPC1114_CodeBase;Source Files;project" name="unnamed" />
-  <ProjectSessionItem path="LPC1114_CodeBase;LPC1114_CodeBase;Source Files;project;commands" name="unnamed" />
  </Project>
  <Register1>
   <RegisterWindow openNodes="CT16B1/TMR16B1PWMC;GPIO2;SysTick" binaryNodes="GPIO1/GPIO1DATA;GPIO2/GPIO2DATA;GPIO2/GPIO2DIR;GPIO3/GPIO3DATA" hiddenNodes="" unsignedNodes="" visibleGroups="GPIO2;CT16B1;GPIO1;GPIO3;SysTick" decimalNodes="SysTick/SysTick_VAL" octalNodes="" asciiNodes="" />
@@ -62,8 +57,9 @@
   <Watches active="0" update="Never" />
  </Watch4>
  <Files>
-  <SessionOpenFile useTextEdit="1" useBinaryEdit="0" codecName="Latin1" x="44" debugPath="C:\Users\Kevin\Documents\My Dropbox\microBuilder\Code\LPC1114\LPC1114_CodeBase\main.c" y="62" path="C:\Users\Kevin\Documents\My Dropbox\microBuilder\Code\LPC1114\LPC1114_CodeBase\main.c" left="0" selected="1" name="unnamed" top="48" />
-  <SessionOpenFile useTextEdit="1" useBinaryEdit="0" codecName="Latin1" x="0" debugPath="C:\Users\Kevin\Documents\My Dropbox\microBuilder\Code\LPC1114\LPC1114_CodeBase\projectconfig.h" y="22" path="C:\Users\Kevin\Documents\My Dropbox\microBuilder\Code\LPC1114\LPC1114_CodeBase\projectconfig.h" left="0" selected="0" name="unnamed" top="0" />
+  <SessionOpenFile useTextEdit="1" useBinaryEdit="0" codecName="Latin1" x="20" debugPath="C:\Users\Kevin\Documents\My Dropbox\microBuilder\Code\LPC1114\LPC1114_CodeBase\main.c" y="45" path="C:\Users\Kevin\Documents\My Dropbox\microBuilder\Code\LPC1114\LPC1114_CodeBase\main.c" left="0" selected="0" name="unnamed" top="45" />
+  <SessionOpenFile useTextEdit="1" useBinaryEdit="0" codecName="Latin1" x="4" debugPath="C:\Users\Kevin\Documents\My Dropbox\microBuilder\Code\LPC1114\LPC1114_CodeBase\projectconfig.h" y="50" path="C:\Users\Kevin\Documents\My Dropbox\microBuilder\Code\LPC1114\LPC1114_CodeBase\projectconfig.h" left="0" selected="1" name="unnamed" top="45" />
+  <SessionOpenFile useTextEdit="1" useBinaryEdit="0" codecName="Latin1" x="0" debugPath="C:\Users\Kevin\Documents\My Dropbox\microBuilder\Code\LPC1114\LPC1114_CodeBase\core\adc\adc.c" y="238" path="C:\Users\Kevin\Documents\My Dropbox\microBuilder\Code\LPC1114\LPC1114_CodeBase\core\adc\adc.c" left="0" selected="0" name="unnamed" top="216" />
  </Files>
  <ARMCrossStudioWindow activeProject="LPC1114_CodeBase" autoConnectTarget="Segger J-Link" debugSearchFileMap="" fileDialogInitialDirectory="C:\Users\Kevin\Documents\My Dropbox\microBuilder\Code\LPC1114\LPC1114_CodeBase\core\iap" fileDialogDefaultFilter="*.c" autoConnectCapabilities="388991" debugSearchPath="" buildConfiguration="THUMB Flash Release" />
 </session>

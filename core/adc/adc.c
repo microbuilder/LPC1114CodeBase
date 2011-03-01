@@ -175,6 +175,12 @@ uint32_t adcRead (uint8_t channelNum)
                 for 10-bit, SW-controlled A/D conversion.
 
     @return     Nothing
+
+    @warning    Depending on what board you are using, you may need to
+                configure AD6 and AD7 instead of AD2 and AD3:
+
+                LPC1114 Reference Design Board:   AD0, AD1, AD6, AD7
+                LPC1114 802.15.4 Wireless Board:  AD0, AD1, AD2, AD3
 */
 /**************************************************************************/
 void adcInit (void)
@@ -202,6 +208,7 @@ void adcInit (void)
   IOCON_JTAG_TMS_PIO1_0 |=   (IOCON_JTAG_TMS_PIO1_0_FUNC_AD1 &
                               IOCON_JTAG_TMS_PIO1_0_ADMODE_ANALOG);
 
+  #ifdef CFG_BRD_LPC1114_802154WIRELESS
   /* Set AD2 to analog input */
   IOCON_JTAG_TDO_PIO1_1 &=  ~(IOCON_JTAG_TDO_PIO1_1_ADMODE_MASK |
                               IOCON_JTAG_TDO_PIO1_1_FUNC_MASK |
@@ -215,6 +222,23 @@ void adcInit (void)
                                IOCON_JTAG_nTRST_PIO1_2_MODE_MASK);
   IOCON_JTAG_nTRST_PIO1_2 |=  (IOCON_JTAG_nTRST_PIO1_2_FUNC_AD3 &
                                IOCON_JTAG_nTRST_PIO1_2_ADMODE_ANALOG);
+  #endif
+
+  #ifdef CFG_BRD_LPC1114_REFDESIGN
+  /* Set AD6 to analog input */
+  IOCON_PIO1_10 &=  ~(IOCON_PIO1_10_ADMODE_MASK |
+                      IOCON_PIO1_10_FUNC_MASK |
+                      IOCON_PIO1_10_MODE_MASK);
+  IOCON_PIO1_10 |=   (IOCON_PIO1_10_FUNC_AD6 &
+                      IOCON_PIO1_10_ADMODE_ANALOG);
+  
+  /* Set AD7 to analog input */
+  IOCON_PIO1_11 &=  ~(IOCON_PIO1_11_ADMODE_MASK |
+                      IOCON_PIO1_11_FUNC_MASK |
+                      IOCON_PIO1_11_MODE_MASK);
+  IOCON_PIO1_11 |=   (IOCON_PIO1_11_FUNC_AD7 &
+                      IOCON_PIO1_11_ADMODE_ANALOG);
+  #endif
 
   /* Note that in SW mode only one channel can be selected at a time (AD0 in this case)
      To select multiple channels, ADC_AD0CR_BURST_HWSCANMODE must be used */

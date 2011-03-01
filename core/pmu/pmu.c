@@ -365,9 +365,6 @@ void pmuPowerDown( void )
 /**************************************************************************/
 void pmuSetupHW(void)
 {
-  // Set ADC pins to GPIO and GND them
-
-
   #ifdef CFG_CHIBI
     // Put Chibi/AT86RF212 into sleep mode
     chb_sleep(TRUE);
