@@ -22,36 +22,10 @@ void iap_entry(uint32_t param_tab[], uint32_t result_tab[])
   iap = (void (*)(uint32_t[], uint32_t[]))IAP_ADDRESS;
   iap(param_tab,result_tab);
 }
- 
-/**************************************************************************/
-/*! 
-    Returns the CPU's 32-bit CPU Part ID
-
-    @section Example
-
-    @code
-    #include "core/iap/iap.h"
-
-    IAP_return_t iap_return;
-    iap_return = iapReadCPUPartID();
-
-    if (iap_return.ReturnCode == 0)
-    {
-      printf("CPU ID: %08X %s", iap_return.Result[0], CFG_PRINTF_NEWLINE);
-    }
-    @endcode
-*/
-/**************************************************************************/
-IAP_return_t iapReadCPUPartID(void)
-{
-  param_table[0] = 54; //IAP command
-  iap_entry(param_table,(uint32_t*)(&iap_return));
-  return iap_return;
-}
 
 /**************************************************************************/
 /*! 
-    Returns the CPU's 128-bit serial number (4 words long)
+    Returns the CPU's unique 128-bit serial number (4 words long)
 
     @section Example
 
@@ -75,7 +49,9 @@ IAP_return_t iapReadCPUPartID(void)
 /**************************************************************************/
 IAP_return_t iapReadSerialNumber(void)
 {
-  param_table[0] = 58; //IAP command
+  // ToDo: Why does IAP sometime cause the application to halt when read???
+  param_table[0] = IAP_CMD_READUID;
   iap_entry(param_table,(uint32_t*)(&iap_return));
   return iap_return;
 }
+

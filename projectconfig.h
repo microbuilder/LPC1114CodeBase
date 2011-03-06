@@ -121,11 +121,11 @@
 
     Note:           At 36MHz 1 tick = ~27.777ns or 0.02777us
     -----------------------------------------------------------------------*/
-    #ifdef CFG_BRD_LPC1114_802154WIRELESS
+    #ifdef CFG_BRD_LPC1114_REFDESIGN
       #define CFG_CPU_CCLK              (36000000)
     #endif
 
-    #ifdef CFG_BRD_LPC1114_REFDESIGN
+    #ifdef CFG_BRD_LPC1114_802154WIRELESS
       #define CFG_CPU_CCLK              (36000000)
     #endif
 /*=========================================================================*/
@@ -146,20 +146,20 @@
     CFG_VREG_ALT_REG32    IOCON Register for the alt. output enable pin
 
     -----------------------------------------------------------------------*/
-    #ifdef CFG_BRD_LPC1114_802154WIRELESS
-      #define CFG_VREG_VCC_MAIN         (3300)    // 3.3V * 1000
-      #define CFG_VREG_ALT_PRESENT      (1)
-      #define CFG_VREG_ALT_VCC          (2200)    // TPS780 = 3.3V + 2.2V
-      #define CFG_VREG_ALT_PORT         (2)
-      #define CFG_VREG_ALT_PIN          (10)
-      #define CFG_VREG_ALT_REG32        (IOCON_PIO2_10)
-    #endif
-
     #ifdef CFG_BRD_LPC1114_REFDESIGN
       #define CFG_VREG_VCC_MAIN         (3300)    // 3.3V * 1000
       #define CFG_VREG_ALT_PRESENT      (0)
       #define CFG_VREG_ALT_PRESENT      (0)
       #define CFG_VREG_ALT_VCC          (3300)
+      #define CFG_VREG_ALT_PORT         (2)
+      #define CFG_VREG_ALT_PIN          (10)
+      #define CFG_VREG_ALT_REG32        (IOCON_PIO2_10)
+    #endif
+
+    #ifdef CFG_BRD_LPC1114_802154WIRELESS
+      #define CFG_VREG_VCC_MAIN         (3300)    // 3.3V * 1000
+      #define CFG_VREG_ALT_PRESENT      (1)
+      #define CFG_VREG_ALT_VCC          (2200)    // TPS780 = 3.3V + 2.2V
       #define CFG_VREG_ALT_PORT         (2)
       #define CFG_VREG_ALT_PIN          (10)
       #define CFG_VREG_ALT_REG32        (IOCON_PIO2_10)
@@ -189,15 +189,6 @@
                               'tools/schematics/AT86RF212LPC1114_v1.6.pdf'
                               show how 'BAT' is meant to be connected/used
     -----------------------------------------------------------------------*/
-    #ifdef CFG_BRD_LPC1114_802154WIRELESS
-      #define CFG_BAT
-      #define CFG_BAT_ENPORT              (2)
-      #define CFG_BAT_ENPIN               (11)
-      #define CFG_BAT_ENREG32             (IOCON_PIO2_11)
-      #define CFG_BAT_ADC                 (0)     // AD0 = P0.11
-      #define CFG_BAT_MULTIPLIER          (3127)  // ((10.0 + 4.7) / 4.7) * 1000
-    #endif
-
     #ifdef CFG_BRD_LPC1114_REFDESIGN
       // #define CFG_BAT
       #define CFG_BAT_ENPORT              (2)
@@ -205,6 +196,15 @@
       #define CFG_BAT_ENREG32             (IOCON_PIO2_11)
       #define CFG_BAT_ADC                 (0)
       #define CFG_BAT_MULTIPLIER          (0)
+    #endif
+
+    #ifdef CFG_BRD_LPC1114_802154WIRELESS
+      #define CFG_BAT
+      #define CFG_BAT_ENPORT              (2)
+      #define CFG_BAT_ENPIN               (11)
+      #define CFG_BAT_ENREG32             (IOCON_PIO2_11)
+      #define CFG_BAT_ADC                 (0)     // AD0 = P0.11
+      #define CFG_BAT_MULTIPLIER          (3127)  // ((10.0 + 4.7) / 4.7) * 1000
     #endif
 /*=========================================================================*/
 
@@ -217,11 +217,11 @@
                               of the systick timer.
 							  
     -----------------------------------------------------------------------*/
-    #ifdef CFG_BRD_LPC1114_802154WIRELESS
+    #ifdef CFG_BRD_LPC1114_REFDESIGN
       #define CFG_SYSTICK_DELAY_IN_MS     (1)
     #endif
 
-    #ifdef CFG_BRD_LPC1114_REFDESIGN
+    #ifdef CFG_BRD_LPC1114_802154WIRELESS
       #define CFG_SYSTICK_DELAY_IN_MS     (1)
     #endif
 /*=========================================================================*/
@@ -239,12 +239,12 @@
                               characters to store in memory.
 
     -----------------------------------------------------------------------*/
-    #ifdef CFG_BRD_LPC1114_802154WIRELESS
+    #ifdef CFG_BRD_LPC1114_REFDESIGN
       #define CFG_UART_BAUDRATE           (115200)
       #define CFG_UART_BUFSIZE            (128)
     #endif
 
-    #ifdef CFG_BRD_LPC1114_REFDESIGN
+    #ifdef CFG_BRD_LPC1114_802154WIRELESS
       #define CFG_UART_BAUDRATE           (115200)
       #define CFG_UART_BUFSIZE            (128)
     #endif
@@ -261,14 +261,14 @@
     CFG_LED_OFF               The pin state to turn the LED off (0 = low, 1 = high)
 
     -----------------------------------------------------------------------*/
-    #ifdef CFG_BRD_LPC1114_802154WIRELESS
+    #ifdef CFG_BRD_LPC1114_REFDESIGN
       #define CFG_LED_PORT                (3)
       #define CFG_LED_PIN                 (5)
       #define CFG_LED_ON                  (0)
       #define CFG_LED_OFF                 (1)
     #endif
 
-    #ifdef CFG_BRD_LPC1114_REFDESIGN
+    #ifdef CFG_BRD_LPC1114_802154WIRELESS
       #define CFG_LED_PORT                (3)
       #define CFG_LED_PIN                 (5)
       #define CFG_LED_ON                  (0)
@@ -299,9 +299,9 @@
                               'tools/schematics/AT86RF212LPC1114_v1.6.pdf'
                               show how SDCARD is meant to be connected/used
     -----------------------------------------------------------------------*/
-    #ifdef CFG_BRD_LPC1114_802154WIRELESS
-      #define CFG_SDCARD
-      #define CFG_SDCARD_READONLY         (0)   // Must be 0 or 1
+    #ifdef CFG_BRD_LPC1114_REFDESIGN
+      // #define CFG_SDCARD
+      #define CFG_SDCARD_READONLY         (0)
       #define CFG_SDCARD_CDPORT           (2)
       #define CFG_SDCARD_CDPIN            (4)
       #define CFG_SDCARD_CDREG32          (IOCON_PIO2_4)
@@ -310,9 +310,9 @@
       #define CFG_SDCARD_ENREG32          (IOCON_PIO2_5)
     #endif
 
-    #ifdef CFG_BRD_LPC1114_REFDESIGN
-      // #define CFG_SDCARD
-      #define CFG_SDCARD_READONLY         (0)
+    #ifdef CFG_BRD_LPC1114_802154WIRELESS
+      #define CFG_SDCARD
+      #define CFG_SDCARD_READONLY         (0)   // Must be 0 or 1
       #define CFG_SDCARD_CDPORT           (2)
       #define CFG_SDCARD_CDPIN            (4)
       #define CFG_SDCARD_CDREG32          (IOCON_PIO2_4)
@@ -337,12 +337,12 @@
 
     NOTE: PRINTF Support =    ~350 bytes Flash (-Os)
     -----------------------------------------------------------------------*/
-    #ifdef CFG_BRD_LPC1114_802154WIRELESS
+    #ifdef CFG_BRD_LPC1114_REFDESIGN
       #define CFG_PRINTF_UART
       #define CFG_PRINTF_NEWLINE          "\r\n"
     #endif
 
-    #ifdef CFG_BRD_LPC1114_REFDESIGN
+    #ifdef CFG_BRD_LPC1114_802154WIRELESS
       #define CFG_PRINTF_UART
       #define CFG_PRINTF_NEWLINE          "\r\n"
     #endif
@@ -365,13 +365,13 @@
                               CFG_PRINTF_UART or CFG_PRINTF_USBCDC are 
                               selected.
     -----------------------------------------------------------------------*/
-    #ifdef CFG_BRD_LPC1114_802154WIRELESS
+    #ifdef CFG_BRD_LPC1114_REFDESIGN
       #define CFG_INTERFACE
       #define CFG_INTERFACE_MAXMSGSIZE    (256)
       #define CFG_INTERFACE_PROMPT        "LPC1114 >> "
     #endif
 
-    #ifdef CFG_BRD_LPC1114_REFDESIGN
+    #ifdef CFG_BRD_LPC1114_802154WIRELESS
       #define CFG_INTERFACE
       #define CFG_INTERFACE_MAXMSGSIZE    (256)
       #define CFG_INTERFACE_PROMPT        "LPC1114 >> "
@@ -397,13 +397,13 @@
     DEPENDENCIES:               PWM output requires the use of 16-bit
                                 timer 1 and pin 1.9 (CT16B1_MAT0).
     -----------------------------------------------------------------------*/
-    #ifdef CFG_BRD_LPC1114_802154WIRELESS
+    #ifdef CFG_BRD_LPC1114_REFDESIGN
       // #define CFG_PWM
       #define CFG_PWM_DEFAULT_PULSEWIDTH  (CFG_CPU_CCLK / 1000)
       #define CFG_PWM_DEFAULT_DUTYCYCLE   (50)
     #endif
 
-    #ifdef CFG_BRD_LPC1114_REFDESIGN
+    #ifdef CFG_BRD_LPC1114_802154WIRELESS
       // #define CFG_PWM
       #define CFG_PWM_DEFAULT_PULSEWIDTH  (CFG_CPU_CCLK / 1000)
       #define CFG_PWM_DEFAULT_DUTYCYCLE   (50)
@@ -422,11 +422,11 @@
     DEPENDENCIES:               STEPPER requires the use of pins 2.8-11 and
                                 16-bit timer 0.
     -----------------------------------------------------------------------*/
-    #ifdef CFG_BRD_LPC1114_802154WIRELESS
+    #ifdef CFG_BRD_LPC1114_REFDESIGN
       // #define CFG_STEPPER
     #endif
 
-    #ifdef CFG_BRD_LPC1114_REFDESIGN
+    #ifdef CFG_BRD_LPC1114_802154WIRELESS
       // #define CFG_STEPPER
     #endif
 /*=========================================================================*/
@@ -441,14 +441,14 @@
     CFG_I2CEEPROM_SIZE        The number of bytes available on the EEPROM
 
     -----------------------------------------------------------------------*/
-    #ifdef CFG_BRD_LPC1114_802154WIRELESS
-      #define CFG_I2CEEPROM
-      #define CFG_I2CEEPROM_SIZE          (4096)
-    #endif
-
     #ifdef CFG_BRD_LPC1114_REFDESIGN
       #define CFG_I2CEEPROM
-      #define CFG_I2CEEPROM_SIZE          (4096)
+      #define CFG_I2CEEPROM_SIZE          (3072)
+    #endif
+
+    #ifdef CFG_BRD_LPC1114_802154WIRELESS
+      #define CFG_I2CEEPROM
+      #define CFG_I2CEEPROM_SIZE          (3072)
     #endif
 /*=========================================================================*/
 
@@ -485,13 +485,13 @@
     00Fx  . . . . . . . . . . . . . . . .
 
     -----------------------------------------------------------------------*/
-    #ifdef CFG_BRD_LPC1114_802154WIRELESS
+    #ifdef CFG_BRD_LPC1114_REFDESIGN
       #define CFG_EEPROM_RESERVED                 (0x00FF)              // Protect first 256 bytes of memory
       #define CFG_EEPROM_CHIBI_IEEEADDR           (uint16_t)(0x0000)    // 8
       #define CFG_EEPROM_CHIBI_SHORTADDR          (uint16_t)(0x0009)    // 2
     #endif
 
-    #ifdef CFG_BRD_LPC1114_REFDESIGN
+    #ifdef CFG_BRD_LPC1114_802154WIRELESS
       #define CFG_EEPROM_RESERVED                 (0x00FF)              // Protect first 256 bytes of memory
       #define CFG_EEPROM_CHIBI_IEEEADDR           (uint16_t)(0x0000)    // 8
       #define CFG_EEPROM_CHIBI_SHORTADDR          (uint16_t)(0x0009)    // 2
@@ -508,12 +508,12 @@
                               build (requires external HW)
 
     -----------------------------------------------------------------------*/
-    #ifdef CFG_BRD_LPC1114_802154WIRELESS
-      #define CFG_LM75B
-    #endif
-
     #ifdef CFG_BRD_LPC1114_REFDESIGN
       // #define CFG_LM75B
+    #endif
+
+    #ifdef CFG_BRD_LPC1114_802154WIRELESS
+      #define CFG_LM75B
     #endif
 /*=========================================================================*/
 
@@ -544,8 +544,8 @@
                                 'tools/schematics/AT86RF212LPC1114_v1.6.pdf'
                                 show how 'CHIBI' is meant to be connected
     -----------------------------------------------------------------------*/
-    #ifdef CFG_BRD_LPC1114_802154WIRELESS
-      #define CFG_CHIBI
+    #ifdef CFG_BRD_LPC1114_REFDESIGN
+      // #define CFG_CHIBI
       #define CFG_CHIBI_MODE              (0)                 // OQPSK_868MHZ
       #define CFG_CHIBI_POWER             (0xE9)              // CHB_PWR_EU2_3DBM
       #define CFG_CHIBI_CHANNEL           (0)                 // 868-868.6 MHz
@@ -554,8 +554,8 @@
       #define CFG_CHIBI_BUFFERSIZE        (128)
     #endif
 
-    #ifdef CFG_BRD_LPC1114_REFDESIGN
-      // #define CFG_CHIBI
+    #ifdef CFG_BRD_LPC1114_802154WIRELESS
+      #define CFG_CHIBI
       #define CFG_CHIBI_MODE              (0)                 // OQPSK_868MHZ
       #define CFG_CHIBI_POWER             (0xE9)              // CHB_PWR_EU2_3DBM
       #define CFG_CHIBI_CHANNEL           (0)                 // 868-868.6 MHz
@@ -582,12 +582,12 @@
     DEPENDENCIES:             ST7565 requires the use of pins 2.4-9.
     DEPENDENCIES:             SSD1306 requires the use of pins 2.4-9.
     -----------------------------------------------------------------------*/
-    #ifdef CFG_BRD_LPC1114_802154WIRELESS
+    #ifdef CFG_BRD_LPC1114_REFDESIGN
       // #define CFG_ST7565
       // #define CFG_SSD1306
     #endif
 
-    #ifdef CFG_BRD_LPC1114_REFDESIGN
+    #ifdef CFG_BRD_LPC1114_802154WIRELESS
       // #define CFG_ST7565
       // #define CFG_SSD1306
     #endif
@@ -609,12 +609,12 @@
                                 size.  Please note that Printf can not be
                                 used to display 64-bit values (%lld)!
     -----------------------------------------------------------------------*/
-    #ifdef CFG_BRD_LPC1114_802154WIRELESS
+    #ifdef CFG_BRD_LPC1114_REFDESIGN
       // #define CFG_RSA
       #define CFG_RSA_BITS                  (32)
     #endif
 
-    #ifdef CFG_BRD_LPC1114_REFDESIGN
+    #ifdef CFG_BRD_LPC1114_802154WIRELESS
       // #define CFG_RSA
       #define CFG_RSA_BITS                  (32)
     #endif
@@ -622,9 +622,13 @@
 
 
 
-// #####################
-// Config error-checking
-// #####################
+/*=========================================================================
+  CONFIG FILE VALIDATION
+  -------------------------------------------------------------------------
+  Basic error checking to make sure that incompatible defines are not 
+  enabled at the same time, etc.
+
+  =========================================================================*/
 
 #if !defined CFG_BRD_LPC1114_REFDESIGN && !defined CFG_BRD_LPC1114_802154WIRELESS
   #error "You must defined a target board (CFG_BRD_LPC1114_REFDESIGN or CFG_BRD_LPC1114_802154WIRELESS)"

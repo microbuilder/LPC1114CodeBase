@@ -133,13 +133,16 @@ void wdtInit (void)
 
 /**************************************************************************/
 /*! 
-    Feeds the watchdog to keep it from timing out.
+    Feeds the watchdog to keep it from timing out.  Interrupts will be
+    disabled while feeding the watchdog.
 */
 /**************************************************************************/
 void wdtFeed (void)
 {
   /* Pet the watchdog */
+  __disable_irq();
   WDT_WDFEED = WDT_WDFEED_FEED1;
   WDT_WDFEED = WDT_WDFEED_FEED2;
+  __enable_irq();
 }
 

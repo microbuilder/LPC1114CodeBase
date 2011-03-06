@@ -1,6 +1,8 @@
-v0.61 - Ongoing
-===============
+v0.61 - 7 March 2011
+====================
 
+- Interrupts are now disabled while feeding the watchdog as per
+  a warning in the usermanual.
 - Modified projectconfig.h to select the target board and configure
   the project accordingly.  This isn't ideal, but it's a lot more
   maintainable than have a seperate code base for every board since
