@@ -75,7 +75,7 @@ void cmd_sysinfo(uint8_t argc, char **argv)
 
   // Check the battery voltage
   #ifdef CFG_BAT
-    uint32_t i, c, ctotal;
+    uint32_t c;
     gpioSetDir(CFG_BAT_ENPORT, CFG_BAT_ENPIN, gpioDirection_Output );   
     gpioSetValue(CFG_BAT_ENPORT, CFG_BAT_ENPIN, 1 );    // Enable the voltage divider
     systickDelay(5);

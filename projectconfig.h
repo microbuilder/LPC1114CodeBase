@@ -132,6 +132,38 @@
 
 
 /*=========================================================================
+    Power Management (PMU Settings)
+    -----------------------------------------------------------------------
+
+    CFG_PMU_USEPOWERPROFILES    If set to 1 LPC1100L power profiles will
+                                be used, otherwise they will be ignored.
+                                This should only be set for L-series chips.
+    CFG_PMU_POWERPROFILE        The default power profile to use for normal
+                                program execution.  This can be any of the
+                                following value from core/pmu/pmu.h:
+
+                                  pmuPowerProfile_Default
+                                  pmuPowerProfile_Performance
+                                  pmuPowerProfile_Efficiency
+                                  pmuPowerProfile_LowCurrent
+
+    Note: There is an internal check in the pmu code to make sure that the
+    chip actually supports power profiles, so these can be safely enabled
+    on non L series MCUs.
+    -----------------------------------------------------------------------*/
+    #ifdef CFG_BRD_LPC1114_REFDESIGN
+      #define CFG_PMU_USEPOWERPROFILES  (1)
+      #define CFG_PMU_POWERPROFILE      (pmuPowerProfile_Efficiency)
+    #endif
+
+    #ifdef CFG_BRD_LPC1114_802154WIRELESS
+      #define CFG_PMU_USEPOWERPROFILES  (1)
+      #define CFG_PMU_POWERPROFILE      (pmuPowerProfile_LowCurrent)
+    #endif
+/*=========================================================================*/
+
+
+/*=========================================================================
     VOLTAGE REGULATOR
     -----------------------------------------------------------------------
 

@@ -44,7 +44,6 @@
 
 #include "core/pmu/pmu.h"
 
-
 /**************************************************************************/
 /*! 
     Puts the device into deep sleep
@@ -55,25 +54,12 @@ void cmd_deepsleep(uint8_t argc, char **argv)
   // ToDo: Some peripherals may need to be manually disabled for the
   // lowest possible power consumption in deep sleep mode
 
-  // Put peripherals into sleep mode
-  uint32_t pmuRegVal;
-  pmuRegVal = SCB_PDSLEEPCFG_IRCOUT_PD |
-              SCB_PDSLEEPCFG_IRC_PD |
-              SCB_PDSLEEPCFG_FLASH_PD |
-              SCB_PDSLEEPCFG_BOD_PD |
-              SCB_PDSLEEPCFG_ADC_PD |
-              SCB_PDSLEEPCFG_SYSPLL_PD |
-              SCB_PDSLEEPCFG_SYSOSC_PD;
-
-  // If the wakeup timer is not used, WDTOSC can also be stopped (saves ~2uA)
-  // pmuRegVal |= SCB_PDSLEEPCFG_WDTOSC_PD;
-
   // Enter deep sleep mode (wakeup after ~10 seconds)
   // Note that the exact delay is variable since the internal WDT oscillator
   // is used for lowest possible power consumption and because it requires
   // no external components, but it only has +-/40% accuracy
   printf("Entering Deep Sleep mode for 10 seconds%s", CFG_PRINTF_NEWLINE);
-  pmuDeepSleep(pmuRegVal, 10);
+  pmuDeepSleep(10);
 
   // On wakeup, the WAKEUP interrupt will be fired, which is handled
   // by WAKEUP_IRQHandler in 'core/pmu/pmu.c'.  This will set the CPU

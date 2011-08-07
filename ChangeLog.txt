@@ -1,3 +1,34 @@
+v0.70 - 8 August 2011
+=====================
+
+- Updated 'pmuInit' and 'projectconfig.h' to enable
+  power profiles in the LPC1100L series of chips.
+- Updated 'pmuDeepSleep' in core/pmu/pmu.c to remove
+  the individual peripherals registers during deep-
+  sleep.  The latest version of the UM removed these.
+  The deep sleep command now has the following signature:
+  void pmuDeepSleep(uint32_t wakeupSeconds)
+- Updated clock values in cpu.c for PLL to match FCCO 
+  range of 156-320MHz
+- Changed SCB_PLLCTRL_MULT_* to SCB_PLLCTRL_MSEL_* in
+  lpc111x.h to match usermanual
+- Changed SCB_PLLCTRL_DIV_* SCB_PLLCTRL_PSEL_* in
+  lpc111x.h to match usermanual
+- Fixed IOCON_SWDIO_PIO1_3_FUNC_CT32B1_MAT2 in lpc134x.h
+- Fixed a nasty bug with 'gpioInterruptEvent' in the 
+  gpioSetInterrupt function (core/gpio/gpio.c)
+- Added cmd_reset to the CLI
+- Added __reset() macro to lpc111x.h (see note below)
+- Added AIRCR register to lpc111x.h (Application Interrupt
+  and Reset Control Register) to allow easy system resets.
+- Added '-lm' to linker in Makefile for math.c support
+- Increased MAX_STRING_SIZE from 100 to 255 in stdio.c
+- Added driver for the TSL2561 digital light sensor
+- Added an example of reading the LP75B temperature sensor
+  once every 5 seconds, transmitting the temperature 
+  wirelessly, and then going into deep sleep mode until the
+  next reading.  See "tools/examples/chibi/transmit_temp".
+
 v0.65 - 7 March 2011
 ====================
 

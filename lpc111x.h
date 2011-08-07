@@ -84,45 +84,45 @@
     produce a clock up to the maximum allowed for the CPU, which is 50 MHz. */
 
 #define SCB_PLLCTRL                               (*(pREG32 (0x40048008)))    // System PLL control
-#define SCB_PLLCTRL_MULT_1                        ((unsigned int) 0x00000000)
-#define SCB_PLLCTRL_MULT_2                        ((unsigned int) 0x00000001)
-#define SCB_PLLCTRL_MULT_3                        ((unsigned int) 0x00000002)
-#define SCB_PLLCTRL_MULT_4                        ((unsigned int) 0x00000003)
-#define SCB_PLLCTRL_MULT_5                        ((unsigned int) 0x00000004)
-#define SCB_PLLCTRL_MULT_6                        ((unsigned int) 0x00000005)
-#define SCB_PLLCTRL_MULT_7                        ((unsigned int) 0x00000006)
-#define SCB_PLLCTRL_MULT_8                        ((unsigned int) 0x00000007)
-#define SCB_PLLCTRL_MULT_9                        ((unsigned int) 0x00000008)
-#define SCB_PLLCTRL_MULT_10                       ((unsigned int) 0x00000009)
-#define SCB_PLLCTRL_MULT_11                       ((unsigned int) 0x0000000A)
-#define SCB_PLLCTRL_MULT_12                       ((unsigned int) 0x0000000B)
-#define SCB_PLLCTRL_MULT_13                       ((unsigned int) 0x0000000C)
-#define SCB_PLLCTRL_MULT_14                       ((unsigned int) 0x0000000D)
-#define SCB_PLLCTRL_MULT_15                       ((unsigned int) 0x0000000E)
-#define SCB_PLLCTRL_MULT_16                       ((unsigned int) 0x0000000F)
-#define SCB_PLLCTRL_MULT_17                       ((unsigned int) 0x00000010)
-#define SCB_PLLCTRL_MULT_18                       ((unsigned int) 0x00000011)
-#define SCB_PLLCTRL_MULT_19                       ((unsigned int) 0x00000012)
-#define SCB_PLLCTRL_MULT_20                       ((unsigned int) 0x00000013)
-#define SCB_PLLCTRL_MULT_21                       ((unsigned int) 0x00000014)
-#define SCB_PLLCTRL_MULT_22                       ((unsigned int) 0x00000015)
-#define SCB_PLLCTRL_MULT_23                       ((unsigned int) 0x00000016)
-#define SCB_PLLCTRL_MULT_24                       ((unsigned int) 0x00000017)
-#define SCB_PLLCTRL_MULT_25                       ((unsigned int) 0x00000018)
-#define SCB_PLLCTRL_MULT_26                       ((unsigned int) 0x00000019)
-#define SCB_PLLCTRL_MULT_27                       ((unsigned int) 0x0000001A)
-#define SCB_PLLCTRL_MULT_28                       ((unsigned int) 0x0000001B)
-#define SCB_PLLCTRL_MULT_29                       ((unsigned int) 0x0000001C)
-#define SCB_PLLCTRL_MULT_30                       ((unsigned int) 0x0000001D)
-#define SCB_PLLCTRL_MULT_31                       ((unsigned int) 0x0000001E)
-#define SCB_PLLCTRL_MULT_32                       ((unsigned int) 0x0000001F)
-#define SCB_PLLCTRL_MULT_MASK                     ((unsigned int) 0x0000001F)    
-#define SCB_PLLCTRL_DIV_2                         ((unsigned int) 0x00000000)       
-#define SCB_PLLCTRL_DIV_4                         ((unsigned int) 0x00000020)       
-#define SCB_PLLCTRL_DIV_8                         ((unsigned int) 0x00000040)       
-#define SCB_PLLCTRL_DIV_16                        ((unsigned int) 0x00000060)
-#define SCB_PLLCTRL_DIV_BIT                       (5)
-#define SCB_PLLCTRL_DIV_MASK                      ((unsigned int) 0x00000060)    
+#define SCB_PLLCTRL_MSEL_1                        ((unsigned int) 0x00000000)
+#define SCB_PLLCTRL_MSEL_2                        ((unsigned int) 0x00000001)
+#define SCB_PLLCTRL_MSEL_3                        ((unsigned int) 0x00000002)
+#define SCB_PLLCTRL_MSEL_4                        ((unsigned int) 0x00000003)
+#define SCB_PLLCTRL_MSEL_5                        ((unsigned int) 0x00000004)
+#define SCB_PLLCTRL_MSEL_6                        ((unsigned int) 0x00000005)
+#define SCB_PLLCTRL_MSEL_7                        ((unsigned int) 0x00000006)
+#define SCB_PLLCTRL_MSEL_8                        ((unsigned int) 0x00000007)
+#define SCB_PLLCTRL_MSEL_9                        ((unsigned int) 0x00000008)
+#define SCB_PLLCTRL_MSEL_10                       ((unsigned int) 0x00000009)
+#define SCB_PLLCTRL_MSEL_11                       ((unsigned int) 0x0000000A)
+#define SCB_PLLCTRL_MSEL_12                       ((unsigned int) 0x0000000B)
+#define SCB_PLLCTRL_MSEL_13                       ((unsigned int) 0x0000000C)
+#define SCB_PLLCTRL_MSEL_14                       ((unsigned int) 0x0000000D)
+#define SCB_PLLCTRL_MSEL_15                       ((unsigned int) 0x0000000E)
+#define SCB_PLLCTRL_MSEL_16                       ((unsigned int) 0x0000000F)
+#define SCB_PLLCTRL_MSEL_17                       ((unsigned int) 0x00000010)
+#define SCB_PLLCTRL_MSEL_18                       ((unsigned int) 0x00000011)
+#define SCB_PLLCTRL_MSEL_19                       ((unsigned int) 0x00000012)
+#define SCB_PLLCTRL_MSEL_20                       ((unsigned int) 0x00000013)
+#define SCB_PLLCTRL_MSEL_21                       ((unsigned int) 0x00000014)
+#define SCB_PLLCTRL_MSEL_22                       ((unsigned int) 0x00000015)
+#define SCB_PLLCTRL_MSEL_23                       ((unsigned int) 0x00000016)
+#define SCB_PLLCTRL_MSEL_24                       ((unsigned int) 0x00000017)
+#define SCB_PLLCTRL_MSEL_25                       ((unsigned int) 0x00000018)
+#define SCB_PLLCTRL_MSEL_26                       ((unsigned int) 0x00000019)
+#define SCB_PLLCTRL_MSEL_27                       ((unsigned int) 0x0000001A)
+#define SCB_PLLCTRL_MSEL_28                       ((unsigned int) 0x0000001B)
+#define SCB_PLLCTRL_MSEL_29                       ((unsigned int) 0x0000001C)
+#define SCB_PLLCTRL_MSEL_30                       ((unsigned int) 0x0000001D)
+#define SCB_PLLCTRL_MSEL_31                       ((unsigned int) 0x0000001E)
+#define SCB_PLLCTRL_MSEL_32                       ((unsigned int) 0x0000001F)
+#define SCB_PLLCTRL_MSEL_MASK                     ((unsigned int) 0x0000001F)    
+#define SCB_PLLCTRL_PSEL_2                        ((unsigned int) 0x00000000)       
+#define SCB_PLLCTRL_PSEL_4                        ((unsigned int) 0x00000020)       
+#define SCB_PLLCTRL_PSEL_8                        ((unsigned int) 0x00000040)       
+#define SCB_PLLCTRL_PSEL_16                       ((unsigned int) 0x00000060)
+#define SCB_PLLCTRL_PSEL_BIT                      (5)
+#define SCB_PLLCTRL_PSEL_MASK                     ((unsigned int) 0x00000060)    
 #define SCB_PLLCTRL_MASK                          ((unsigned int) 0x0000007F)    
 
 /*  SYSPLLSTAT (System PLL status register)
@@ -694,23 +694,32 @@
     will be automatically loaded into the PDRUNCFG register when the Sleep mode is
     entered. */
 
+/*  Note: The latest version of the UM (10 March 2011) indicates that only four 
+    values can be assigned to the PDSLEEPCFG register.  This differs from early
+    versions of the UM which contained seperate values, but values have been
+    added for the four 'valid' values included in the latest UM. */
+
 #define SCB_PDSLEEPCFG                            (*(pREG32 (0x40048230)))    // Power-down states in Deep-sleep mode
-#define SCB_PDSLEEPCFG_IRCOUT_PD                  ((unsigned int) 0x00000001)
-#define SCB_PDSLEEPCFG_IRCOUT_PD_MASK             ((unsigned int) 0x00000001)
-#define SCB_PDSLEEPCFG_IRC_PD                     ((unsigned int) 0x00000002)
-#define SCB_PDSLEEPCFG_IRC_PD_MASK                ((unsigned int) 0x00000002)
-#define SCB_PDSLEEPCFG_FLASH_PD                   ((unsigned int) 0x00000004)
-#define SCB_PDSLEEPCFG_FLASH_PD_MASK              ((unsigned int) 0x00000004)
-#define SCB_PDSLEEPCFG_BOD_PD                     ((unsigned int) 0x00000008)
-#define SCB_PDSLEEPCFG_BOD_PD_MASK                ((unsigned int) 0x00000008)
-#define SCB_PDSLEEPCFG_ADC_PD                     ((unsigned int) 0x00000010)
-#define SCB_PDSLEEPCFG_ADC_PD_MASK                ((unsigned int) 0x00000010)
-#define SCB_PDSLEEPCFG_SYSOSC_PD                  ((unsigned int) 0x00000020)
-#define SCB_PDSLEEPCFG_SYSOSC_PD_MASK             ((unsigned int) 0x00000020)
-#define SCB_PDSLEEPCFG_WDTOSC_PD                  ((unsigned int) 0x00000040)
-#define SCB_PDSLEEPCFG_WDTOSC_PD_MASK             ((unsigned int) 0x00000040)
-#define SCB_PDSLEEPCFG_SYSPLL_PD                  ((unsigned int) 0x00000080)
-#define SCB_PDSLEEPCFG_SYSPLL_PD_MASK             ((unsigned int) 0x00000080)
+#define SCB_PDSLEEPCFG_BOD_ON_WDOSC_ON            ((unsigned int) 0x000018B7)
+#define SCB_PDSLEEPCFG_BOD_ON_WDOSC_OFF           ((unsigned int) 0x000018F7)
+#define SCB_PDSLEEPCFG_BOD_OFF_WDOSC_ON           ((unsigned int) 0x000018BF)
+#define SCB_PDSLEEPCFG_BOD_OFF_WDOSC_OFF          ((unsigned int) 0x000018FF)
+//#define SCB_PDSLEEPCFG_IRCOUT_PD                  ((unsigned int) 0x00000001)
+//#define SCB_PDSLEEPCFG_IRCOUT_PD_MASK             ((unsigned int) 0x00000001)
+//#define SCB_PDSLEEPCFG_IRC_PD                     ((unsigned int) 0x00000002)
+//#define SCB_PDSLEEPCFG_IRC_PD_MASK                ((unsigned int) 0x00000002)
+//#define SCB_PDSLEEPCFG_FLASH_PD                   ((unsigned int) 0x00000004)
+//#define SCB_PDSLEEPCFG_FLASH_PD_MASK              ((unsigned int) 0x00000004)
+//#define SCB_PDSLEEPCFG_BOD_PD                     ((unsigned int) 0x00000008)
+//#define SCB_PDSLEEPCFG_BOD_PD_MASK                ((unsigned int) 0x00000008)
+//#define SCB_PDSLEEPCFG_ADC_PD                     ((unsigned int) 0x00000010)
+//#define SCB_PDSLEEPCFG_ADC_PD_MASK                ((unsigned int) 0x00000010)
+//#define SCB_PDSLEEPCFG_SYSOSC_PD                  ((unsigned int) 0x00000020)
+//#define SCB_PDSLEEPCFG_SYSOSC_PD_MASK             ((unsigned int) 0x00000020)
+//#define SCB_PDSLEEPCFG_WDTOSC_PD                  ((unsigned int) 0x00000040)
+//#define SCB_PDSLEEPCFG_WDTOSC_PD_MASK             ((unsigned int) 0x00000040)
+//#define SCB_PDSLEEPCFG_SYSPLL_PD                  ((unsigned int) 0x00000080)
+//#define SCB_PDSLEEPCFG_SYSPLL_PD_MASK             ((unsigned int) 0x00000080)
 
 /*  PDAWAKECFG (Wake-up configuration register)
     The bits in this register can be programmed to indicate the state the chip must enter when
@@ -811,6 +820,18 @@
 #define SCB_ICSR_VECTPENDING_MASK                 ((unsigned int) 0x001FF000)
 #define SCB_ICSR_VECTACTIVE_MASK                  ((unsigned int) 0x000001FF)
 
+/*  Application Interrupt and Reset Control Register */
+
+#define SCB_AIRCR                                 (*(pREG32 (0xE000ED0C)))
+#define SCB_AIRCR_VECTKEY_VALUE                   ((unsigned int) 0x05FA0000) // Vect key needs to be set to 05FA for reset to work
+#define SCB_AIRCR_VECTKEY_MASK                    ((unsigned int) 0xFFFF0000)
+#define SCB_AIRCR_ENDIANESS                       ((unsigned int) 0x00008000) // Read Endianness (1=Big, 0=Little)
+#define SCB_AIRCR_ENDIANESS_MASK                  ((unsigned int) 0x00008000)
+#define SCB_AIRCR_SYSRESETREQ                     ((unsigned int) 0x00000004) // Request system reset
+#define SCB_AIRCR_SYSRESETREQ_MASK                ((unsigned int) 0x00000004)
+#define SCB_AIRCR_VECTCLRACTIVE                   ((unsigned int) 0x00000002) // Used to prevent accidental reset
+#define SCB_AIRCR_VECTCLRACTIVE_MASK              ((unsigned int) 0x00000002)
+
 /*  System Control Register */
 
 #define SCB_SCR                                   (*(pREG32 (0xE000ED10)))
@@ -831,6 +852,8 @@
 #define PMU_PMUCTRL_DPDEN_MASK                    ((unsigned int) 0x00000002) // Deep power-down enable
 #define PMU_PMUCTRL_DPDEN_DEEPPOWERDOWN           ((unsigned int) 0x00000002) // WFI will enter deep power-down mode
 #define PMU_PMUCTRL_DPDEN_SLEEP                   ((unsigned int) 0x00000000) // WFI will enter sleep mode
+#define PMU_PMUCTRL_SLEEPFLAG_MASK                ((unsigned int) 0x00000100) // Read-only ... indicates if the device is in active or sleep/deep-sleep/deep-power-down mode
+#define PMU_PMUCTRL_SLEEPFLAG                     ((unsigned int) 0x00000100)
 #define PMU_PMUCTRL_DPDFLAG_MASK                  ((unsigned int) 0x00000800) // Deep power-down flag
 #define PMU_PMUCTRL_DPDFLAG                       ((unsigned int) 0x00000800)
 
@@ -858,7 +881,7 @@
     Only a cold boot, when all power has been completely removed from the chip, will reset
     the general purpose registers.
       
-    Remark: If the external voltage applied on pin VDD(3V3) drops below <tbd> V, the
+    Remark: If the external voltage applied on pin VDD(3V3) drops below 2.2V, the
     hysteresis of the WAKEUP input pin has to be disabled in order for the chip to wake up
     from Deep power-down mode.  */
 
@@ -1102,7 +1125,7 @@
 #define IOCON_SWDIO_PIO1_3_FUNC_SWDIO             ((unsigned int) 0x00000000)
 #define IOCON_SWDIO_PIO1_3_FUNC_GPIO              ((unsigned int) 0x00000001)
 #define IOCON_SWDIO_PIO1_3_FUNC_AD4               ((unsigned int) 0x00000002)
-#define IOCON_SWDIO_PIO1_3_FUNC_CT32B1_MAT2       ((unsigned int) 0x00000004)
+#define IOCON_SWDIO_PIO1_3_FUNC_CT32B1_MAT2       ((unsigned int) 0x00000003)
 #define IOCON_SWDIO_PIO1_3_HYS_MASK               ((unsigned int) 0x00000020)
 #define IOCON_SWDIO_PIO1_3_HYS_DISABLE            ((unsigned int) 0x00000000)
 #define IOCON_SWDIO_PIO1_3_HYS_ENABLE             ((unsigned int) 0x00000020)
@@ -3118,5 +3141,16 @@ static inline void NVIC_DisableIRQ(IRQn_t IRQn)
 /*##############################################################################
 ## Misc. Inline Functions
 ##############################################################################*/
+
+/**************************************************************************/
+/*! 
+    @brief  Causes a system reset
+
+    Resets the system using the AIRCR register, and waits in a loop until reset
+    occurs (since there may be a delay since the write to the register and the
+*/
+/**************************************************************************/
+static inline void __reset()      { __disable_irq(); SCB_AIRCR = SCB_AIRCR_VECTKEY_VALUE | SCB_AIRCR_SYSRESETREQ; while(1); }
+
 
 #endif

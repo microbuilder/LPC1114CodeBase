@@ -1,13 +1,16 @@
 /**************************************************************************/
 /*! 
-    @file     main.c
+    @file     cmd_reset.c
     @author   K. Townsend (microBuilder.eu)
+
+    @brief    Code to execute for cmd_reset in the 'core/cmd'
+              command-line interpretter.
 
     @section LICENSE
 
     Software License Agreement (BSD License)
 
-    Copyright (c) 2011, microBuilder SARL
+    Copyright (c) 2010, microBuilder SARL
     All rights reserved.
 
     Redistribution and use in source and binary forms, with or without
@@ -33,58 +36,25 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 /**************************************************************************/
-#include <stdlib.h>
 #include <stdio.h>
-#include <string.h>
 
 #include "projectconfig.h"
-#include "sysinit.h"
+#include "core/cmd/cmd.h"
+#include "core/cpu/cpu.h"
+#include "project/commands.h"       // Generic helper functions
 
-#include "core/gpio/gpio.h"
-#include "core/systick/systick.h"
-
-#ifdef CFG_INTERFACE
-  #include "core/cmd/cmd.h"
-#endif
+#ifdef CFG_I2CEEPROM
+  #include "drivers/eeprom/eeprom.h"
+  #include "core/uart/uart.h"
 
 /**************************************************************************/
 /*! 
-    Main program entry point.  After reset, normal code execution will
-    begin here.
+    Resets the board using the AIRCR register
 */
 /**************************************************************************/
-int main(void)
+void cmd_reset(uint8_t argc, char **argv)
 {
-  // Configure cpu and mandatory peripherals
-  systemInit();
-
-  uint32_t currentSecond, lastSecond;
-  currentSecond = lastSecond = 0;
-
-  gpioSetValue (CFG_LED_PORT, CFG_LED_PIN, CFG_LED_ON); 
-
-  while (1)
-  {
-    // Toggle LED once per second ... rollover = 136 years :)
-    currentSecond = systickGetSecondsActive();
-    if (currentSecond != lastSecond)
-    {
-      lastSecond = currentSecond;
-      if (gpioGetValue(CFG_LED_PORT, CFG_LED_PIN) == CFG_LED_OFF)
-      {
-        gpioSetValue (CFG_LED_PORT, CFG_LED_PIN, CFG_LED_ON); 
-      }
-      else
-      {
-        gpioSetValue (CFG_LED_PORT, CFG_LED_PIN, CFG_LED_OFF); 
-      }
-    }
-
-    // Poll for CLI input if CFG_INTERFACE is enabled in projectconfig.h
-    #ifdef CFG_INTERFACE 
-      cmdPoll(); 
-    #endif
-  }
-
-  return 0;
+  cpuReset();
 }
+
+#endif

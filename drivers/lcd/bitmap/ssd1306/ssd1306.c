@@ -1,14 +1,14 @@
 /**************************************************************************/
 /*! 
-    @file     ST7565.c
+    @file     ssd1306.c
     @author   K. Townsend (microBuilder.eu)
 
     @section DESCRIPTION
 
-    Driver for 128x64 pixel display based on the ST7565 LCD controller.
+    Driver for 128x64 OLED display based on the SSD1306 controller.
 
-    This driver is based on the ST7565 Library from Limor Fried
-    (Adafruit Industries) at: http://github.com/adafruit/ST7565-LCD/    
+    This driver is based on the SSD1306 Library from Limor Fried
+    (Adafruit Industries) at: https://github.com/adafruit/SSD1306  
     
     @section LICENSE
 
@@ -42,51 +42,39 @@
 /**************************************************************************/
 #include <string.h>
 
-#include "st7565.h"
+#include "ssd1306.h"
 
 #include "core/gpio/gpio.h"
 #include "core/systick/systick.h"
 #include "drivers/lcd/smallfonts.h"
 
-void sendByte(uint8_t byte);
+void ssd1306SendByte(uint8_t byte);
 
-#define CMD(c)        do { gpioSetValue( ST7565_A0_PORT, ST7565_A0_PIN, 0 ); sendByte( c ); } while (0);
-#define DATA(d)       do { gpioSetValue( ST7565_A0_PORT, ST7565_A0_PIN, 1 ); sendByte( d ); } while (0);
+// Note:  These macros could be optimised significantly by setting the
+//        GPIO register directly, though the tradeoff is that changing the
+//        pin locations is a bit more complicated for absolute beginners
+//        since they will need to understand how the bits are set in the
+//        appropriate registers, etc.
+
+#define CMD(c)        do { gpioSetValue( SSD1306_CS_PORT, SSD1306_CS_PIN, 1 ); \
+                           gpioSetValue( SSD1306_DC_PORT, SSD1306_DC_PIN, 0 ); \
+                           gpioSetValue( SSD1306_CS_PORT, SSD1306_CS_PIN, 0 ); \
+                           ssd1306SendByte( c ); \
+                           gpioSetValue( SSD1306_CS_PORT, SSD1306_CS_PIN, 1 ); \
+                         } while (0);
+#define DATA(c)       do { gpioSetValue( SSD1306_CS_PORT, SSD1306_CS_PIN, 1 ); \
+                           gpioSetValue( SSD1306_DC_PORT, SSD1306_DC_PIN, 1 ); \
+                           gpioSetValue( SSD1306_CS_PORT, SSD1306_CS_PIN, 0 ); \
+                           ssd1306SendByte( c ); \
+                           gpioSetValue( SSD1306_CS_PORT, SSD1306_CS_PIN, 1 ); \
+                         } while (0);
 #define DELAY(mS)     do { systickDelay( mS / CFG_SYSTICK_DELAY_IN_MS ); } while(0);
 
-uint8_t _st7565buffer[128*64/8];
+uint8_t _ssd1306buffer[SSD1306_LCDWIDTH * SSD1306_LCDHEIGHT / 8];
 
 /**************************************************************************/
 /* Private Methods                                                        */
 /**************************************************************************/
-
-/**************************************************************************/
-/*! 
-    @brief Renders the buffer contents
-
-    @param[in]  buffer
-                Pointer to the buffer containing the raw pixel data
-*/
-/**************************************************************************/
-void writeBuffer(uint8_t *buffer) 
-{
-  uint8_t c, p;
-  int pagemap[] = { 3, 2, 1, 0, 7, 6, 5, 4 };
-
-  for(p = 0; p < 8; p++) 
-  {
-    CMD(ST7565_CMD_SET_PAGE | pagemap[p]);
-    CMD(ST7565_CMD_SET_COLUMN_LOWER | (0x0 & 0xf));
-    CMD(ST7565_CMD_SET_COLUMN_UPPER | ((0x0 >> 4) & 0xf));
-    CMD(ST7565_CMD_RMW);
-    DATA(0xff);
-    
-    for(c = 0; c < 128; c++) 
-    {
-      DATA(buffer[(128*p)+c]);
-    }
-  }
-}
 
 /**************************************************************************/
 /*! 
@@ -96,26 +84,22 @@ void writeBuffer(uint8_t *buffer)
                 The byte to send
 */
 /**************************************************************************/
-void sendByte(uint8_t byte)
+void ssd1306SendByte(uint8_t byte)
 {
   int8_t i;
 
-  // Note: This code can be optimised to avoid the branches by setting
-  // GPIO registers directly, but we'll leave it as is for the moment
-  // for simplicity sake
-
   // Make sure clock pin starts high
-  gpioSetValue(ST7565_SCLK_PORT, ST7565_SCLK_PIN, 1);
+  gpioSetValue(SSD1306_SCLK_PORT, SSD1306_SCLK_PIN, 1);
 
   // Write from MSB to LSB
   for (i=7; i>=0; i--) 
   {
     // Set clock pin low
-    gpioSetValue(ST7565_SCLK_PORT, ST7565_SCLK_PIN, 0);
+    gpioSetValue(SSD1306_SCLK_PORT, SSD1306_SCLK_PIN, 0);
     // Set data pin high or low depending on the value of the current bit
-    gpioSetValue(ST7565_SDAT_PORT, ST7565_SDAT_PIN, byte & (1 << i) ? 1 : 0);
+    gpioSetValue(SSD1306_SDAT_PORT, SSD1306_SDAT_PIN, byte & (1 << i) ? 1 : 0);
     // Set clock pin high
-    gpioSetValue(ST7565_SCLK_PORT, ST7565_SCLK_PIN, 1);
+    gpioSetValue(SSD1306_SCLK_PORT, SSD1306_SCLK_PIN, 1);
   }
 }
 
@@ -124,7 +108,7 @@ void sendByte(uint8_t byte)
     @brief  Draws a single graphic character using the supplied font
 */
 /**************************************************************************/
-void drawChar(uint16_t x, uint16_t y, uint8_t c, struct FONT_DEF font)
+static void ssd1306DrawChar(uint16_t x, uint16_t y, uint8_t c, struct FONT_DEF font)
 {
   uint8_t col, column[font.u8Width];
 
@@ -154,10 +138,10 @@ void drawChar(uint16_t x, uint16_t y, uint8_t c, struct FONT_DEF font)
     {
       uint8_t bit = 0x00;
       bit = (column[xoffset] << (8 - (yoffset + 1)));     // Shift current row bit left
-      bit = (bit >> 7);                     // Shift current row but right (results in 0x01 for black, and 0x00 for white)
+      bit = (bit >> 7);                                   // Shift current row but right (results in 0x01 for black, and 0x00 for white)
       if (bit)
       {
-        st7565DrawPixel(x + xoffset, y + yoffset);
+        ssd1306DrawPixel(x + xoffset, y + yoffset);
       }
     }
   }
@@ -169,105 +153,65 @@ void drawChar(uint16_t x, uint16_t y, uint8_t c, struct FONT_DEF font)
 
 /**************************************************************************/
 /*! 
-    @brief Initialises the ST7565 LCD display
+    @brief Initialises the SSD1306 LCD display
 */
 /**************************************************************************/
-void st7565Init(void)
+void ssd1306Init(uint8_t vccstate)
 {
-  // Note: This can be optimised to set all pins to output and high
-  // in two commands by manipulating the registers directly (assuming
-  // that the pins are located in the same GPIO bank).  The code is left
-  // as is for clarity sake in case the pins are not all located in the
-  // same bank.
+  // Set all pins to output
+  gpioSetDir(SSD1306_SCLK_PORT, SSD1306_SCLK_PIN, gpioDirection_Output);
+  gpioSetDir(SSD1306_SDAT_PORT, SSD1306_SDAT_PIN, gpioDirection_Output);
+  gpioSetDir(SSD1306_DC_PORT, SSD1306_DC_PIN, gpioDirection_Output);
+  gpioSetDir(SSD1306_RST_PORT, SSD1306_RST_PIN, gpioDirection_Output);
+  gpioSetDir(SSD1306_CS_PORT, SSD1306_CS_PIN, gpioDirection_Output);
 
-  // Set clock pin to output and high
-  gpioSetDir(ST7565_SCLK_PORT, ST7565_SCLK_PIN, 1);
-  gpioSetValue(ST7565_SCLK_PORT, ST7565_SCLK_PIN, 1);
+  // Reset the LCD
+  gpioSetValue(SSD1306_RST_PORT, SSD1306_RST_PIN, 1);
+  DELAY(1);
+  gpioSetValue(SSD1306_RST_PORT, SSD1306_RST_PIN, 0);
+  DELAY(10);
+  gpioSetValue(SSD1306_RST_PORT, SSD1306_RST_PIN, 1);
 
-  // Set data pin to output and high
-  gpioSetDir(ST7565_SDAT_PORT, ST7565_SDAT_PIN, 1);
-  gpioSetValue(ST7565_SDAT_PORT, ST7565_SDAT_PIN, 1);
+  // Initialisation sequence
+  CMD(SSD1306_DISPLAYOFF);                    // 0xAE
+  CMD(SSD1306_SETLOWCOLUMN | 0x0);            // low col = 0
+  CMD(SSD1306_SETHIGHCOLUMN | 0x0);           // hi col = 0
+  CMD(SSD1306_SETSTARTLINE | 0x0);            // line #0
+  CMD(SSD1306_SETCONTRAST);                   // 0x81
+  if (vccstate == SSD1306_EXTERNALVCC) 
+    { CMD(0x9F) }
+  else 
+    { CMD(0xCF) }
+  CMD(0xa1);                                  // setment remap 95 to 0 (?)
+  CMD(SSD1306_NORMALDISPLAY);                 // 0xA6
+  CMD(SSD1306_DISPLAYALLON_RESUME);           // 0xA4
+  CMD(SSD1306_SETMULTIPLEX);                  // 0xA8
+  CMD(0x3F);                                  // 0x3F 1/64 duty
+  CMD(SSD1306_SETDISPLAYOFFSET);              // 0xD3
+  CMD(0x0);                                   // no offset
+  CMD(SSD1306_SETDISPLAYCLOCKDIV);            // 0xD5
+  CMD(0x80);                                  // the suggested ratio 0x80
+  CMD(SSD1306_SETPRECHARGE);                  // 0xd9
+  if (vccstate == SSD1306_EXTERNALVCC) 
+    { CMD(0x22) }
+  else 
+    { CMD(0xF1) }
+  CMD(SSD1306_SETCOMPINS);                    // 0xDA
+  CMD(0x12);                                  // disable COM left/right remap
+  CMD(SSD1306_SETVCOMDETECT);                 // 0xDB
+  CMD(0x40);                                  // 0x20 is default?
+  CMD(SSD1306_MEMORYMODE);                    // 0x20
+  CMD(0x00);                                  // 0x0 act like ks0108
+  CMD(SSD1306_SEGREMAP | 0x1);
+  CMD(SSD1306_COMSCANDEC);
+  CMD(SSD1306_CHARGEPUMP);                    //0x8D
+  if (vccstate == SSD1306_EXTERNALVCC) 
+    { CMD(0x10) }
+  else 
+    { CMD(0x14) }
 
-  // Configure backlight pin to output and set high (off)
-  gpioSetDir(ST7565_BL_PORT, ST7565_BL_PIN, 1);
-  gpioSetValue(ST7565_BL_PORT, ST7565_BL_PIN, 1);
-
-  // Configure A0 pin to output and set high
-  gpioSetDir(ST7565_A0_PORT, ST7565_A0_PIN, 1);
-  gpioSetValue(ST7565_A0_PORT, ST7565_A0_PIN, 1);
-
-  // Configure Reset pin and set high
-  gpioSetDir(ST7565_RST_PORT, ST7565_RST_PIN, 1);
-  gpioSetValue(ST7565_RST_PORT, ST7565_RST_PIN, 1);
-
-  // Configure select pin and set high
-  gpioSetDir(ST7565_CS_PORT, ST7565_CS_PIN, 1);
-  gpioSetValue(ST7565_CS_PORT, ST7565_CS_PIN, 1);
-
-  // Reset
-  gpioSetValue(ST7565_CS_PORT, ST7565_CS_PIN, 0);     // Set CS low
-  gpioSetValue(ST7565_RST_PORT, ST7565_RST_PIN, 0);   // Set reset low
-  DELAY(500 / CFG_SYSTICK_DELAY_IN_MS);               // Wait 500mS
-  gpioSetValue(ST7565_RST_PORT, ST7565_RST_PIN, 1);   // Set reset high
-
-  // Configure Display
-  CMD(ST7565_CMD_SET_BIAS_7);                         // LCD Bias Select
-  CMD(ST7565_CMD_SET_ADC_NORMAL);                     // ADC Select
-  CMD(ST7565_CMD_SET_COM_NORMAL);                     // SHL Select
-  CMD(ST7565_CMD_SET_DISP_START_LINE);                // Initial Display Line
-  CMD(ST7565_CMD_SET_POWER_CONTROL | 0x04);           // Turn on voltage converter (VC=1, VR=0, VF=0)
-  DELAY(50 / CFG_SYSTICK_DELAY_IN_MS);                // Wait 50mS
-  CMD(ST7565_CMD_SET_POWER_CONTROL | 0x06);           // Turn on voltage regulator (VC=1, VR=1, VF=0)
-  DELAY(50 / CFG_SYSTICK_DELAY_IN_MS);                // Wait 50mS
-  CMD(ST7565_CMD_SET_POWER_CONTROL | 0x07);           // Turn on voltage follower
-  DELAY(10 / CFG_SYSTICK_DELAY_IN_MS);                // Wait 10mS
-  CMD(ST7565_CMD_SET_RESISTOR_RATIO | 0x6);           // Set LCD operating voltage
-
-  // Turn display on
-  CMD(ST7565_CMD_DISPLAY_ON);
-  CMD(ST7565_CMD_SET_ALLPTS_NORMAL);
-  st7565SetBrightness(0x18);
-}
-
-/**************************************************************************/
-/*! 
-    @brief Enables or disables the backlight
-*/
-/**************************************************************************/
-void st7565Backlight(bool state)
-{
-  gpioSetValue( ST7565_BL_PORT, ST7565_BL_PIN, state ? 0 : 1 );
-}
-
-/**************************************************************************/
-/*! 
-    @brief Sets the display brightness
-*/
-/**************************************************************************/
-void st7565SetBrightness(uint8_t val)
-{
-  CMD(ST7565_CMD_SET_VOLUME_FIRST);
-  CMD(ST7565_CMD_SET_VOLUME_SECOND | (val & 0x3f));
-}
-
-/**************************************************************************/
-/*! 
-    @brief Clears the screen
-*/
-/**************************************************************************/
-void st7565ClearScreen(void) 
-{
-  memset(&_st7565buffer, 0x00, 128*64/8);
-}
-
-/**************************************************************************/
-/*! 
-    @brief Renders the contents of the pixel buffer on the LCD
-*/
-/**************************************************************************/
-void st7565Refresh(void)
-{
-  writeBuffer(_st7565buffer);
+  // Enabled the OLED panel
+  CMD(SSD1306_DISPLAYON);
 }
 
 /**************************************************************************/
@@ -280,13 +224,12 @@ void st7565Refresh(void)
                 The y position (0..63)
 */
 /**************************************************************************/
-void st7565DrawPixel(uint8_t x, uint8_t y) 
+void ssd1306DrawPixel(uint8_t x, uint8_t y) 
 {
-  if ((x >= 128) || (y >= 64))
+  if ((x >= SSD1306_LCDWIDTH) || (y >= SSD1306_LCDHEIGHT))
     return;
 
-  // x is which column
-  _st7565buffer[x+ (y/8)*128] |= (1 << (7-(y%8)));
+  _ssd1306buffer[x+ (y/8)*SSD1306_LCDWIDTH] |= (1 << y%8);
 }
 
 /**************************************************************************/
@@ -299,13 +242,12 @@ void st7565DrawPixel(uint8_t x, uint8_t y)
                 The y position (0..63)
 */
 /**************************************************************************/
-void st7565ClearPixel(uint8_t x, uint8_t y)
+void ssd1306ClearPixel(uint8_t x, uint8_t y) 
 {
-  if ((x >= 128) || (y >= 64))
+  if ((x >= SSD1306_LCDWIDTH) || (y >= SSD1306_LCDHEIGHT))
     return;
 
-  // x is which column
-  _st7565buffer[x+ (y/8)*128] &= ~(1 << (7-(y%8)));
+  _ssd1306buffer[x+ (y/8)*SSD1306_LCDWIDTH] &= ~(1 << y%8); 
 }
 
 /**************************************************************************/
@@ -320,10 +262,38 @@ void st7565ClearPixel(uint8_t x, uint8_t y)
     @return     1 if the pixel is enabled, 0 if disabled
 */
 /**************************************************************************/
-uint8_t st7565GetPixel(uint8_t x, uint8_t y)
+uint8_t ssd1306GetPixel(uint8_t x, uint8_t y)
 {
-  if ((x >= 128) || (y >= 64)) return 0;
-  return _st7565buffer[x+ (y/8)*128] & (1 << (7-(y%8)));
+  if ((x >= SSD1306_LCDWIDTH) || (y >=SSD1306_LCDHEIGHT)) return 0;
+  return _ssd1306buffer[x+ (y/8)*SSD1306_LCDWIDTH] & (1 << y%8) ? 1 : 0;
+}
+
+/**************************************************************************/
+/*! 
+    @brief Clears the screen
+*/
+/**************************************************************************/
+void ssd1306ClearScreen(void) 
+{
+  memset(_ssd1306buffer, 0, 1024);
+}
+
+/**************************************************************************/
+/*! 
+    @brief Renders the contents of the pixel buffer on the LCD
+*/
+/**************************************************************************/
+void ssd1306Refresh(void) 
+{
+  CMD(SSD1306_SETLOWCOLUMN | 0x0);  // low col = 0
+  CMD(SSD1306_SETHIGHCOLUMN | 0x0);  // hi col = 0
+  CMD(SSD1306_SETSTARTLINE | 0x0); // line #0
+
+  uint16_t i;
+  for (i=0; i<1024; i++) 
+  {
+    DATA(_ssd1306buffer[i]);
+  }
 }
 
 /**************************************************************************/
@@ -343,32 +313,28 @@ uint8_t st7565GetPixel(uint8_t x, uint8_t y)
 
     @code 
 
-    #include "drivers/lcd/bitmap/st7565/st7565.h"
+    #include "drivers/lcd/bitmap/ssd1306/ssd1306.h"
     #include "drivers/lcd/smallfonts.h"
     
     // Configure the pins and initialise the LCD screen
-    st7565Init();
+    ssd1306Init();
 
-    // Enable the backlight
-    st7565BLEnable();
-
-    // Render some text on the screen with different fonts
-    st7565DrawString(1, 1, "3X6 SYSTEM", Font_System3x6);   // 3x6 is UPPER CASE only
-    st7565DrawString(1, 10, "5x8 System", Font_System5x8);
-    st7565DrawString(1, 20, "7x8 System", Font_System7x8);
+    // Render some text on the screen
+    ssd1306DrawString(1, 10, "5x8 System", Font_System5x8);
+    ssd1306DrawString(1, 20, "7x8 System", Font_System7x8);
 
     // Refresh the screen to see the results
-    st7565Refresh();
+    ssd1306Refresh();
 
     @endcode
 */
 /**************************************************************************/
-void st7565DrawString(uint16_t x, uint16_t y, char* text, struct FONT_DEF font)
+void ssd1306DrawString(uint16_t x, uint16_t y, char* text, struct FONT_DEF font)
 {
   uint8_t l;
   for (l = 0; l < strlen(text); l++)
   {
-    drawChar(x + (l * (font.u8Width + 1)), y, text[l], font);
+    ssd1306DrawChar(x + (l * (font.u8Width + 1)), y, text[l], font);
   }
 }
 
@@ -386,24 +352,24 @@ void st7565DrawString(uint16_t x, uint16_t y, char* text, struct FONT_DEF font)
 
     @code 
 
-    #include "drivers/lcd/bitmap/st7565/st7565.h"
+    #include "drivers/lcd/bitmap/ssd1306/ssd1306.h"
     #include "drivers/lcd/smallfonts.h"
     
     // Configure the pins and initialise the LCD screen
-    st7565Init();
+    ssd1306Init();
 
     // Enable the backlight
-    st7565BLEnable();
+    ssd1306BLEnable();
 
     // Continually write some text, scrolling upward one line each time
     while (1)
     {
       // Shift the buffer up 8 pixels (adjust for font-height)
-      st7565ShiftFrameBuffer(8);
+      ssd1306ShiftFrameBuffer(8);
       // Render some text on the screen with different fonts
-      st7565DrawString(1, 56, "INSERT TEXT HERE", Font_System3x6);   // 3x6 is UPPER CASE only
+      ssd1306DrawString(1, 56, "INSERT TEXT HERE", Font_System3x6);   // 3x6 is UPPER CASE only
       // Refresh the screen to see the results
-      st7565Refresh();    
+      ssd1306Refresh();    
       // Wait a bit before writing the next line
       systickDelay(1000);
     }
@@ -411,13 +377,13 @@ void st7565DrawString(uint16_t x, uint16_t y, char* text, struct FONT_DEF font)
     @endcode
 */
 /**************************************************************************/
-void st7565ShiftFrameBuffer( uint8_t height )
+void ssd1306ShiftFrameBuffer( uint8_t height )
 {
   if (height == 0) return;
-  if (height >= 64)
+  if (height >= SSD1306_LCDHEIGHT)
   {
     // Clear the entire frame buffer
-    st7565ClearScreen();
+    ssd1306ClearScreen();
     return;
   }
 
@@ -425,21 +391,20 @@ void st7565ShiftFrameBuffer( uint8_t height )
   // In a production environment, this should be significantly optimised
 
   uint8_t y, x;
-  for (y = 0; y < 64; y++)
+  for (y = 0; y < SSD1306_LCDHEIGHT; y++)
   {
-    for (x = 0; x < 128; x++)
+    for (x = 0; x < SSD1306_LCDWIDTH; x++)
     {
-      if (63 - y > height)
+      if ((SSD1306_LCDHEIGHT - 1) - y > height)
       {
         // Shift height from further ahead in the buffer
-        st7565GetPixel(x, y + height) ? st7565DrawPixel(x, y) : st7565ClearPixel(x, y);
+        ssd1306GetPixel(x, y + height) ? ssd1306DrawPixel(x, y) : ssd1306ClearPixel(x, y);
       }
       else
       {
         // Clear the entire line
-        st7565ClearPixel(x, y);
+        ssd1306ClearPixel(x, y);
       }
     }
   }
 }
-

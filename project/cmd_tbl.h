@@ -48,6 +48,7 @@
 // Function prototypes for the command table
 void cmd_help(uint8_t argc, char **argv);         // handled by core/cmd/cmd.c
 void cmd_sysinfo(uint8_t argc, char **argv);
+void cmd_reset(uint8_t argc, char **argv);
 
 #ifdef CFG_CHIBI
 void cmd_chibi_addr(uint8_t argc, char **argv);
@@ -70,6 +71,8 @@ void cmd_sd_dir(uint8_t argc, char **argv);
 
 void cmd_deepsleep(uint8_t argc, char **argv);
 
+#define CMD_NOPARAMS "This command has no parameters"
+
 /**************************************************************************/
 /*! 
     Command list for the command-line interpreter and the name of the
@@ -82,8 +85,9 @@ void cmd_deepsleep(uint8_t argc, char **argv);
 cmd_t cmd_tbl[] = 
 {
   // command name, min args, max args, hidden, function name, command description, syntax
-  { "?",    0,  0,  0, cmd_help              , "Help"                           , "'?' has no parameters" },
-  { "V",    0,  0,  0, cmd_sysinfo           , "System Info"                    , "'V' has no parameters" },
+  { "?",    0,  0,  0, cmd_help              , "Help"                           , CMD_NOPARAMS },
+  { "V",    0,  0,  0, cmd_sysinfo           , "System Info"                    , CMD_NOPARAMS },
+  { "Z",    0,  0,  0, cmd_reset             , "Reset"                          , CMD_NOPARAMS },
 
   #ifdef CFG_CHIBI
   { "A",    0,  1,  0, cmd_chibi_addr        , "Get/Set node address"           , "'A [<1-65534>|<OxFFFE>]'" },
@@ -96,14 +100,14 @@ cmd_t cmd_tbl[] =
   #endif
 
   #ifdef CFG_LM75B
-  { "m",    0,  0,  0, cmd_lm75b_gettemp     , "Temperature (Celsius)"          , "'m' has no parameters" },
+  { "m",    0,  0,  0, cmd_lm75b_gettemp     , "Temperature (Celsius)"          , CMD_NOPARAMS },
   #endif
 
   #ifdef CFG_SDCARD
   { "d",    0,  1,  0,  cmd_sd_dir           , "Dir (SD Card)"                  , "'d [<path>]'" },
   #endif
 
-  { "z",    0,  0,  0,  cmd_deepsleep        , "Deep sleep for ~10 seconds"     , "'z' has no parameters" },
+  { "z",    0,  0,  0,  cmd_deepsleep        , "Deep sleep for ~10 seconds"     , CMD_NOPARAMS },
 };
 
 #endif

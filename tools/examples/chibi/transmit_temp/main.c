@@ -7,7 +7,7 @@
 
     Software License Agreement (BSD License)
 
-    Copyright (c) 2011, microBuilder SARL
+    Copyright (c) 2010, microBuilder SARL
     All rights reserved.
 
     Redistribution and use in source and binary forms, with or without
@@ -33,24 +33,32 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 /**************************************************************************/
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
-
 #include "projectconfig.h"
 #include "sysinit.h"
 
 #include "core/gpio/gpio.h"
-#include "core/systick/systick.h"
+#include "core/pmu/pmu.h"
 
-#ifdef CFG_INTERFACE
-  #include "core/cmd/cmd.h"
+#if defined CFG_CHIBI
+  #include <string.h>
+  #include <stdlib.h>
+  #include "drivers/chibi/chb.h"
+  #include "drivers/chibi/chb_drvr.h"
+#endif
+
+#ifdef CFG_LM75B
+  #include "drivers/sensors/lm75b/lm75b.h"
 #endif
 
 /**************************************************************************/
 /*! 
-    Main program entry point.  After reset, normal code execution will
-    begin here.
+    Broadcast a basic message every 250 milliseconds
+  
+    projectconfig.h settings:
+    --------------------------------------------------
+    CFG_CHIBI             -> Enabled
+    CFG_CHIBI_PROMISCUOUS -> 0
+    CFG_CHIBI_BUFFERSIZE  -> 128
 */
 /**************************************************************************/
 int main(void)
@@ -58,32 +66,42 @@ int main(void)
   // Configure cpu and mandatory peripherals
   systemInit();
 
-  uint32_t currentSecond, lastSecond;
-  currentSecond = lastSecond = 0;
+  // Make sure that projectconfig.h is properly configured for this example
+  #if !defined CFG_BRD_LPC1114_802154WIRELESS
+    #error "Warning: This example (probably) only works with the LPC1114 802.15.4 Wireless board"
+  #endif
+  #if !defined CFG_CHIBI
+    #error "CFG_CHIBI must be enabled in projectconfig.h for this example"
+  #endif
+  #if !defined CFG_LM75B
+    #error "CFG_LM75B must be enabled in projectconfig.h for this example"
+  #endif
+  #if CFG_CHIBI_PROMISCUOUS != 0
+    #error "CFG_CHIBI_PROMISCUOUS must be set to 0 in projectconfig.h for this example"
+  #endif
 
-  gpioSetValue (CFG_LED_PORT, CFG_LED_PIN, CFG_LED_ON); 
+  char text[128];
+  int32_t temp;
 
-  while (1)
+  // Get a reference to the wireless peripheral control block
+  chb_pcb_t *pcb = chb_get_pcb();
+
+  // Send the temperature every 5 seconds and going into deep sleep between messages
+  while(1)
   {
-    // Toggle LED once per second ... rollover = 136 years :)
-    currentSecond = systickGetSecondsActive();
-    if (currentSecond != lastSecond)
-    {
-      lastSecond = currentSecond;
-      if (gpioGetValue(CFG_LED_PORT, CFG_LED_PIN) == CFG_LED_OFF)
-      {
-        gpioSetValue (CFG_LED_PORT, CFG_LED_PIN, CFG_LED_ON); 
-      }
-      else
-      {
-        gpioSetValue (CFG_LED_PORT, CFG_LED_PIN, CFG_LED_OFF); 
-      }
-    }
-
-    // Poll for CLI input if CFG_INTERFACE is enabled in projectconfig.h
-    #ifdef CFG_INTERFACE 
-      cmdPoll(); 
-    #endif
+    // Get the current temperature (in 0.125°C units)
+    lm75bGetTemperature(&temp);    
+    // Multiply value by 125 for fixed-point math (0.125°C per unit)
+    temp *= 125;
+    // Use modulus operator to display decimal value
+    sprintf(text, "Current Temp: %d.%d C", (int)(temp / 1000), (int)(temp % 1000));
+    // Enable LED
+    gpioSetValue (CFG_LED_PORT, CFG_LED_PIN, CFG_LED_ON); 
+    chb_write(0xFFFF, text, strlen(text) + 1);
+    // Disable LED
+    gpioSetValue (CFG_LED_PORT, CFG_LED_PIN, CFG_LED_OFF); 
+    // Deep sleep for 5 seconds
+    pmuDeepSleep(5);
   }
 
   return 0;

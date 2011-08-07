@@ -88,8 +88,6 @@ extern volatile uint8_t   I2CMasterBuffer[I2C_BUFSIZE];
 extern volatile uint8_t   I2CSlaveBuffer[I2C_BUFSIZE];
 extern volatile uint32_t  I2CReadLength, I2CWriteLength;
 
-uint32_t i;
-
 static bool _lm75bInitialised = false;
 
 /**************************************************************************/
@@ -100,6 +98,7 @@ static bool _lm75bInitialised = false;
 static lm75bError_e lm75bWrite8 (uint8_t reg, uint32_t value)
 {
   // Clear write buffers
+  uint32_t i;
   for ( i = 0; i < I2C_BUFSIZE; i++ )
   {
     I2CMasterBuffer[i] = 0x00;
@@ -122,6 +121,7 @@ static lm75bError_e lm75bWrite8 (uint8_t reg, uint32_t value)
 static lm75bError_e lm75bRead16(uint8_t reg, int32_t *value)
 {
   // Clear write buffers
+  uint32_t i;
   for ( i = 0; i < I2C_BUFSIZE; i++ )
   {
     I2CMasterBuffer[i] = 0x00;

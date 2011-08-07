@@ -41,10 +41,10 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 /**************************************************************************/
+#include "pmu.h"
 #include "core/gpio/gpio.h"
 #include "core/cpu/cpu.h"
 #include "core/timer32/timer32.h"
-#include "pmu.h"
 
 #ifdef CFG_CHIBI
   #include "drivers/chibi/chb_drvr.h"
@@ -54,7 +54,13 @@
   #include "core/ssp/ssp.h"
 #endif
 
-#define PMU_WDTCLOCKSPEED_HZ 7812
+#define PMU_WDTCLOCKSPEED_HZ  7812
+
+// Pointer for ROM access and power profiles
+#if CFG_PMU_USEPOWERPROFILES == 1
+  static unsigned int command[5], result[5];
+  const ROM ** rom = (const ROM **) 0x1FFF1FF8;
+#endif
 
 void pmuSetupHW(void);
 void pmuRestoreHW(void);
@@ -98,7 +104,6 @@ void WAKEUP_IRQHandler(void)
   // Perform custom wakeup tasks
   pmuRestoreHW();
 
-  /* See tracker for bug report. */
   __asm volatile ("NOP");
 
   return;
@@ -141,6 +146,22 @@ void pmuInit( void )
   SCB_PDRUNCFG &= ~(SCB_PDRUNCFG_WDTOSC_MASK | 
                     SCB_PDRUNCFG_SYSOSC_MASK | 
                     SCB_PDRUNCFG_ADC_MASK);
+
+  // Setup the appropriate power profile if requested
+  #if CFG_PMU_USEPOWERPROFILES == 1
+    // Make sure that the clock for ROM is enabled?
+    SCB_SYSAHBCLKCTRL |= SCB_SYSAHBCLKCTRL_ROM;
+    if((*rom)->pPWRD == (void *)0xFFFFFFFF)
+    {
+      // Ooops ... this device doesn't support power profiles (LPC1114/301, etc.)
+      return;
+    }
+    command[0] = CFG_CPU_CCLK / 1000000;
+    command[1] = CFG_PMU_POWERPROFILE;
+    command[2] = CFG_CPU_CCLK / 1000000;
+    (*rom)->pPWRD->set_power(command, result);
+  #endif
+
   return;
 }
 
@@ -172,8 +193,8 @@ void pmuSleep()
 
 /**************************************************************************/
 /*! 
-    @brief  Turns off select peripherals and puts the device in deep-sleep
-            mode.
+    @brief  Puts the device in deep-sleep mode, and alternately switches
+            to the WDTOSC if a timed wakeup is required.
 
     The device can be configured to wakeup from deep-sleep mode after a
     specified delay by supplying a non-zero value to the wakeupSeconds
@@ -183,58 +204,36 @@ void pmuSleep()
     should not be powered off (using the sleepCtrl parameter) when a
     wakeup delay is specified.
 
-    The sleepCtrl parameter is used to indicate which peripherals should
-    be put in sleep mode (see the SCB_PDSLEEPCFG register for details).
-    
-    @param[in]  sleepCtrl  
-                The bits to set in the SCB_PDSLEEPCFG register.  This
-                controls which peripherals will be put in sleep mode.
     @param[in]  wakeupSeconds
                 The number of seconds to wait until the device will
                 wakeup.  If you do not wish to wakeup after a specific
                 delay, enter a value of 0.
 
     @code 
-    uint32_t pmuRegVal;
-  
     // Configure wakeup sources before going into sleep/deep-sleep
     // By default, pin 0.1 is configured as wakeup source
     pmuInit();
   
-    // Put peripherals into sleep mode
-    pmuRegVal = SCB_PDSLEEPCFG_IRCOUT_PD |
-                SCB_PDSLEEPCFG_IRC_PD |
-                SCB_PDSLEEPCFG_FLASH_PD |
-                SCB_PDSLEEPCFG_BOD_PD |
-                SCB_PDSLEEPCFG_ADC_PD |
-                SCB_PDSLEEPCFG_SYSPLL_PD |
-                SCB_PDSLEEPCFG_SYSOSC_PD;
-  
-    // If the wakeup timer is not used, WDTOSC can also be stopped (saves ~2uA)
-    // pmuRegVal |= SCB_PDSLEEPCFG_WDTOSC_PD;
-
     // Enter deep sleep mode (wakeup after 5 seconds)
-    pmuDeepSleep(pmuRegVal, 5);
+    // If no wakeup is required, enter 0 for the timeout (lower power)
+    pmuDeepSleep(5);
     @endcode
 */
 /**************************************************************************/
-void pmuDeepSleep(uint32_t sleepCtrl, uint32_t wakeupSeconds)
+void pmuDeepSleep(uint32_t wakeupSeconds)
 {
-  // Setup the board for deep sleep mode, shutting down certain
-  // peripherals and remapping pins for lower power
+  // Setup the board for deep sleep mode, remapping pins for lower power
   pmuSetupHW();
 
   SCB_PDAWAKECFG = SCB_PDRUNCFG;
-  sleepCtrl &= ~(1 << 9);               // MAIN_REGUL_PD
-  sleepCtrl |= (1 << 11) | (1 << 12);   // LP_REGUL_PD
-  SCB_PDSLEEPCFG = sleepCtrl;
   SCB_SCR |= SCB_SCR_SLEEPDEEP;
 
-  /* Configure system to run from WDT and set TMR32B0 for wakeup          */
+  /* Configure system to run from WDT and setup TMR32B0 for wakeup        */
   if (wakeupSeconds > 0)
   {
-    // Make sure WDTOSC isn't disabled in PDSLEEPCFG
-    SCB_PDSLEEPCFG &= ~(SCB_PDSLEEPCFG_WDTOSC_PD);
+    // Enabled the WDTOSC during deep sleeps since it's required for wakeup
+    // BOD is turned off, but can be turned on here if required
+    SCB_PDSLEEPCFG = SCB_PDSLEEPCFG_BOD_OFF_WDOSC_ON;
 
     // Disable 32-bit timer 0 if currently in use
     TMR_TMR32B0TCR = TMR_TMR32B0TCR_COUNTERENABLE_DISABLED;
@@ -260,7 +259,19 @@ void pmuDeepSleep(uint32_t sleepCtrl, uint32_t wakeupSeconds)
     TMR_TMR32B0EMR |= TMR_TMR32B0EMR_EMC2_HIGH;     // Set MR2 (0.1) high on match
 
     /* Enable wakeup interrupt (P0.1..11 and P1.0 can be used) */
+    //NVIC_EnableIRQ(WAKEUP0_IRQn);    // P0.0
     NVIC_EnableIRQ(WAKEUP1_IRQn);      // P0.1  (CT32B0_MAT2)
+    //NVIC_EnableIRQ(WAKEUP2_IRQn);    // P0.2
+    //NVIC_EnableIRQ(WAKEUP3_IRQn);    // P0.3
+    //NVIC_EnableIRQ(WAKEUP4_IRQn);    // P0.4
+    //NVIC_EnableIRQ(WAKEUP5_IRQn);    // P0.5
+    //NVIC_EnableIRQ(WAKEUP6_IRQn);    // P0.6
+    //NVIC_EnableIRQ(WAKEUP7_IRQn);    // P0.7
+    //NVIC_EnableIRQ(WAKEUP8_IRQn);    // P0.8
+    //NVIC_EnableIRQ(WAKEUP9_IRQn);    // P0.9
+    //NVIC_EnableIRQ(WAKEUP10_IRQn);   // P0.10
+    //NVIC_EnableIRQ(WAKEUP11_IRQn);   // P0.11 (CT32B0_MAT3)
+    //NVIC_EnableIRQ(WAKEUP12_IRQn);   // P1.0
 
     /* Use RISING EDGE for wakeup detection. */
     SCB_STARTAPRP0 |= SCB_STARTAPRP0_APRPIO0_1;
@@ -276,6 +287,12 @@ void pmuDeepSleep(uint32_t sleepCtrl, uint32_t wakeupSeconds)
 	
     /* Start the timer */
     TMR_TMR32B0TCR = TMR_TMR32B0TCR_COUNTERENABLE_ENABLED;
+  }
+  else
+  {
+    // No WDTOSC required since there is no timed wakeup
+    // BOD is turned off, but can be turned on here if required
+    SCB_PDSLEEPCFG = SCB_PDSLEEPCFG_BOD_OFF_WDOSC_OFF;
   }
 
   // Send Wait For Interrupt command

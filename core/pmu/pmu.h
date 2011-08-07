@@ -41,10 +41,53 @@
 
 #include "projectconfig.h"
 
+/**************************************************************************/
+/*! 
+    Pointers to the power profiles functions in LPC1100L series MCUs.
+*/
+/**************************************************************************/
+typedef struct _PWRD 
+{
+  void (*set_pll)(unsigned int cmd[], unsigned int resp[]);
+  void (*set_power)(unsigned int cmd[], unsigned int resp[]);
+} PWRD;
+
+/**************************************************************************/
+/*! 
+    ROM entry table ... this is used to access power profiles in ROM.
+*/
+/**************************************************************************/
+typedef	struct _ROM 
+{
+   const unsigned p_usbd;
+   const unsigned p_clib;
+   const unsigned p_cand;
+   const PWRD * pPWRD;
+   const unsigned p_dev1;
+   const unsigned p_dev2;
+   const unsigned p_dev3;
+   const unsigned p_dev4; 
+}  ROM;
+
+/**************************************************************************/
+/*! 
+    Indicates a specific LPC1100L power-profile (only relevant to 'L'
+    series chips).
+*/
+/**************************************************************************/
+typedef enum pmuPowerProfile_e
+{
+  pmuPowerProfile_Default = 0,
+  pmuPowerProfile_Performance = 1,
+  pmuPowerProfile_Efficiency = 2,
+  pmuPowerProfile_LowCurrent = 3
+} 
+pmuPowerProfile_t;
+
 void WAKEUP_IRQHandler( void );
 void pmuInit( void );
 void pmuSleep( void );
-void pmuDeepSleep( uint32_t sleepCtrl, uint32_t wakeupSeconds );
+void pmuDeepSleep(uint32_t wakeupSeconds);
 void pmuPowerDown( void );
 
 #endif

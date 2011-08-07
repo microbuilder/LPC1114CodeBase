@@ -53,5 +53,6 @@ cpuMultiplier_t;
 void cpuPllSetup (cpuMultiplier_t multiplier);
 void cpuInit (void);
 uint32_t cpuGetDeviceID (void);
+void cpuReset (void);
 
 #endif
