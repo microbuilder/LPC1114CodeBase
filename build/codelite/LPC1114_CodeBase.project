@@ -163,6 +163,7 @@
       <File Name="../../project/commands/cmd_lm75b_gettemp.c"/>
       <File Name="../../project/commands/cmd_sysinfo.c"/>
       <File Name="../../project/commands/cmd_sd_dir.c"/>
+      <File Name="../../project/commands/cmd_reset.c"/>
     </VirtualDirectory>
     <File Name="../../project/readme.txt"/>
   </VirtualDirectory>

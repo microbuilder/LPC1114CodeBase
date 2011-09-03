@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Session Name="C:\Dropbox\microBuilder\Code\LPC1114\LPC1114_CodeBase\build\codelite\LPC1114 CodeBase.workspace">
+<Session Name="C:\Dropbox\microBuilder\Code\LPC1114\LPC1114_CodeBase_GIT\build\codelite\LPC1114 CodeBase.workspace">
   <int Value="2" Name="m_selectedTab"/>
-  <wxString Value="C:\Dropbox\microBuilder\Code\LPC1114\LPC1114_CodeBase\build\codelite\LPC1114 CodeBase.workspace" Name="m_workspaceName"/>
+  <wxString Value="C:\Dropbox\microBuilder\Code\LPC1114\LPC1114_CodeBase_GIT\build\codelite\LPC1114 CodeBase.workspace" Name="m_workspaceName"/>
   <TabInfoArray Name="TabInfoArray">
     <TabInfo>
       <wxString Value="C:\Dropbox\microBuilder\Code\LPC1114\LPC1114_CodeBase\Makefile" Name="FileName"/>
@@ -16,9 +16,9 @@
       <wxArrayString Name="Bookmarks"/>
     </TabInfo>
     <TabInfo>
-      <wxString Value="C:\Dropbox\microBuilder\Code\LPC1114\LPC1114_CodeBase\main.c" Name="FileName"/>
-      <int Value="56" Name="FirstVisibleLine"/>
-      <int Value="87" Name="CurrentLine"/>
+      <wxString Value="C:\Dropbox\microBuilder\Code\LPC1114\LPC1114_CodeBase_GIT\main.c" Name="FileName"/>
+      <int Value="4" Name="FirstVisibleLine"/>
+      <int Value="35" Name="CurrentLine"/>
       <wxArrayString Name="Bookmarks"/>
     </TabInfo>
   </TabInfoArray>

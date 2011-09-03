@@ -1,3 +1,10 @@
+v0.75 - Ongoing
+===============
+
+- Fixed a bug in pmu.c when waking up from deep sleep with
+  a timed delay ... wouldn't wakeup do to reconfiguring
+  32-bit timer 0.
+
 v0.70 - 8 August 2011
 =====================
 

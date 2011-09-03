@@ -105,7 +105,7 @@
     FIRMWARE VERSION SETTINGS
     -----------------------------------------------------------------------*/
     #define CFG_FIRMWARE_VERSION_MAJOR            (0)
-    #define CFG_FIRMWARE_VERSION_MINOR            (6)
+    #define CFG_FIRMWARE_VERSION_MINOR            (7)
     #define CFG_FIRMWARE_VERSION_REVISION         (5)
 /*=========================================================================*/
 

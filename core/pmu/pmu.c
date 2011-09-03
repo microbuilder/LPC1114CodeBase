@@ -97,10 +97,6 @@ void WAKEUP_IRQHandler(void)
     SCB_STARTRSRP0CLR = regVal;
   }
 
-  // Reconfigure CT32B0
-  timer32Init(0, TIMER32_DEFAULTINTERVAL);
-  timer32Enable(0);
-
   // Perform custom wakeup tasks
   pmuRestoreHW();
 
@@ -231,7 +227,7 @@ void pmuDeepSleep(uint32_t wakeupSeconds)
   /* Configure system to run from WDT and setup TMR32B0 for wakeup        */
   if (wakeupSeconds > 0)
   {
-    // Enabled the WDTOSC during deep sleeps since it's required for wakeup
+    // Enable the WDTOSC during deep sleep since it's required for wakeup
     // BOD is turned off, but can be turned on here if required
     SCB_PDSLEEPCFG = SCB_PDSLEEPCFG_BOD_OFF_WDOSC_ON;
 
@@ -241,7 +237,7 @@ void pmuDeepSleep(uint32_t wakeupSeconds)
     // Disable internal pullup on 0.1
     gpioSetPullup(&IOCON_PIO0_1, gpioPullupMode_Inactive);
 
-    /* Enable the clock for CT32B0 */
+    /* Enable the clock for CT32B0 (in case it's not enabled) */
     SCB_SYSAHBCLKCTRL |= (SCB_SYSAHBCLKCTRL_CT32B0);
   
     /* Configure 0.1 as Timer0_32 MAT2 */
@@ -251,27 +247,16 @@ void pmuDeepSleep(uint32_t wakeupSeconds)
     /* Set appropriate timer delay */
     TMR_TMR32B0MR0 = PMU_WDTCLOCKSPEED_HZ * wakeupSeconds;
   
-    /* Configure match control register to raise an interrupt and reset on MR0 */
-    TMR_TMR32B0MCR |= (TMR_TMR32B0MCR_MR0_INT_ENABLED | TMR_TMR32B0MCR_MR0_RESET_ENABLED);
+    /* Configure match control register to reset on MR0 */
+    TMR_TMR32B0MCR |= (TMR_TMR32B0MCR_MR0_RESET_ENABLED);
   
     /* Configure external match register to set 0.1 high on match */
     TMR_TMR32B0EMR &= ~(0xFF<<4);                   // Clear EMR config bits
     TMR_TMR32B0EMR |= TMR_TMR32B0EMR_EMC2_HIGH;     // Set MR2 (0.1) high on match
 
     /* Enable wakeup interrupt (P0.1..11 and P1.0 can be used) */
-    //NVIC_EnableIRQ(WAKEUP0_IRQn);    // P0.0
     NVIC_EnableIRQ(WAKEUP1_IRQn);      // P0.1  (CT32B0_MAT2)
-    //NVIC_EnableIRQ(WAKEUP2_IRQn);    // P0.2
-    //NVIC_EnableIRQ(WAKEUP3_IRQn);    // P0.3
-    //NVIC_EnableIRQ(WAKEUP4_IRQn);    // P0.4
-    //NVIC_EnableIRQ(WAKEUP5_IRQn);    // P0.5
-    //NVIC_EnableIRQ(WAKEUP6_IRQn);    // P0.6
-    //NVIC_EnableIRQ(WAKEUP7_IRQn);    // P0.7
-    //NVIC_EnableIRQ(WAKEUP8_IRQn);    // P0.8
-    //NVIC_EnableIRQ(WAKEUP9_IRQn);    // P0.9
-    //NVIC_EnableIRQ(WAKEUP10_IRQn);   // P0.10
     //NVIC_EnableIRQ(WAKEUP11_IRQn);   // P0.11 (CT32B0_MAT3)
-    //NVIC_EnableIRQ(WAKEUP12_IRQn);   // P1.0
 
     /* Use RISING EDGE for wakeup detection. */
     SCB_STARTAPRP0 |= SCB_STARTAPRP0_APRPIO0_1;
