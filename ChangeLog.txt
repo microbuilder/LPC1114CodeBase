@@ -1,9 +1,18 @@
 v0.75 - Ongoing
 ===============
 
+- *** Renamed 'drivers/lcd' to 'drivers/displays' ***
+- Added average sampling option to projectconfig.h.
+  This allows you to take several readings from the
+  ADC and return the average.  Helps reduces one-off
+  peaks and valleys in the ADC at the expense of
+  slower reads.
+- Fixed I2C clock duty cycle registers
 - Fixed a bug in pmu.c when waking up from deep sleep with
-  a timed delay ... wouldn't wakeup do to reconfiguring
+  a timed delay ... wouldn't wakeup due to reconfiguring
   32-bit timer 0.
+- Fixed bug in LPC11xx_handlers.c with CodeSourcery (thanks
+  David).
 
 v0.70 - 8 August 2011
 =====================

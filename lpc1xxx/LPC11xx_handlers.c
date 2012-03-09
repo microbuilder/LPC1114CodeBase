@@ -28,10 +28,11 @@
  *
  */
 
-// The GCC compiler defines the current architecture derived from the -mcpu argument.
+// The GCC compiler defines the current architecture derived from the -mcpu argument. 
 // When target cpu is the cortex-m0, it automatically defines __ARM_ARCH_6M__
-#ifndef __ARM_ARCH_6M__
-  #error "The target ARM cpu must be Cortex-M0 compatible (-mcpu=cortex-m0)"
+// Some versions define __ARM_ARCH_6SM__ instead 
+#if !defined(__ARM_ARCH_6M__) && !defined(__ARM_ARCH_6SM__) 
+  #error "The target ARM cpu must be Cortex-M0 compatible (-mcpu=cortex-m0)" 
 #endif
 
 // Declare a weak alias macro as described in the GCC manual[1][2]

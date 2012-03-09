@@ -40,7 +40,7 @@
 
 #include "projectconfig.h"
 
-#include "drivers/lcd/smallfonts.h"
+#include "drivers/displays/smallfonts.h"
 
 // Pin Definitions
 #define ST7565_A0_PORT                    (2)     // Register Select Pin (A0)

@@ -1,24 +1,24 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <Session Name="C:\Dropbox\microBuilder\Code\LPC1114\LPC1114_CodeBase_GIT\build\codelite\LPC1114 CodeBase.workspace">
   <int Value="2" Name="m_selectedTab"/>
   <wxString Value="C:\Dropbox\microBuilder\Code\LPC1114\LPC1114_CodeBase_GIT\build\codelite\LPC1114 CodeBase.workspace" Name="m_workspaceName"/>
   <TabInfoArray Name="TabInfoArray">
     <TabInfo>
-      <wxString Value="C:\Dropbox\microBuilder\Code\LPC1114\LPC1114_CodeBase\Makefile" Name="FileName"/>
-      <int Value="0" Name="FirstVisibleLine"/>
-      <int Value="0" Name="CurrentLine"/>
-      <wxArrayString Name="Bookmarks"/>
-    </TabInfo>
-    <TabInfo>
-      <wxString Value="C:\Dropbox\microBuilder\Code\LPC1114\LPC1114_CodeBase\projectconfig.h" Name="FileName"/>
-      <int Value="33" Name="FirstVisibleLine"/>
-      <int Value="51" Name="CurrentLine"/>
+      <wxString Value="C:\Dropbox\microBuilder\Code\LPC1114\LPC1114_CodeBase_GIT\Makefile" Name="FileName"/>
+      <int Value="4" Name="FirstVisibleLine"/>
+      <int Value="23" Name="CurrentLine"/>
       <wxArrayString Name="Bookmarks"/>
     </TabInfo>
     <TabInfo>
       <wxString Value="C:\Dropbox\microBuilder\Code\LPC1114\LPC1114_CodeBase_GIT\main.c" Name="FileName"/>
-      <int Value="4" Name="FirstVisibleLine"/>
-      <int Value="35" Name="CurrentLine"/>
+      <int Value="42" Name="FirstVisibleLine"/>
+      <int Value="61" Name="CurrentLine"/>
+      <wxArrayString Name="Bookmarks"/>
+    </TabInfo>
+    <TabInfo>
+      <wxString Value="C:\Dropbox\microBuilder\Code\LPC1114\LPC1114_CodeBase_GIT\projectconfig.h" Name="FileName"/>
+      <int Value="272" Name="FirstVisibleLine"/>
+      <int Value="288" Name="CurrentLine"/>
       <wxArrayString Name="Bookmarks"/>
     </TabInfo>
   </TabInfoArray>

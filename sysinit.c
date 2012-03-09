@@ -54,11 +54,11 @@
 #endif
 
 #ifdef CFG_ST7565
-  #include "drivers/lcd/bitmap/st7565/st7565.h"
+  #include "drivers/displays/bitmap/st7565/st7565.h"
 #endif
 
 #ifdef CFG_SSD1306
-  #include "drivers/lcd/bitmap/ssd1306/ssd1306.h"
+  #include "drivers/displays/bitmap/ssd1306/ssd1306.h"
 #endif
 
 #ifdef CFG_LM75B

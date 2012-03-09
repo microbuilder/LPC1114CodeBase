@@ -113,20 +113,16 @@
             <configuration Name="THUMB RAM Debug" build_exclude_from_build="Yes"/>
           </file>
         </folder>
-        <folder Name="lcd">
+        <folder Name="displays">
           <folder Name="bitmap">
             <folder Name="st7565">
-              <file file_name="../../drivers/lcd/bitmap/ST7565/ST7565.c">
-                <configuration Name="THUMB Flash Debug" build_exclude_from_build="No"/>
-              </file>
+              <file file_name="../../drivers/displays/bitmap/ST7565/ST7565.c"/>
             </folder>
             <folder Name="ssd1306">
-              <file file_name="../../drivers/lcd/bitmap/ssd1306/ssd1306.c"/>
+              <file file_name="../../drivers/displays/bitmap/ssd1306/ssd1306.c"/>
             </folder>
           </folder>
-          <file file_name="../../drivers/lcd/smallfonts.c">
-            <configuration Name="THUMB Flash Debug" build_exclude_from_build="No"/>
-          </file>
+          <file file_name="../../drivers/displays/smallfonts.c"/>
         </folder>
         <folder Name="motor">
           <folder Name="stepper">

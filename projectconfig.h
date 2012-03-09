@@ -284,6 +284,33 @@
 
 
 /*=========================================================================
+    ADC
+    -----------------------------------------------------------------------
+
+    ADC_AVERAGING_ENABLE      To get better results, the ADC code can take
+                              a number of samples and return the average
+                              value.  This is slower, but can give more
+                              accurate results compared to single-reading.
+                              
+                              To enable averaging, set ADC_AVERAGING_ENABLE
+                              to a non-zero value.
+    ADC_AVERAGING_SAMPLES     The number of ADC samples to read and
+                              average if ADC averaging is enabled.
+
+    -----------------------------------------------------------------------*/
+    #ifdef CFG_BRD_LPC1114_REFDESIGN
+      #define ADC_AVERAGING_ENABLE    (1)
+      #define ADC_AVERAGING_SAMPLES   (5)
+    #endif
+
+    #ifdef CFG_BRD_LPC1114_802154WIRELESS
+      #define ADC_AVERAGING_ENABLE    (0)
+      #define ADC_AVERAGING_SAMPLES   (5)
+    #endif
+/*=========================================================================*/
+
+
+/*=========================================================================
     ON-BOARD LED
     -----------------------------------------------------------------------
 
@@ -705,6 +732,10 @@
 
 #if CFG_VREG_ALT_PRESENT != 1 && CFG_VREG_ALT_PRESENT != 0
   #error "CFG_VREG_ALT_PRESENT must be equal to either 1 or 0"
+#endif
+
+#if ADC_AVERAGING_ENABLE && ADC_AVERAGING_SAMPLES < 1
+  #error "ADC_AVERAGING_SAMPLES must be 1 or higher when ADC averaging is enabled"
 #endif
 
 #endif

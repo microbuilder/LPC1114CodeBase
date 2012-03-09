@@ -66,6 +66,7 @@
 #include "adc.h"
 
 static bool _adcInitialised = false;
+static uint8_t _adcLastChannel = 0;
 
 /**************************************************************************/
 /*! 
@@ -86,7 +87,7 @@ static bool _adcInitialised = false;
                 be added to the adcInit function.
 */
 /**************************************************************************/
-uint32_t adcRead (uint8_t channelNum)
+uint32_t adcReadSingle (uint8_t channelNum)
 {
   if (!_adcInitialised) adcInit();
 
@@ -99,11 +100,11 @@ uint32_t adcRead (uint8_t channelNum)
     channelNum = 0;
   }
 
-  /* deselect all channels */
+  /* Deselect all channels */
   ADC_AD0CR &= ~ADC_AD0CR_SEL_MASK;
 
-  /* switch channel and start converting */
-  ADC_AD0CR |= (ADC_AD0CR_START_STARTNOW | (1 << channelNum));	
+  /* Start converting now on the appropriate channel */
+  ADC_AD0CR |= ADC_AD0CR_START_STARTNOW | (1 << channelNum);
 				
   /* wait until end of A/D convert */
   while ( 1 )			
@@ -140,14 +141,6 @@ uint32_t adcRead (uint8_t channelNum)
         break;
     }
 
-    // Set channel in AD0CR
-    ADC_AD0CR = ((1 << channelNum) |                     /* SEL=1,select channel 0 on ADC0 */
-                (((CFG_CPU_CCLK / SCB_SYSAHBCLKDIV) / 1000000 - 1 ) << 8) |   /* CLKDIV = Fpclk / 1000000 - 1 */ 
-                ADC_AD0CR_BURST_SWMODE |                 /* BURST = 0, no BURST, software controlled */
-                ADC_AD0CR_CLKS_10BITS |                  /* CLKS = 0, 11 clocks/10 bits */
-                ADC_AD0CR_START_NOSTART |                /* START = 0 A/D conversion stops */
-                ADC_AD0CR_EDGE_RISING);                  /* EDGE = 0 (CAP/MAT signal falling, trigger A/D conversion) */ 
-
     /* read result of A/D conversion */
     if (regVal & ADC_DR_DONE)
     {
@@ -171,16 +164,49 @@ uint32_t adcRead (uint8_t channelNum)
 
 /**************************************************************************/
 /*! 
+    @brief Returns the conversion results on the specified ADC channel.
+
+    This function will manually start an A/D conversion on a single
+    channel and return the results.  If ADC Averaging is enabled
+    (via ADC_AVERAGING_ENABLE) the specified number of values will be
+    samples from the ADC and the average value will be returned.
+
+    @param[in]  channelNum
+                The A/D channel [0..7] that will be used during the A/D 
+                conversion.  (Note that only A/D channel's 0..3 are 
+                configured by default in adcInit.)
+
+    @return     0 if an overrun error occured, otherwise a 10-bit value
+                containing the A/D conversion results.
+
+    @warning    Only AD channels 0..3 are configured for A/D in adcInit.
+                If you wish to use A/D pins 4..7 they will also need to
+                be added to the adcInit function.
+*/
+/**************************************************************************/
+uint32_t adcRead (uint8_t channelNum)
+{
+  if (!_adcInitialised) adcInit();
+
+  #if ADC_AVERAGING_ENABLE
+    uint32_t adcTotal, i;
+    adcTotal = 0;
+    for (i=0; i<ADC_AVERAGING_SAMPLES;i++)
+    {
+      adcTotal += adcReadSingle(channelNum);
+    }
+    return adcTotal/ADC_AVERAGING_SAMPLES;
+  #else
+    return adcReadSingle(channelNum);
+  #endif
+}
+
+/**************************************************************************/
+/*! 
     @brief      Initialises the A/D converter and configures channels 0..3
                 for 10-bit, SW-controlled A/D conversion.
 
     @return     Nothing
-
-    @warning    Depending on what board you are using, you may need to
-                configure AD6 and AD7 instead of AD2 and AD3:
-
-                LPC1114 Reference Design Board:   AD0, AD1, AD6, AD7
-                LPC1114 802.15.4 Wireless Board:  AD0, AD1, AD2, AD3
 */
 /**************************************************************************/
 void adcInit (void)
@@ -208,7 +234,6 @@ void adcInit (void)
   IOCON_JTAG_TMS_PIO1_0 |=   (IOCON_JTAG_TMS_PIO1_0_FUNC_AD1 &
                               IOCON_JTAG_TMS_PIO1_0_ADMODE_ANALOG);
 
-  #ifdef CFG_BRD_LPC1114_802154WIRELESS
   /* Set AD2 to analog input */
   IOCON_JTAG_TDO_PIO1_1 &=  ~(IOCON_JTAG_TDO_PIO1_1_ADMODE_MASK |
                               IOCON_JTAG_TDO_PIO1_1_FUNC_MASK |
@@ -222,23 +247,6 @@ void adcInit (void)
                                IOCON_JTAG_nTRST_PIO1_2_MODE_MASK);
   IOCON_JTAG_nTRST_PIO1_2 |=  (IOCON_JTAG_nTRST_PIO1_2_FUNC_AD3 &
                                IOCON_JTAG_nTRST_PIO1_2_ADMODE_ANALOG);
-  #endif
-
-  #ifdef CFG_BRD_LPC1114_REFDESIGN
-  /* Set AD6 to analog input */
-  IOCON_PIO1_10 &=  ~(IOCON_PIO1_10_ADMODE_MASK |
-                      IOCON_PIO1_10_FUNC_MASK |
-                      IOCON_PIO1_10_MODE_MASK);
-  IOCON_PIO1_10 |=   (IOCON_PIO1_10_FUNC_AD6 &
-                      IOCON_PIO1_10_ADMODE_ANALOG);
-  
-  /* Set AD7 to analog input */
-  IOCON_PIO1_11 &=  ~(IOCON_PIO1_11_ADMODE_MASK |
-                      IOCON_PIO1_11_FUNC_MASK |
-                      IOCON_PIO1_11_MODE_MASK);
-  IOCON_PIO1_11 |=   (IOCON_PIO1_11_FUNC_AD7 &
-                      IOCON_PIO1_11_ADMODE_ANALOG);
-  #endif
 
   /* Note that in SW mode only one channel can be selected at a time (AD0 in this case)
      To select multiple channels, ADC_AD0CR_BURST_HWSCANMODE must be used */
@@ -251,6 +259,9 @@ void adcInit (void)
 
   /* Set initialisation flag */
   _adcInitialised = true;
+
+  /* Set last channel flag to 0 (initialised above) */
+  _adcLastChannel = 0;
 
   return;
 }

@@ -118,20 +118,20 @@
         <File Name="../../drivers/dac/mcp4725/mcp4725.h"/>
       </VirtualDirectory>
     </VirtualDirectory>
-    <VirtualDirectory Name="lcd">
-      <File Name="../../drivers/lcd/smallfonts.c"/>
-      <File Name="../../drivers/lcd/smallfonts.h"/>
+    <VirtualDirectory Name="displays">
       <VirtualDirectory Name="bitmap">
         <VirtualDirectory Name="ST7565">
-          <File Name="../../drivers/lcd/bitmap/ST7565/ST7565.c"/>
-          <File Name="../../drivers/lcd/bitmap/ST7565/ST7565.h"/>
+          <File Name="../../drivers/displays/bitmap/ST7565/ST7565.c"/>
+          <File Name="../../drivers/displays/bitmap/ST7565/ST7565.h"/>
         </VirtualDirectory>
-        <File Name="../../drivers/lcd/bitmap/readme.txt"/>
         <VirtualDirectory Name="ssd1306">
-          <File Name="../../drivers/lcd/bitmap/ssd1306/ssd1306.c"/>
-          <File Name="../../drivers/lcd/bitmap/ssd1306/ssd1306.h"/>
+          <File Name="../../drivers/displays/bitmap/ssd1306/ssd1306.c"/>
+          <File Name="../../drivers/displays/bitmap/ssd1306/ssd1306.h"/>
         </VirtualDirectory>
+        <File Name="../../drivers/displays/bitmap/readme.txt"/>
       </VirtualDirectory>
+      <File Name="../../drivers/displays/smallfonts.c"/>
+      <File Name="../../drivers/displays/smallfonts.h"/>
     </VirtualDirectory>
   </VirtualDirectory>
   <VirtualDirectory Name="lpc1xxx">
@@ -168,52 +168,53 @@
     <File Name="../../project/readme.txt"/>
   </VirtualDirectory>
   <Settings Type="Dynamic Library">
-    <Configuration Name="Debug" CompilerType="gnu gcc" DebuggerType="GNU gdb debugger" Type="Dynamic Library" BuildCmpWithGlobalSettings="append" BuildLnkWithGlobalSettings="append" BuildResWithGlobalSettings="append">
-      <Compiler Options="-g" Required="yes" PreCompiledHeader="">
+    <GlobalSettings>
+      <Compiler Options="" C_Options="">
+        <IncludePath Value="."/>
+      </Compiler>
+      <Linker Options="">
+        <LibraryPath Value="."/>
+      </Linker>
+      <ResourceCompiler Options=""/>
+    </GlobalSettings>
+    <Configuration Name="Debug" CompilerType="gnu gcc" DebuggerType="GNU gdb debugger Cortex M3" Type="Dynamic Library" BuildCmpWithGlobalSettings="append" BuildLnkWithGlobalSettings="append" BuildResWithGlobalSettings="append">
+      <Compiler Options="-g" C_Options="-g" Required="yes" PreCompiledHeader="" PCHInCommandLine="no" UseDifferentPCHFlags="no" PCHFlags="">
         <IncludePath Value="."/>
       </Compiler>
       <Linker Options="" Required="yes"/>
       <ResourceCompiler Options="" Required="no"/>
-      <General OutputFile="" IntermediateDirectory="./Debug" Command="" CommandArguments="" WorkingDirectory="$(IntermediateDirectory)" PauseExecWhenProcTerminates="yes"/>
+      <General OutputFile="" IntermediateDirectory="../../" Command="firmware.elf" CommandArguments="" UseSeparateDebugArgs="no" DebugArguments="" WorkingDirectory="$(IntermediateDirectory)" PauseExecWhenProcTerminates="yes"/>
+      <Environment EnvVarSetName="&lt;Use Defaults&gt;" DbgSetName="&lt;Use Defaults&gt;">
+        <![CDATA[]]>
+      </Environment>
       <Debugger IsRemote="yes" RemoteHostName="localhost" RemoteHostPort="2331" DebuggerPath="arm-none-eabi-gdb.exe">
-        <PostConnectCommands># Make sure that we are using SWD
+        <PostConnectCommands/>
+        <StartupCommands># Make sure that we are using SWD
 monitor interface SWD
+
+# Set monitor to little endian
+monitor endian little
 
 # Set monitor speed
 monitor speed 1000
 
+# Reset device
+monitor reset
+
 # Set device ID to LPC1114
 monitor flash device = LPC1114
-
-# Enable unlimited flash break points (may require license)
-monitor flash breakpoints = 1
 
 # Enable flash download
 monitor flash download = 1
 
-# Set gdb server to little endian
-monitor endian little
-
-# Reset the chip to get to a known state.
-monitor reset
-monitor sleep 10
-
 # Transfer the firmware to the device
 load "../../firmware.elf"
 
-# Initialise stack pointer (R13) and program counter (PC, R15)
-# monitor reg r13 = (0x00000000)
-# monitor reg pc = (0x00000004)
+# Initializing PC and stack pointer
+monitor reg r13 = (0x00000000)
+monitor reg pc = (0x00000004)
 
-# break main
-# continue 
-
-# Reset device to start execution
-monitor reset
-
-# Start the device
-monitor go</PostConnectCommands>
-        <StartupCommands/>
+monitor reset</StartupCommands>
       </Debugger>
       <PreBuild/>
       <PostBuild/>
@@ -231,14 +232,22 @@ monitor go</PostConnectCommands>
         <CustomPostBuild/>
         <CustomPreBuild/>
       </AdditionalRules>
+      <Completion>
+        <ClangCmpFlags/>
+        <ClangPP/>
+        <SearchPaths/>
+      </Completion>
     </Configuration>
     <Configuration Name="Release" CompilerType="gnu gcc" DebuggerType="GNU gdb debugger" Type="Dynamic Library" BuildCmpWithGlobalSettings="append" BuildLnkWithGlobalSettings="append" BuildResWithGlobalSettings="append">
-      <Compiler Options="" Required="yes" PreCompiledHeader="">
+      <Compiler Options="" C_Options="" Required="yes" PreCompiledHeader="" PCHInCommandLine="no" UseDifferentPCHFlags="no" PCHFlags="">
         <IncludePath Value="."/>
       </Compiler>
       <Linker Options="-O2" Required="yes"/>
       <ResourceCompiler Options="" Required="no"/>
-      <General OutputFile="" IntermediateDirectory="./Release" Command="" CommandArguments="" WorkingDirectory="$(IntermediateDirectory)" PauseExecWhenProcTerminates="yes"/>
+      <General OutputFile="" IntermediateDirectory="./Release" Command="" CommandArguments="" UseSeparateDebugArgs="no" DebugArguments="" WorkingDirectory="$(IntermediateDirectory)" PauseExecWhenProcTerminates="yes"/>
+      <Environment EnvVarSetName="&lt;Use Defaults&gt;" DbgSetName="&lt;Use Defaults&gt;">
+        <![CDATA[]]>
+      </Environment>
       <Debugger IsRemote="no" RemoteHostName="" RemoteHostPort="" DebuggerPath="">
         <PostConnectCommands/>
         <StartupCommands/>
@@ -259,15 +268,11 @@ monitor go</PostConnectCommands>
         <CustomPostBuild/>
         <CustomPreBuild/>
       </AdditionalRules>
+      <Completion>
+        <ClangCmpFlags/>
+        <ClangPP/>
+        <SearchPaths/>
+      </Completion>
     </Configuration>
-    <GlobalSettings>
-      <Compiler Options="">
-        <IncludePath Value="."/>
-      </Compiler>
-      <Linker Options="">
-        <LibraryPath Value="."/>
-      </Linker>
-      <ResourceCompiler Options=""/>
-    </GlobalSettings>
   </Settings>
 </CodeLite_Project>

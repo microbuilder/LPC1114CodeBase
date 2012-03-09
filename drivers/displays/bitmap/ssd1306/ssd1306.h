@@ -40,7 +40,7 @@
 
 #include "projectconfig.h"
 
-#include "drivers/lcd/smallfonts.h"
+#include "drivers/displays/smallfonts.h"
 
 // Pin Definitions
 #define SSD1306_DC_PORT                   (2)     // Data/Command

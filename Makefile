@@ -16,6 +16,14 @@ VPATH =
 OBJS = main.o
 
 ##########################################################################
+# Debug settings
+##########################################################################
+
+# Set DEBUGBUILD to 'TRUE' for full debugging (larger, slower binaries), 
+# or to 'FALSE' for release builds (smallest, fastest binaries)
+DEBUGBUILD = TRUE
+
+##########################################################################
 # Project-specific files 
 ##########################################################################
 
@@ -44,8 +52,9 @@ VPATH += drivers/sensors/lm75b
 OBJS += lm75b.o
 
 # Bitmap LCD support (ST7565, SSD1306)
-VPATH += drivers/lcd drivers/lcd/bitmap/ST7565
-VPATH += drivers/lcd/bitmap/ssd1306
+VPATH += drivers/displays
+VPATH += drivers/displays/bitmap/ST7565
+VPATH += drivers/displays/bitmap/ssd1306
 OBJS += smallfonts.o ST7565.o ssd1306.o
 
 # ChaN FatFS and SD card support
@@ -113,8 +122,13 @@ OBJS += $(TARGET)_handlers.o LPC1xxx_startup.o
 ##########################################################################
 # Compiler settings, parameters and flags
 ##########################################################################
-CFLAGS  = -c -Os $(INCLUDE_PATHS) -Wall -mthumb -ffunction-sections -fdata-sections -fmessage-length=0 -mcpu=$(CPU_TYPE) -DTARGET=$(TARGET) -fno-builtin
-ASFLAGS = -c -Os $(INCLUDE_PATHS) -Wall -mthumb -ffunction-sections -fdata-sections -fmessage-length=0 -mcpu=$(CPU_TYPE) -D__ASSEMBLY__ -x assembler-with-cpp
+ifeq (TRUE,$(DEBUGBUILD))
+  CFLAGS  = -c -g -O0 $(INCLUDE_PATHS) -Wall -mthumb -ffunction-sections -fdata-sections -fmessage-length=0 -mcpu=$(CPU_TYPE) -DTARGET=$(TARGET) -fno-builtin
+  ASFLAGS = -c -g -O0 $(INCLUDE_PATHS) -Wall -mthumb -ffunction-sections -fdata-sections -fmessage-length=0 -mcpu=$(CPU_TYPE) -D__ASSEMBLY__ -x assembler-with-cpp
+else
+  CFLAGS  = -c -g -Os $(INCLUDE_PATHS) -Wall -mthumb -ffunction-sections -fdata-sections -fmessage-length=0 -mcpu=$(CPU_TYPE) -DTARGET=$(TARGET) -fno-builtin
+  ASFLAGS = -c -g -Os $(INCLUDE_PATHS) -Wall -mthumb -ffunction-sections -fdata-sections -fmessage-length=0 -mcpu=$(CPU_TYPE) -D__ASSEMBLY__ -x assembler-with-cpp
+endif
 LDFLAGS = -nostartfiles -mcpu=$(CPU_TYPE) -mthumb -Wl,--gc-sections
 LDLIBS  = -lm
 OCFLAGS = --strip-unneeded

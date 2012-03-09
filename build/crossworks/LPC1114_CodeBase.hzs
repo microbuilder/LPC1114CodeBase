@@ -33,6 +33,8 @@
   <ProjectSessionItem path="LPC1114_CodeBase" name="unnamed" />
   <ProjectSessionItem path="LPC1114_CodeBase;LPC1114_CodeBase" name="unnamed" />
   <ProjectSessionItem path="LPC1114_CodeBase;LPC1114_CodeBase;Source Files" name="unnamed" />
+  <ProjectSessionItem path="LPC1114_CodeBase;LPC1114_CodeBase;Source Files;drivers" name="unnamed" />
+  <ProjectSessionItem path="LPC1114_CodeBase;LPC1114_CodeBase;Source Files;drivers;displays" name="unnamed" />
  </Project>
  <Register1>
   <RegisterWindow openNodes="CT16B1/TMR16B1PWMC;GPIO2;SysTick" binaryNodes="GPIO1/GPIO1DATA;GPIO2/GPIO2DATA;GPIO2/GPIO2DIR;GPIO3/GPIO3DATA" hiddenNodes="" unsignedNodes="" visibleGroups="GPIO2;CT16B1;GPIO1;GPIO3;SysTick" decimalNodes="SysTick/SysTick_VAL" octalNodes="" asciiNodes="" />
@@ -52,10 +54,10 @@
  </TraceWindow>
  <Watch1>
   <Watches active="1" update="Each Second" >
-   <Watchpoint linenumber="66" radix="10" name="msTicks" expression="msTicks" filename="c:/documents and settings/kevin/my documents/my dropbox/microbuilder/code/lpc1114/lpc1114_codebase/core/systick/systick.c" />
-   <Watchpoint linenumber="72" radix="16" name="UARTBuffer" expression="UARTBuffer" filename="c:/users/kevin/documents/my dropbox/microbuilder/code/lpc1114/lpc1114_codebase/core/uart/uart.c" />
-   <Watchpoint linenumber="80" radix="10" name="stepperPosition" expression="stepperPosition" filename="c:/users/kevin/documents/my dropbox/microbuilder/code/lpc1114/lpc1114_codebase/drivers/motor/stepper/stepper.c" />
    <Watchpoint linenumber="81" radix="10" name="stepperStepNumber" expression="stepperStepNumber" filename="c:/users/kevin/documents/my dropbox/microbuilder/code/lpc1114/lpc1114_codebase/drivers/motor/stepper/stepper.c" />
+   <Watchpoint linenumber="80" radix="10" name="stepperPosition" expression="stepperPosition" filename="c:/users/kevin/documents/my dropbox/microbuilder/code/lpc1114/lpc1114_codebase/drivers/motor/stepper/stepper.c" />
+   <Watchpoint linenumber="72" radix="16" name="UARTBuffer" expression="UARTBuffer" filename="c:/users/kevin/documents/my dropbox/microbuilder/code/lpc1114/lpc1114_codebase/core/uart/uart.c" />
+   <Watchpoint linenumber="66" radix="10" name="msTicks" expression="msTicks" filename="c:/documents and settings/kevin/my documents/my dropbox/microbuilder/code/lpc1114/lpc1114_codebase/core/systick/systick.c" />
   </Watches>
  </Watch1>
  <Watch2>
@@ -68,7 +70,8 @@
   <Watches active="0" update="Never" />
  </Watch4>
  <Files>
-  <SessionOpenFile useTextEdit="1" useBinaryEdit="0" codecName="Latin1" x="33" debugPath="C:\Dropbox\microBuilder\Code\LPC1114\LPC1114_CodeBase_GIT\main.c" y="43" path="C:\Dropbox\microBuilder\Code\LPC1114\LPC1114_CodeBase_GIT\main.c" left="0" selected="1" name="unnamed" top="18" />
+  <SessionOpenFile useTextEdit="1" useBinaryEdit="0" codecName="Latin1" x="0" debugPath="C:\Dropbox\microBuilder\Code\LPC1114\LPC1114_CodeBase_GIT\main.c" y="66" path="C:\Dropbox\microBuilder\Code\LPC1114\LPC1114_CodeBase_GIT\main.c" left="0" selected="0" name="unnamed" top="33" />
+  <SessionOpenFile useTextEdit="1" useBinaryEdit="0" codecName="Latin1" x="0" debugPath="C:\Dropbox\microBuilder\Code\LPC1114\LPC1114_CodeBase_GIT\drivers\displays\bitmap\ssd1306\ssd1306.h" y="23" path="C:\Dropbox\microBuilder\Code\LPC1114\LPC1114_CodeBase_GIT\drivers\displays\bitmap\ssd1306\ssd1306.h" left="0" selected="1" name="unnamed" top="0" />
  </Files>
- <ARMCrossStudioWindow activeProject="LPC1114_CodeBase" autoConnectTarget="Segger J-Link" debugSearchFileMap="" fileDialogInitialDirectory="C:\Dropbox\microBuilder\Code\LPC1114\LPC1114_CodeBase\project\commands" fileDialogDefaultFilter="*.c" autoConnectCapabilities="388991" debugSearchPath="" buildConfiguration="THUMB Flash Release" />
+ <ARMCrossStudioWindow activeProject="LPC1114_CodeBase" autoConnectTarget="Segger J-Link" debugSearchFileMap="" fileDialogInitialDirectory="C:\Dropbox\microBuilder\Code\LPC1114\LPC1114_CodeBase_GIT\drivers\displays\bitmap\ssd1306" fileDialogDefaultFilter="" autoConnectCapabilities="388991" debugSearchPath="" buildConfiguration="THUMB Flash Release" />
 </session>
