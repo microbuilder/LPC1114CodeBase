@@ -508,8 +508,8 @@
 	<storageModule moduleId="com.crt.config">
 		<projectStorage>&lt;?xml version="1.0" encoding="UTF-8"?&gt;&#13;
 &lt;TargetConfig&gt;&#13;
-&lt;Properties property_0="" property_1="" property_3="NXP" property_4="LPC1114/303" property_count="5" version="1"/&gt;&#13;
-&lt;infoList vendor="NXP"&gt;&lt;info chip="LPC1114/303" match_id="0x00040040" name="LPC1114/303" stub="crt_emu_lpc11_13_nxp"&gt;&lt;chip&gt;&lt;name&gt;LPC1114/303&lt;/name&gt;&#13;
+&lt;Properties property_0="" property_1="" property_3="NXP" property_4="LPC1114/301" property_count="5" version="1"/&gt;&#13;
+&lt;infoList vendor="NXP"&gt;&lt;info chip="LPC1114/301" match_id="0x00040040" name="LPC1114/301" stub="crt_emu_lpc11_13_nxp"&gt;&lt;chip&gt;&lt;name&gt;LPC1114/301&lt;/name&gt;&#13;
 &lt;family&gt;LPC11xx&lt;/family&gt;&#13;
 &lt;vendor&gt;NXP (formerly Philips)&lt;/vendor&gt;&#13;
 &lt;reset board="None" core="Real" sys="Real"/&gt;&#13;
