@@ -1,5 +1,5 @@
-v0.75 - Ongoing
-===============
+v0.75 - 24 March 2012
+=====================
 
 - *** Renamed 'drivers/lcd' to 'drivers/displays' ***
 - *** Moved Chibi to 'drivers/rf/chibi' ***
