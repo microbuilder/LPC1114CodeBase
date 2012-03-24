@@ -107,7 +107,12 @@ void cmdRx(uint8_t c)
     
     case '\b':
         printf("%c", c);
-        if (msg_ptr > msg)
+        if (msg_ptr == msg)
+        {
+            // Send bell alert and space (to maintain position)
+            printf("\a ");
+        }
+        else if (msg_ptr > msg)
         {
             msg_ptr--;
         }
