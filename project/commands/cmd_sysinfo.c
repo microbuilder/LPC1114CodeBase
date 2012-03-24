@@ -47,8 +47,8 @@
 #include "core/iap/iap.h"
 
 #ifdef CFG_CHIBI
-  #include "drivers/chibi/chb.h"
-  #include "drivers/chibi/chb_drvr.h"
+  #include "drivers/rf/chibi/chb.h"
+  #include "drivers/rf/chibi/chb_drvr.h"
 #endif
 
 #ifdef CFG_LM75B

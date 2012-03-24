@@ -21,7 +21,13 @@ OBJS = main.o
 
 # Set DEBUGBUILD to 'TRUE' for full debugging (larger, slower binaries), 
 # or to 'FALSE' for release builds (smallest, fastest binaries)
-DEBUGBUILD = TRUE
+DEBUGBUILD = FALSE
+
+##########################################################################
+# IDE Flags (Keeps various IDEs happy)
+##########################################################################
+
+OPTDEFINES = -D __NEWLIB__
 
 ##########################################################################
 # Project-specific files 
@@ -40,7 +46,7 @@ OBJS += cmd_sysinfo.o cmd_sd_dir.o cmd_reset.o
 ##########################################################################
 
 # Chibi Light-Weight Wireless Stack (AT86RF212)
-VPATH += drivers/chibi
+VPATH += drivers/rf/chibi
 OBJS += chb.o chb_buf.o chb_drvr.o chb_eeprom.o chb_spi.o
 
 # 4K EEPROM
@@ -72,6 +78,15 @@ OBJS += rsa.o
 # DAC
 VPATH += drivers/dac/mcp4725
 OBJS += mcp4725.o
+
+# RFID/NFC
+VPATH += drivers/rf/pn532 drivers/rf/pn532/helpers
+OBJS += pn532.o pn532_bus_i2c.o pn532_bus_uart.o
+OBJS += pn532_mifare_classic.o pn532_mifare_ultralight.o
+
+# TAOS Light Sensors
+VPATH += drivers/sensors/tsl2561
+OBJS += tsl2561.o
 
 ##########################################################################
 # Library files 
@@ -123,10 +138,10 @@ OBJS += $(TARGET)_handlers.o LPC1xxx_startup.o
 # Compiler settings, parameters and flags
 ##########################################################################
 ifeq (TRUE,$(DEBUGBUILD))
-  CFLAGS  = -c -g -O0 $(INCLUDE_PATHS) -Wall -mthumb -ffunction-sections -fdata-sections -fmessage-length=0 -mcpu=$(CPU_TYPE) -DTARGET=$(TARGET) -fno-builtin
+  CFLAGS  = -c -g -O0 $(INCLUDE_PATHS) -Wall -mthumb -ffunction-sections -fdata-sections -fmessage-length=0 -mcpu=$(CPU_TYPE) -DTARGET=$(TARGET) -fno-builtin $(OPTDEFINES)
   ASFLAGS = -c -g -O0 $(INCLUDE_PATHS) -Wall -mthumb -ffunction-sections -fdata-sections -fmessage-length=0 -mcpu=$(CPU_TYPE) -D__ASSEMBLY__ -x assembler-with-cpp
 else
-  CFLAGS  = -c -g -Os $(INCLUDE_PATHS) -Wall -mthumb -ffunction-sections -fdata-sections -fmessage-length=0 -mcpu=$(CPU_TYPE) -DTARGET=$(TARGET) -fno-builtin
+  CFLAGS  = -c -g -Os $(INCLUDE_PATHS) -Wall -mthumb -ffunction-sections -fdata-sections -fmessage-length=0 -mcpu=$(CPU_TYPE) -DTARGET=$(TARGET) -fno-builtin $(OPTDEFINES)
   ASFLAGS = -c -g -Os $(INCLUDE_PATHS) -Wall -mthumb -ffunction-sections -fdata-sections -fmessage-length=0 -mcpu=$(CPU_TYPE) -D__ASSEMBLY__ -x assembler-with-cpp
 endif
 LDFLAGS = -nostartfiles -mcpu=$(CPU_TYPE) -mthumb -Wl,--gc-sections

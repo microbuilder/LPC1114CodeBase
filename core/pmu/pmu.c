@@ -47,7 +47,7 @@
 #include "core/timer32/timer32.h"
 
 #ifdef CFG_CHIBI
-  #include "drivers/chibi/chb_drvr.h"
+  #include "drivers/rf/chibi/chb_drvr.h"
 #endif
 
 #ifdef CFG_SDCARD

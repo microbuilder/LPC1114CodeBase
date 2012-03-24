@@ -43,18 +43,9 @@
 #include "gpio.h"
 
 #ifdef CFG_CHIBI
-#include "drivers/chibi/chb_drvr.h"
+#include "drivers/rf/chibi/chb_drvr.h"
 volatile uint32_t chibi_counter  = 0;
 #endif
-
-volatile uint32_t gpio0_counter = 0;
-volatile uint32_t gpio1_counter = 0;
-volatile uint32_t gpio2_counter = 0;
-volatile uint32_t gpio3_counter = 0;
-volatile uint32_t p0_1_counter  = 0;
-volatile uint32_t p1_1_counter  = 0;
-volatile uint32_t p2_1_counter  = 0;
-volatile uint32_t p3_1_counter  = 0;
 
 static bool _gpioInitialised = false;
 
@@ -63,66 +54,65 @@ static bool _gpioInitialised = false;
     @brief IRQ Handler for GPIO port 0 (currently checks pin 0.1)
 */
 /**************************************************************************/
+#if defined GPIO_ENABLE_IRQ0
 void PIOINT0_IRQHandler(void)
 {
   uint32_t regVal;
 
-  gpio0_counter++;
-
   regVal = gpioIntStatus(0, 1);
   if (regVal)
   {
-    p0_1_counter++;
     gpioIntClear(0, 1);
   }		
   return;
 }
+#endif
 
 /**************************************************************************/
 /*! 
     @brief IRQ Handler for GPIO port 1 (currently checks pin 1.1)
 */
 /**************************************************************************/
+#if defined GPIO_ENABLE_IRQ1
 void PIOINT1_IRQHandler(void)
 {
   uint32_t regVal;
 
-  gpio1_counter++;
-
   regVal = gpioIntStatus(1, 1);
   if ( regVal )
   {
-    p1_1_counter++;
     gpioIntClear(1, 1);
   }
 
   return;
 }
+#endif
 
 /**************************************************************************/
 /*! 
     @brief IRQ Handler for GPIO port 2 (currently checks pin 2.1)
 */
 /**************************************************************************/
+#if defined GPIO_ENABLE_IRQ2
 void PIOINT2_IRQHandler(void)
 {
   uint32_t regVal;
 
-  gpio2_counter++;
   regVal = gpioIntStatus(2, 1);
   if ( regVal )
   {
-    p2_1_counter++;
     gpioIntClear(2, 1);
   }		
   return;
 }
+#endif
 
 /**************************************************************************/
 /*! 
     @brief IRQ Handler for GPIO port 3 (currently checks pin 3.1)
 */
 /**************************************************************************/
+#if defined GPIO_ENABLE_IRQ3
 void PIOINT3_IRQHandler(void)
 {
   uint32_t regVal;
@@ -137,17 +127,16 @@ void PIOINT3_IRQHandler(void)
     gpioIntClear(3, 1);
   }		
 #else
-  gpio3_counter++;
   regVal = gpioIntStatus(3, 1);
   if ( regVal )
   {
-    p3_1_counter++;
     gpioIntClear(3, 1);
   }		
 #endif
 
  return;
 }
+#endif
 
 /**************************************************************************/
 /*! 
@@ -333,9 +322,10 @@ void gpioSetInterrupt (uint32_t portNum, uint32_t bitPos, gpioInterruptSense_t s
   if (!_gpioInitialised) gpioInit();
 
   // Get the appropriate register (handled this way to optimise code size)
-  REG32 *gpiois  = &GPIO_GPIO0IS;
-  REG32 *gpioibe = &GPIO_GPIO0IBE;
-  REG32 *gpioiev = &GPIO_GPIO0IEV;
+  REG32 *gpiois  = &GPIO_GPIO0IS;   // Interrupt sense (edge or level sensitive)
+  REG32 *gpioibe = &GPIO_GPIO0IBE;  // Interrupt both edges (0 = int controlled by GPIOIEV, 1 = both edges trigger interrupt)
+  REG32 *gpioiev = &GPIO_GPIO0IEV;  // 0 = falling edge or low, 1 = rising edge or high (depending on GPIOIS)
+  
   switch (portNum)
   {
     case 0:

@@ -70,29 +70,6 @@
           </folder>
           <file file_name="../../drivers/eeprom/eeprom.c"/>
         </folder>
-        <folder Name="chibi">
-          <file file_name="../../drivers/chibi/chb.c">
-            <configuration Name="THUMB Flash Debug" build_exclude_from_build="No"/>
-            <configuration Name="THUMB RAM Debug" build_exclude_from_build="Yes"/>
-          </file>
-          <file file_name="../../drivers/chibi/chb_buf.c">
-            <configuration Name="THUMB Flash Debug" build_exclude_from_build="No"/>
-            <configuration Name="THUMB RAM Debug" build_exclude_from_build="Yes"/>
-          </file>
-          <file file_name="../../drivers/chibi/chb_eeprom.c">
-            <configuration Name="THUMB Flash Debug" build_exclude_from_build="No"/>
-            <configuration Name="THUMB RAM Debug" build_exclude_from_build="Yes"/>
-          </file>
-          <file file_name="../../drivers/chibi/chb_drvr.c">
-            <configuration Name="THUMB Flash Debug" build_exclude_from_build="No"/>
-            <configuration Name="THUMB RAM Debug" build_exclude_from_build="Yes"/>
-          </file>
-          <file file_name="../../drivers/chibi/chb_spi.c">
-            <configuration Name="THUMB Flash Debug" build_exclude_from_build="No"/>
-            <configuration Name="THUMB RAM Debug" build_exclude_from_build="Yes"/>
-          </file>
-          <file file_name="../../drivers/chibi/chb_libpcap.c"/>
-        </folder>
         <folder Name="sensors">
           <folder Name="lm75b">
             <file file_name="../../drivers/sensors/lm75b/lm75b.c">
@@ -135,6 +112,34 @@
         <folder Name="dac">
           <folder Name="mcp4725">
             <file file_name="../../drivers/dac/mcp4725/mcp4725.c"/>
+          </folder>
+        </folder>
+        <folder Name="rf">
+          <folder Name="chibi">
+            <file file_name="../../drivers/rf/chibi/chb.c"/>
+            <file file_name="../../drivers/rf/chibi/chb.h"/>
+            <file file_name="../../drivers/rf/chibi/chb_buf.c"/>
+            <file file_name="../../drivers/rf/chibi/chb_buf.h"/>
+            <file file_name="../../drivers/rf/chibi/chb_drvr.c"/>
+            <file file_name="../../drivers/rf/chibi/chb_drvr.h"/>
+            <file file_name="../../drivers/rf/chibi/chb_eeprom.c"/>
+            <file file_name="../../drivers/rf/chibi/chb_eeprom.h"/>
+            <file file_name="../../drivers/rf/chibi/chb_libpcap.c"/>
+            <file file_name="../../drivers/rf/chibi/chb_libpcap.h"/>
+            <file file_name="../../drivers/rf/chibi/chb_spi.c"/>
+            <file file_name="../../drivers/rf/chibi/chb_spi.h"/>
+            <file file_name="../../drivers/rf/chibi/types.h"/>
+          </folder>
+          <folder Name="pn532">
+            <folder Name="helpers">
+              <file file_name="../../drivers/rf/pn532/helpers/pn532_mifare_classic.c"/>
+              <file file_name="../../drivers/rf/pn532/helpers/pn532_mifare_ultralight.c"/>
+            </folder>
+            <file file_name="../../drivers/rf/pn532/pn532.c"/>
+            <file file_name="../../drivers/rf/pn532/pn532.h"/>
+            <file file_name="../../drivers/rf/pn532/pn532_bus.h"/>
+            <file file_name="../../drivers/rf/pn532/pn532_bus_i2c.c"/>
+            <file file_name="../../drivers/rf/pn532/pn532_bus_uart.c"/>
           </folder>
         </folder>
       </folder>

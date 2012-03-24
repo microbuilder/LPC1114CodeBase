@@ -15,8 +15,8 @@
 
 #define PN532_RSTPD_PORT                      (3)
 #define PN532_RSTPD_PIN                       (1)
-#define PN532_I2C_IRQPORT                     (3)
-#define PN532_I2C_IRQPIN                      (2)
+#define PN532_I2C_IRQPORT                     (1)
+#define PN532_I2C_IRQPIN                      (10)
 
 #define PN532_NORMAL_FRAME__DATA_MAX_LEN      (254)
 #define PN532_NORMAL_FRAME__OVERHEAD          (8)

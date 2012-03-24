@@ -66,7 +66,7 @@
 #endif
 
 #ifdef CFG_CHIBI
-  #include "drivers/chibi/chb.h"
+  #include "drivers/rf/chibi/chb.h"
 #endif
 
 #ifdef CFG_SDCARD

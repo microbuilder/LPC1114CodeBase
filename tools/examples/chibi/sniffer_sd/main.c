@@ -41,9 +41,9 @@
 #if defined CFG_CHIBI && defined CFG_SDCARD 
   #include <string.h>
   #include <stdlib.h>
-  #include "drivers/chibi/chb.h"
-  #include "drivers/chibi/chb_drvr.h"
-  #include "drivers/chibi/chb_libpcap.h"
+  #include "drivers/rf/chibi/chb.h"
+  #include "drivers/rf/chibi/chb_drvr.h"
+  #include "drivers/rf/chibi/chb_libpcap.h"
   static chb_rx_data_t rx_data;
 #endif
 

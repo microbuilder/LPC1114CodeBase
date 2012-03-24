@@ -74,6 +74,7 @@
     INTERFACE   . .       . . .     . . . . . . .  .     . . .
     BATTERY     . X       . . .     . . . . . . .  X     . . .
     VREG [1]    . .       . . .     . . . . . . X  .     . . .
+    PN532 [3]   . .       . . .     . . . . . . .  .     X X .
 
                 TIMERS                      SSP       ADC [0]       UART
                 ======================      ===       ===========   ====
@@ -97,6 +98,27 @@
     [2]  PMU uses 32-bit Timer 0 for SW wakeup from deep-sleep.  This timer
          can safely be used by other peripherals, but may need to be
          reconfigured when you wakeup from deep-sleep.
+    [3]  3.2 only used when with the I2C bus (for IRQ)
+
+ **************************************************************************/
+
+
+/**************************************************************************
+    I2C Addresses
+    -----------------------------------------------------------------------
+    The following addresses are used by the different I2C sensors included
+    in the code base [1]
+
+                                HEX       BINARY
+                                ====      ========
+    LM75B                       0x90      1001000x
+    MCP24AA                     0xA0      1010000x
+    TSL2561                     0x72      0111001x
+    TCS3414                     0x72      0111001x
+    PN532                       0x48      0100100x
+
+    [1]  Alternative addresses may exists, but the addresses listed in this
+         table are the values used in the code base
 
  **************************************************************************/
 
@@ -255,6 +277,44 @@
 
     #ifdef CFG_BRD_LPC1114_802154WIRELESS
       #define CFG_SYSTICK_DELAY_IN_MS     (1)
+    #endif
+/*=========================================================================*/
+
+
+/*=========================================================================
+    GPIO INTERRUPTS
+    -----------------------------------------------------------------------
+
+    IF you wish to use the GPIO interrupt handlers elsewhere in your code,
+    you should probably define a seperate IRQHandler for the appropriate
+    GPIO bank rather than using the definitions in core/gpio/gpio.c (to
+    avoid causing problems in other projects, and to make updates easier,
+    etc.)  To disable the default IRQHandler, simply comment out the
+    define below for the appropriate GPIO bank and implement the handler
+    somewhere else.
+
+    GPIO_ENABLE_IRQ0    If defined, PIOINT0_IRQHandler will be declared and
+                        handled in core/gpio/gpio.c
+    GPIO_ENABLE_IRQ1    If defined, PIOINT1_IRQHandler will be declared and
+                        handled in core/gpio/gpio.c
+    GPIO_ENABLE_IRQ2    If defined, PIOINT2_IRQHandler will be declared and
+                        handled in core/gpio/gpio.c
+    GPIO_ENABLE_IRQ3    If defined, PIOINT3_IRQHandler will be declared and
+                        handled in core/gpio/gpio.c
+
+    -----------------------------------------------------------------------*/
+    #ifdef CFG_BRD_LPC1114_REFDESIGN
+      // #define GPIO_ENABLE_IRQ0
+      // #define GPIO_ENABLE_IRQ1
+      // #define GPIO_ENABLE_IRQ2
+      // #define GPIO_ENABLE_IRQ3
+    #endif
+
+    #ifdef CFG_BRD_LPC1114_802154WIRELESS
+      // #define GPIO_ENABLE_IRQ0
+      // #define GPIO_ENABLE_IRQ1
+      // #define GPIO_ENABLE_IRQ2
+      #define GPIO_ENABLE_IRQ3		// Used for AT86RF212 IRQ
     #endif
 /*=========================================================================*/
 

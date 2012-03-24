@@ -2,6 +2,9 @@ v0.75 - Ongoing
 ===============
 
 - *** Renamed 'drivers/lcd' to 'drivers/displays' ***
+- *** Moved Chibi to 'drivers/rf/chibi' ***
+- Added PN532 drivers to /drivers/rf/pn532
+- Added LPCXpresso project files to root folder
 - Added average sampling option to projectconfig.h.
   This allows you to take several readings from the
   ADC and return the average.  Helps reduces one-off
