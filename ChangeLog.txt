@@ -1,3 +1,8 @@
+v0.8.0 - Ongoing
+================
+
+- Added I2C support for the SSD1306 Driver
+
 v0.75 - 24 March 2012
 =====================
 

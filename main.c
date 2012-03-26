@@ -62,8 +62,6 @@ int main(void)
   uint32_t currentSecond, lastSecond;
   currentSecond = lastSecond = 0;
 
-  gpioSetValue (CFG_LED_PORT, CFG_LED_PIN, CFG_LED_ON); 
-
   while (1)
   {
     // Toggle LED once per second ... rollover = 136 years :)

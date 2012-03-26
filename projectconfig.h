@@ -70,7 +70,8 @@
     STEPPER     . .       . . .     . . . . X X X  X     . . .
     CHIBI       . .       . . .     . . . . . . .  .     X X X
     ST7565      . .       . . .     X X X X X X .  .     . . .
-    SSD1306     . .       . . .     X X X . X X .  .     . . .
+    SSD1306 SPI . .       . . .     X X X . X X .  .     . . .
+    SSD1306 I2C . .       . . .     . X . . . . .  .     . . .
     INTERFACE   . .       . . .     . . . . . . .  .     . . .
     BATTERY     . X       . . .     . . . . . . .  X     . . .
     VREG [1]    . .       . . .     . . . . . . X  .     . . .
@@ -98,7 +99,7 @@
     [2]  PMU uses 32-bit Timer 0 for SW wakeup from deep-sleep.  This timer
          can safely be used by other peripherals, but may need to be
          reconfigured when you wakeup from deep-sleep.
-    [3]  3.2 only used when with the I2C bus (for IRQ)
+    [3]  P3.2 only used with the I2C bus (for IRQ)
 
  **************************************************************************/
 
@@ -116,6 +117,7 @@
     TSL2561                     0x72      0111001x
     TCS3414                     0x72      0111001x
     PN532                       0x48      0100100x
+    SSD1306_I2C                 0x78      0111100x  // Assumes SA0 = GND
 
     [1]  Alternative addresses may exists, but the addresses listed in this
          table are the values used in the code base
@@ -127,8 +129,8 @@
     FIRMWARE VERSION SETTINGS
     -----------------------------------------------------------------------*/
     #define CFG_FIRMWARE_VERSION_MAJOR            (0)
-    #define CFG_FIRMWARE_VERSION_MINOR            (7)
-    #define CFG_FIRMWARE_VERSION_REVISION         (5)
+    #define CFG_FIRMWARE_VERSION_MINOR            (8)
+    #define CFG_FIRMWARE_VERSION_REVISION         (0)
 /*=========================================================================*/
 
 

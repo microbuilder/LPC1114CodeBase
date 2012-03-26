@@ -110,16 +110,16 @@
 /*=========================================================================*/
 
 // Pin Definitions
-#define SSD1306_DC_PORT                    (2)     // Data/Command ... used for SA0 with I2C
-#define SSD1306_DC_PIN                     (1)
-#define SSD1306_RST_PORT                   (2)     // Reset           (I2C + SPI)
-#define SSD1306_RST_PIN                    (2)
-#define SSD1306_CS_PORT                    (2)     // Select          (SPI only)
-#define SSD1306_CS_PIN                     (3)
-#define SSD1306_SCLK_PORT                  (2)     // Serial Clock    (SPI only)
-#define SSD1306_SCLK_PIN                   (5)
-#define SSD1306_SDAT_PORT                  (2)     // Serial Data     (SPI only)
-#define SSD1306_SDAT_PIN                   (6)
+#define SSD1306_DC_PORT                   (2)     // Data/Command for SPI, SA0 for I2C
+#define SSD1306_DC_PIN                    (4)
+#define SSD1306_RST_PORT                  (2)     // Reset          (I2C+SPI)
+#define SSD1306_RST_PIN                   (5)
+#define SSD1306_CS_PORT                   (2)     // Select         (SPI)
+#define SSD1306_CS_PIN                    (6)
+#define SSD1306_SCLK_PORT                 (2)     // Serial Clock   (SPI)
+#define SSD1306_SCLK_PIN                  (8)
+#define SSD1306_SDAT_PORT                 (2)     // Serial Data    (SPI)
+#define SSD1306_SDAT_PIN                  (9)
 
 // Commands
 #define SSD1306_SETCONTRAST               0x81
