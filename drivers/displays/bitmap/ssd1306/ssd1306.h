@@ -2,14 +2,14 @@
 /*! 
     @file     ssd1306.h
     @author   K. Townsend (microBuilder.eu)
-    @date     22 March 2010
+    @date     18 January 2012
     @version  0.10
 
     @section LICENSE
 
     Software License Agreement (BSD License)
 
-    Copyright (c) 2010, microBuilder SARL
+    Copyright (c) 2012, microBuilder SARL
     All rights reserved.
 
     Redistribution and use in source and binary forms, with or without
@@ -42,20 +42,84 @@
 
 #include "drivers/displays/smallfonts.h"
 
-// Pin Definitions
-#define SSD1306_DC_PORT                   (2)     // Data/Command
-#define SSD1306_DC_PIN                    (4)
-#define SSD1306_RST_PORT                  (2)     // Reset
-#define SSD1306_RST_PIN                   (5)
-#define SSD1306_CS_PORT                   (2)     // Select
-#define SSD1306_CS_PIN                    (6)
-#define SSD1306_SCLK_PORT                 (2)     // Serial Clock
-#define SSD1306_SCLK_PIN                  (8)
-#define SSD1306_SDAT_PORT                 (2)     // Serial Data
-#define SSD1306_SDAT_PIN                  (9)
+/*=========================================================================
+    Bus Select
+    -----------------------------------------------------------------------
+    The SSD1306 can be driven using either SPI or I2C.  Select the
+    appropriate bus below to indicate which one you wish to use.
 
-#define SSD1306_LCDWIDTH                  (128)
-#define SSD1306_LCDHEIGHT                 (64)
+    SSD1306_BUS_SPI   Use bit-banged SPI
+
+    SSD1306_BUS_I2C   Use HW I2C
+
+    -----------------------------------------------------------------------*/
+    // #define SSD1306_BUS_SPI
+    #define SSD1306_BUS_I2C
+
+    #if defined SSD1306_BUS_SPI && defined SSD1306_BUS_I2C
+      #error "Only one SSD1306 bus interface can be specified at once in ssd1306.h"
+    #endif
+    #if !defined SSD1306_BUS_SPI && !defined SSD1306_BUS_I2C
+      #error "At least one SSD1306 bus interface must be specified in ssd1306.h"
+    #endif
+/*=========================================================================*/
+
+
+#if defined SSD1306_BUS_I2C
+/*=========================================================================
+    I2C Address - 011110+SA0+RW ... 0x78 for SA0 = 0, 0x7A for SA0 = 1
+    ---------------------------------------------------------------------*/
+    #define SSD1306_I2C_ADDRESS   (0x78)
+    #define SSD1306_I2C_READWRITE (0x01)
+/*=========================================================================*/
+#endif
+
+/*=========================================================================
+    Display Size
+    -----------------------------------------------------------------------
+    The driver is used in multiple displays (128x64, 128x32, etc.).
+    Select the appropriate display below to create an appropriately
+    sized framebuffer, etc.
+
+    SSD1306_128_64  128x64 pixel display
+
+    SSD1306_128_32  128x32 pixel display
+
+    You also need to set the LCDWIDTH and LCDHEIGHT defines to an 
+    appropriate size
+
+    -----------------------------------------------------------------------*/
+    #define SSD1306_128_64
+    // #define SSD1306_128_32
+
+    #if defined SSD1306_128_64 && defined SSD1306_128_32
+      #error "Only one SSD1306 display can be specified at once in ssd1306.h"
+    #endif
+    #if !defined SSD1306_128_64 && !defined SSD1306_128_32
+      #error "At least one SSD1306 display must be specified in ssd1306.h"
+    #endif
+
+    #if defined SSD1306_128_64
+      #define SSD1306_LCDWIDTH                  128
+      #define SSD1306_LCDHEIGHT                 64
+    #endif
+    #if defined SSD1306_128_32
+      #define SSD1306_LCDWIDTH                  128
+      #define SSD1306_LCDHEIGHT                 32
+    #endif
+/*=========================================================================*/
+
+// Pin Definitions
+#define SSD1306_DC_PORT                    (2)     // Data/Command ... used for SA0 with I2C
+#define SSD1306_DC_PIN                     (1)
+#define SSD1306_RST_PORT                   (2)     // Reset           (I2C + SPI)
+#define SSD1306_RST_PIN                    (2)
+#define SSD1306_CS_PORT                    (2)     // Select          (SPI only)
+#define SSD1306_CS_PIN                     (3)
+#define SSD1306_SCLK_PORT                  (2)     // Serial Clock    (SPI only)
+#define SSD1306_SCLK_PIN                   (5)
+#define SSD1306_SDAT_PORT                  (2)     // Serial Data     (SPI only)
+#define SSD1306_SDAT_PIN                   (6)
 
 // Commands
 #define SSD1306_SETCONTRAST               0x81
@@ -80,6 +144,7 @@
 #define SSD1306_SEGREMAP                  0xA0
 #define SSD1306_CHARGEPUMP                0x8D
 #define SSD1306_EXTERNALVCC               0x1
+#define SSD1306_INTERNALVCC               0x2
 #define SSD1306_SWITCHCAPVCC              0x2
 
 // Initialisation/Config Prototypes
