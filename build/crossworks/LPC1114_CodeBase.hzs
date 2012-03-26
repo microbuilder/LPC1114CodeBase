@@ -63,9 +63,7 @@
   <Watches active="0" update="Never" />
  </Watch4>
  <Files>
-  <SessionOpenFile useTextEdit="1" useBinaryEdit="0" codecName="Latin1" x="33" debugPath="C:\Dropbox\microBuilder\Code\LPC1114\LPC1114_CodeBase_GIT\main.c" y="85" path="C:\Dropbox\microBuilder\Code\LPC1114\LPC1114_CodeBase_GIT\main.c" left="0" selected="1" name="unnamed" top="42" />
-  <SessionOpenFile useTextEdit="1" useBinaryEdit="0" codecName="Latin1" x="0" debugPath="C:\Dropbox\microBuilder\Code\LPC1114\LPC1114_CodeBase_GIT\drivers\displays\bitmap\ssd1306\ssd1306.c" y="44" path="C:\Dropbox\microBuilder\Code\LPC1114\LPC1114_CodeBase_GIT\drivers\displays\bitmap\ssd1306\ssd1306.c" left="0" selected="0" name="unnamed" top="30" />
-  <SessionOpenFile useTextEdit="1" useBinaryEdit="0" codecName="Latin1" x="49" debugPath="C:\Dropbox\microBuilder\Code\LPC1114\LPC1114_CodeBase_GIT\drivers\displays\bitmap\ssd1306\ssd1306.h" y="115" path="C:\Dropbox\microBuilder\Code\LPC1114\LPC1114_CodeBase_GIT\drivers\displays\bitmap\ssd1306\ssd1306.h" left="0" selected="0" name="unnamed" top="84" />
+  <SessionOpenFile useTextEdit="1" useBinaryEdit="0" codecName="Latin1" x="0" debugPath="C:\Dropbox\microBuilder\Code\LPC1114\LPC1114_CodeBase_GIT\main.c" y="20" path="C:\Dropbox\microBuilder\Code\LPC1114\LPC1114_CodeBase_GIT\main.c" left="0" selected="1" name="unnamed" top="12" />
  </Files>
  <ARMCrossStudioWindow activeProject="LPC1114_CodeBase" autoConnectTarget="SEGGER J-Link" debugSearchFileMap="" fileDialogInitialDirectory="C:\Dropbox\microBuilder\Code\LPC1114\LPC1114_CodeBase_GIT\drivers\rf\chibi" fileDialogDefaultFilter="*.c" autoConnectCapabilities="388991" debugSearchPath="" buildConfiguration="THUMB Flash Release" />
 </session>

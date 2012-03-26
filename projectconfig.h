@@ -71,7 +71,6 @@
     CHIBI       . .       . . .     . . . . . . .  .     X X X
     ST7565      . .       . . .     X X X X X X .  .     . . .
     SSD1306 SPI . .       . . .     X X X . X X .  .     . . .
-    SSD1306 I2C . .       . . .     . X . . . . .  .     . . .
     INTERFACE   . .       . . .     . . . . . . .  .     . . .
     BATTERY     . X       . . .     . . . . . . .  X     . . .
     VREG [1]    . .       . . .     . . . . . . X  .     . . .
