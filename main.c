@@ -64,19 +64,12 @@ int main(void)
 
   while (1)
   {
-    // Toggle LED once per second ... rollover = 136 years :)
+    // Toggle LED once per second
     currentSecond = systickGetSecondsActive();
     if (currentSecond != lastSecond)
     {
       lastSecond = currentSecond;
-      if (gpioGetValue(CFG_LED_PORT, CFG_LED_PIN) == CFG_LED_OFF)
-      {
-        gpioSetValue (CFG_LED_PORT, CFG_LED_PIN, CFG_LED_ON); 
-      }
-      else
-      {
-        gpioSetValue (CFG_LED_PORT, CFG_LED_PIN, CFG_LED_OFF); 
-      }
+      gpioSetValue(CFG_LED_PORT, CFG_LED_PIN, lastSecond % 2);
     }
 
     // Poll for CLI input if CFG_INTERFACE is enabled in projectconfig.h

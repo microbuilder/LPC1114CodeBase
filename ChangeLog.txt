@@ -2,6 +2,9 @@ v0.8.0 - Ongoing
 ================
 
 - Added I2C support for the SSD1306 Driver
+- Updated Crossworks project to LPC1000 lib v1.19
+  (Uses CMSIS 3)
+- Small improvement to gpioSetValue (thanks Tom)
 
 v0.75 - 24 March 2012
 =====================
