@@ -2,15 +2,19 @@
 /*! 
     @file     lpc111x.h
     @author   K. Townsend (microBuilder.eu)
-    @version  1.0
+    @version  1.1
 
     LPC1114 header file
+
+    Added muliplexing for LPC1115FBD48/303 as of version 1.1.  Some new
+    registers for the LPC1100XL series may still be missing since these
+    additions haven't been thoroughly vetted and tested.
 
     @section LICENSE
 
     Software License Agreement (BSD License)
 
-    Copyright (c) 2010, microBuilder SARL
+    Copyright (c) 2012 K. Townsend
     All rights reserved.
 
     Redistribution and use in source and binary forms, with or without
@@ -1209,6 +1213,7 @@
 #define IOCON_PIO1_9_FUNC_MASK                    ((unsigned int) 0x00000007)
 #define IOCON_PIO1_9_FUNC_GPIO                    ((unsigned int) 0x00000000)
 #define IOCON_PIO1_9_FUNC_CT16B1_MAT0             ((unsigned int) 0x00000001)
+#define IOCON_PIO1_9_FUNC_MOSI1                   ((unsigned int) 0x00000002) // LPC1100XL
 #define IOCON_PIO1_9_MODE_MASK                    ((unsigned int) 0x00000018)
 #define IOCON_PIO1_9_MODE_INACTIVE                ((unsigned int) 0x00000000)
 #define IOCON_PIO1_9_MODE_PULLDOWN                ((unsigned int) 0x00000008)
@@ -1223,6 +1228,7 @@
 #define IOCON_PIO1_10_FUNC_GPIO                   ((unsigned int) 0x00000000)
 #define IOCON_PIO1_10_FUNC_AD6                    ((unsigned int) 0x00000001)
 #define IOCON_PIO1_10_FUNC_CT16B1_MAT1            ((unsigned int) 0x00000002)
+#define IOCON_PIO1_10_FUNC_MISO1                  ((unsigned int) 0x00000003) // LPC1100XL
 #define IOCON_PIO1_10_MODE_MASK                   ((unsigned int) 0x00000018)
 #define IOCON_PIO1_10_MODE_INACTIVE               ((unsigned int) 0x00000000)
 #define IOCON_PIO1_10_MODE_PULLDOWN               ((unsigned int) 0x00000008)
@@ -1239,6 +1245,7 @@
 #define IOCON_PIO1_11_FUNC_MASK                   ((unsigned int) 0x00000007)
 #define IOCON_PIO1_11_FUNC_GPIO                   ((unsigned int) 0x00000000)
 #define IOCON_PIO1_11_FUNC_AD7                    ((unsigned int) 0x00000001)
+#define IOCON_PIO1_11_FUNC_CT32B1_CAP1            ((unsigned int) 0x00000002) // LPC1100XL
 #define IOCON_PIO1_11_MODE_MASK                   ((unsigned int) 0x00000018)
 #define IOCON_PIO1_11_MODE_INACTIVE               ((unsigned int) 0x00000000)
 #define IOCON_PIO1_11_MODE_PULLDOWN               ((unsigned int) 0x00000008)
@@ -1310,6 +1317,8 @@
 #define IOCON_PIO2_4                              (*(pREG32 (0x40044040)))
 #define IOCON_PIO2_4_FUNC_MASK                    ((unsigned int) 0x00000007)
 #define IOCON_PIO2_4_FUNC_GPIO                    ((unsigned int) 0x00000000)
+#define IOCON_PIO2_4_FUNC_CT16B1_MAT1             ((unsigned int) 0x00000001) // LPC1100XL
+#define IOCON_PIO2_4_FUNC_SSEL1                   ((unsigned int) 0x00000002) // LPC1100XL
 #define IOCON_PIO2_4_MODE_MASK                    ((unsigned int) 0x00000018)
 #define IOCON_PIO2_4_MODE_INACTIVE                ((unsigned int) 0x00000000)
 #define IOCON_PIO2_4_MODE_PULLDOWN                ((unsigned int) 0x00000008)
@@ -1322,6 +1331,7 @@
 #define IOCON_PIO2_5                              (*(pREG32 (0x40044044)))
 #define IOCON_PIO2_5_FUNC_MASK                    ((unsigned int) 0x00000007)
 #define IOCON_PIO2_5_FUNC_GPIO                    ((unsigned int) 0x00000000)
+#define IOCON_PIO2_5_FUNC_CT32B0_MAT0             ((unsigned int) 0x00000001) // LPC1100XL
 #define IOCON_PIO2_5_MODE_MASK                    ((unsigned int) 0x00000018)
 #define IOCON_PIO2_5_MODE_INACTIVE                ((unsigned int) 0x00000000)
 #define IOCON_PIO2_5_MODE_PULLDOWN                ((unsigned int) 0x00000008)
@@ -1334,6 +1344,7 @@
 #define IOCON_PIO2_6                              (*(pREG32 (0x40044000)))
 #define IOCON_PIO2_6_FUNC_MASK                    ((unsigned int) 0x00000007)
 #define IOCON_PIO2_6_FUNC_GPIO                    ((unsigned int) 0x00000000)
+#define IOCON_PIO2_6_FUNC_CT32B0_MAT1             ((unsigned int) 0x00000001)  // LPC1100XL
 #define IOCON_PIO2_6_MODE_MASK                    ((unsigned int) 0x00000018)
 #define IOCON_PIO2_6_MODE_INACTIVE                ((unsigned int) 0x00000000)
 #define IOCON_PIO2_6_MODE_PULLDOWN                ((unsigned int) 0x00000008)
@@ -1346,6 +1357,8 @@
 #define IOCON_PIO2_7                              (*(pREG32 (0x40044020)))
 #define IOCON_PIO2_7_FUNC_MASK                    ((unsigned int) 0x00000007)
 #define IOCON_PIO2_7_FUNC_GPIO                    ((unsigned int) 0x00000000)
+#define IOCON_PIO2_7_FUNC_CT32B0_MAT2             ((unsigned int) 0x00000001) // LPC1100XL
+#define IOCON_PIO2_7_FUNC_RXD                     ((unsigned int) 0x00000002) // LPC1100XL
 #define IOCON_PIO2_7_MODE_MASK                    ((unsigned int) 0x00000018)
 #define IOCON_PIO2_7_MODE_INACTIVE                ((unsigned int) 0x00000000)
 #define IOCON_PIO2_7_MODE_PULLDOWN                ((unsigned int) 0x00000008)
@@ -1358,6 +1371,8 @@
 #define IOCON_PIO2_8                              (*(pREG32 (0x40044024)))
 #define IOCON_PIO2_8_FUNC_MASK                    ((unsigned int) 0x00000007)
 #define IOCON_PIO2_8_FUNC_GPIO                    ((unsigned int) 0x00000000)
+#define IOCON_PIO2_8_FUNC_CT32B0_MAT3             ((unsigned int) 0x00000001) // LPC1100XL
+#define IOCON_PIO2_8_FUNC_TXD                     ((unsigned int) 0x00000002) // LPC1100XL
 #define IOCON_PIO2_8_MODE_MASK                    ((unsigned int) 0x00000018)
 #define IOCON_PIO2_8_MODE_INACTIVE                ((unsigned int) 0x00000000)
 #define IOCON_PIO2_8_MODE_PULLDOWN                ((unsigned int) 0x00000008)
@@ -1370,6 +1385,7 @@
 #define IOCON_PIO2_9                              (*(pREG32 (0x40044054)))
 #define IOCON_PIO2_9_FUNC_MASK                    ((unsigned int) 0x00000007)
 #define IOCON_PIO2_9_FUNC_GPIO                    ((unsigned int) 0x00000000)
+#define IOCON_PIO2_9_FUNC_CT32B0_CAP0             ((unsigned int) 0x00000001) // LPC1100XL
 #define IOCON_PIO2_9_MODE_MASK                    ((unsigned int) 0x00000018)
 #define IOCON_PIO2_9_MODE_INACTIVE                ((unsigned int) 0x00000000)
 #define IOCON_PIO2_9_MODE_PULLDOWN                ((unsigned int) 0x00000008)
@@ -1379,22 +1395,23 @@
 #define IOCON_PIO2_9_HYS_DISABLE                  ((unsigned int) 0x00000000)
 #define IOCON_PIO2_9_HYS_ENABLE                   ((unsigned int) 0x00000020)
 
-#define IOCON_PIO2_10                              (*(pREG32 (0x40044058)))
-#define IOCON_PIO2_10_FUNC_MASK                    ((unsigned int) 0x00000007)
-#define IOCON_PIO2_10_FUNC_GPIO                    ((unsigned int) 0x00000000)
-#define IOCON_PIO2_10_MODE_MASK                    ((unsigned int) 0x00000018)
-#define IOCON_PIO2_10_MODE_INACTIVE                ((unsigned int) 0x00000000)
-#define IOCON_PIO2_10_MODE_PULLDOWN                ((unsigned int) 0x00000008)
-#define IOCON_PIO2_10_MODE_PULLUP                  ((unsigned int) 0x00000010)
-#define IOCON_PIO2_10_MODE_REPEATER                ((unsigned int) 0x00000018)
-#define IOCON_PIO2_10_HYS_MASK                     ((unsigned int) 0x00000020)
-#define IOCON_PIO2_10_HYS_DISABLE                  ((unsigned int) 0x00000000)
-#define IOCON_PIO2_10_HYS_ENABLE                   ((unsigned int) 0x00000020)
+#define IOCON_PIO2_10                             (*(pREG32 (0x40044058)))
+#define IOCON_PIO2_10_FUNC_MASK                   ((unsigned int) 0x00000007)
+#define IOCON_PIO2_10_FUNC_GPIO                   ((unsigned int) 0x00000000)
+#define IOCON_PIO2_10_MODE_MASK                   ((unsigned int) 0x00000018)
+#define IOCON_PIO2_10_MODE_INACTIVE               ((unsigned int) 0x00000000)
+#define IOCON_PIO2_10_MODE_PULLDOWN               ((unsigned int) 0x00000008)
+#define IOCON_PIO2_10_MODE_PULLUP                 ((unsigned int) 0x00000010)
+#define IOCON_PIO2_10_MODE_REPEATER               ((unsigned int) 0x00000018)
+#define IOCON_PIO2_10_HYS_MASK                    ((unsigned int) 0x00000020)
+#define IOCON_PIO2_10_HYS_DISABLE                 ((unsigned int) 0x00000000)
+#define IOCON_PIO2_10_HYS_ENABLE                  ((unsigned int) 0x00000020)
 
 #define IOCON_PIO2_11                             (*(pREG32 (0x40044070)))
 #define IOCON_PIO2_11_FUNC_MASK                   ((unsigned int) 0x00000007)
 #define IOCON_PIO2_11_FUNC_GPIO                   ((unsigned int) 0x00000000)
 #define IOCON_PIO2_11_FUNC_SCK                    ((unsigned int) 0x00000001)
+#define IOCON_PIO2_11_FUNC_CT32B0_CAP1            ((unsigned int) 0x00000002) // LPC1100XL
 #define IOCON_PIO2_11_MODE_MASK                   ((unsigned int) 0x00000018)
 #define IOCON_PIO2_11_MODE_INACTIVE               ((unsigned int) 0x00000000)
 #define IOCON_PIO2_11_MODE_PULLDOWN               ((unsigned int) 0x00000008)
@@ -1407,6 +1424,9 @@
 #define IOCON_PIO3_0                              (*(pREG32 (0x40044084)))
 #define IOCON_PIO3_0_FUNC_MASK                    ((unsigned int) 0x00000007)
 #define IOCON_PIO3_0_FUNC_GPIO                    ((unsigned int) 0x00000000)
+#define IOCON_PIO3_0_FUNC_DTR                     ((unsigned int) 0x00000001) // LPC1100XL
+#define IOCON_PIO3_0_FUNC_CT16B0_MAT0             ((unsigned int) 0x00000002) // LPC1100XL
+#define IOCON_PIO3_0_FUNC_TXD                     ((unsigned int) 0x00000003) // LPC1100XL
 #define IOCON_PIO3_0_MODE_MASK                    ((unsigned int) 0x00000018)
 #define IOCON_PIO3_0_MODE_INACTIVE                ((unsigned int) 0x00000000)
 #define IOCON_PIO3_0_MODE_PULLDOWN                ((unsigned int) 0x00000008)
@@ -1419,6 +1439,9 @@
 #define IOCON_PIO3_1                              (*(pREG32 (0x40044088)))
 #define IOCON_PIO3_1_FUNC_MASK                    ((unsigned int) 0x00000007)
 #define IOCON_PIO3_1_FUNC_GPIO                    ((unsigned int) 0x00000000)
+#define IOCON_PIO3_1_FUNC_DSR                     ((unsigned int) 0x00000001) // LPC1100XL
+#define IOCON_PIO3_1_FUNC_CT16B0_MAT1             ((unsigned int) 0x00000002) // LPX1100XL
+#define IOCON_PIO3_1_FUNC_RXD                     ((unsigned int) 0x00000003) // LPC1100XL
 #define IOCON_PIO3_1_MODE_MASK                    ((unsigned int) 0x00000018)
 #define IOCON_PIO3_1_MODE_INACTIVE                ((unsigned int) 0x00000000)
 #define IOCON_PIO3_1_MODE_PULLDOWN                ((unsigned int) 0x00000008)
@@ -1431,6 +1454,9 @@
 #define IOCON_PIO3_2                              (*(pREG32 (0x4004409C)))
 #define IOCON_PIO3_2_FUNC_MASK                    ((unsigned int) 0x00000007)
 #define IOCON_PIO3_2_FUNC_GPIO                    ((unsigned int) 0x00000000)
+#define IOCON_PIO3_2_FUNC_DCD                     ((unsigned int) 0x00000001) // LPC1100XL
+#define IOCON_PIO3_2_FUNC_CT16B0_MAT2             ((unsigned int) 0x00000002) // LPC1100XL
+#define IOCON_PIO3_2_FUNC_SCK1                    ((unsigned int) 0x00000003) // LPC1000XL
 #define IOCON_PIO3_2_MODE_MASK                    ((unsigned int) 0x00000018)
 #define IOCON_PIO3_2_MODE_INACTIVE                ((unsigned int) 0x00000000)
 #define IOCON_PIO3_2_MODE_PULLDOWN                ((unsigned int) 0x00000008)
@@ -1443,6 +1469,8 @@
 #define IOCON_PIO3_3                              (*(pREG32 (0x400440AC)))
 #define IOCON_PIO3_3_FUNC_MASK                    ((unsigned int) 0x00000007)
 #define IOCON_PIO3_3_FUNC_GPIO                    ((unsigned int) 0x00000000)
+#define IOCON_PIO3_3_FUNC_RI                      ((unsigned int) 0x00000001) // LPC1100XL
+#define IOCON_PIO3_3_FUNC_CT16B0_CAP0             ((unsigned int) 0x00000002) // LPC1100XL
 #define IOCON_PIO3_3_MODE_MASK                    ((unsigned int) 0x00000018)
 #define IOCON_PIO3_3_MODE_INACTIVE                ((unsigned int) 0x00000000)
 #define IOCON_PIO3_3_MODE_PULLDOWN                ((unsigned int) 0x00000008)
@@ -1455,6 +1483,8 @@
 #define IOCON_PIO3_4                              (*(pREG32 (0x4004403C)))
 #define IOCON_PIO3_4_FUNC_MASK                    ((unsigned int) 0x00000007)
 #define IOCON_PIO3_4_FUNC_GPIO                    ((unsigned int) 0x00000000)
+#define IOCON_PIO3_4_FUNC_CT16B0_CAP1             ((unsigned int) 0x00000001) // LPC1100XL
+#define IOCON_PIO3_4_FUNC_RXD                     ((unsigned int) 0x00000002) // LPC1100XL
 #define IOCON_PIO3_4_MODE_MASK                    ((unsigned int) 0x00000018)
 #define IOCON_PIO3_4_MODE_INACTIVE                ((unsigned int) 0x00000000)
 #define IOCON_PIO3_4_MODE_PULLDOWN                ((unsigned int) 0x00000008)
@@ -1467,6 +1497,8 @@
 #define IOCON_PIO3_5                              (*(pREG32 (0x40044048)))
 #define IOCON_PIO3_5_FUNC_MASK                    ((unsigned int) 0x00000007)
 #define IOCON_PIO3_5_FUNC_GPIO                    ((unsigned int) 0x00000000)
+#define IOCON_PIO3_5_FUNC_CT16B1_CAP1             ((unsigned int) 0x00000001) // LPC1100XL
+#define IOCON_PIO3_5_FUNC_TXD                     ((unsigned int) 0x00000002) // LPC1100XL
 #define IOCON_PIO3_5_MODE_MASK                    ((unsigned int) 0x00000018)
 #define IOCON_PIO3_5_MODE_INACTIVE                ((unsigned int) 0x00000000)
 #define IOCON_PIO3_5_MODE_PULLDOWN                ((unsigned int) 0x00000008)
@@ -1483,19 +1515,63 @@
 #define IOCON_SCKLOC_SCKPIN_MASK                  ((unsigned int) 0x00000003)
 
 #define IOCON_DSR_LOC                             (*(pREG32 (0x400440B4)))
-#define IOCON_DSR_LOC_DSRLOC_PIO2_1               ((unsigned int) 0x00000001)
-#define IOCON_DSR_LOC_DSRLOC_PIO3_1               ((unsigned int) 0x00000002) // Set DSR function to pin 2.1
-#define IOCON_DSR_LOC_DSRLOC_MASK                 ((unsigned int) 0x00000003) // Set DSR function to pin 3.1
+#define IOCON_DSR_LOC_DSRLOC_PIO2_1               ((unsigned int) 0x00000000)
+#define IOCON_DSR_LOC_DSRLOC_PIO3_1               ((unsigned int) 0x00000001)
+#define IOCON_DSR_LOC_DSRLOC_MASK                 ((unsigned int) 0x00000003)
 
 #define IOCON_DCD_LOC                             (*(pREG32 (0x400440B8)))
-#define IOCON_DCD_LOC_DCDLOC_PIO2_2               ((unsigned int) 0x00000001) // Set DCD function to pin 2.2
-#define IOCON_DCD_LOC_DCDLOC_PIO3_2               ((unsigned int) 0x00000002) // Set DCD function to pin 3.2
+#define IOCON_DCD_LOC_DCDLOC_PIO2_2               ((unsigned int) 0x00000000)
+#define IOCON_DCD_LOC_DCDLOC_PIO3_2               ((unsigned int) 0x00000001)
 #define IOCON_DCD_LOC_DCDLOC_MASK                 ((unsigned int) 0x00000003)
 
 #define IOCON_RI_LOC                              (*(pREG32 (0x400440BC)))
-#define IOCON_RI_LOC_RILOC_PIO2_3                 ((unsigned int) 0x00000001) // Set RI function to pin 2.3
-#define IOCON_RI_LOC_RILOC_PIO3_3                 ((unsigned int) 0x00000002) // Set RI function to pin 3.3
+#define IOCON_RI_LOC_RILOC_PIO2_3                 ((unsigned int) 0x00000000)
+#define IOCON_RI_LOC_RILOC_PIO3_3                 ((unsigned int) 0x00000001)
 #define IOCON_RI_LOC_RILOC_MASK                   ((unsigned int) 0x00000003)
+
+// LPC1100XL Only
+#define IOCON_SSEL1_LOC                           (*(pREG32 (0x40044018))))
+#define IOCON_SSEL1_LOC_PIO2_2                    ((unsigned int) 0x00000000) // Set SSEL1 function to pin 2.2
+#define IOCON_SSEL1_LOC_PIO2_4                    ((unsigned int) 0x00000001) // Set SSEL1 function to pin 2.4
+#define IOCON_SSEL1_LOC_MASK                      ((unsigned int) 0x00000003)
+
+// LPC1100XL Only
+#define IOCON_CT16B0_CAP0_LOC                     (*(pREG32 (0x400440C0)))))
+#define IOCON_CT16B0_CAP0_LOC_PIO0_2              ((unsigned int) 0x00000000)
+#define IOCON_CT16B0_CAP0_LOC_PIO3_3              ((unsigned int) 0x00000001)
+#define IOCON_CT16B0_CAP0_LOC_MASK                ((unsigned int) 0x00000003)
+
+// LPC1100XL Only
+#define IOCON_SCK1_LOC                            (*(pREG32 (0x400440C4)))))
+#define IOCON_SCK1_LOC_PIO2_1                     ((unsigned int) 0x00000000) // Set SCK1 function to pin 2.1
+#define IOCON_SCK1_LOC_PIO3_2                     ((unsigned int) 0x00000001) // Set SCK1 function to pin 3.2
+#define IOCON_SCK1_LOC_MASK                       ((unsigned int) 0x00000003)
+
+// LPC1100XL Only
+#define IOCON_MISO1_LOC                           (*(pREG32 (0x400440C8))))))
+#define IOCON_MISO1_LOC_PIO2_2                    ((unsigned int) 0x00000000) // Set MISO1 function to pin 2.2
+#define IOCON_MISO1_LOC_PIO1_10                   ((unsigned int) 0x00000001) // Set MISO1 function to pin 1.10
+#define IOCON_MISO1_LOC_MASK                      ((unsigned int) 0x00000003)
+
+// LPC1100XL Only
+#define IOCON_MOSI1_LOC                           (*(pREG32 (0x400440CC))))))
+#define IOCON_MOSI1_LOC_PIO2_3                    ((unsigned int) 0x00000000) // Set MOSI1 function to pin 2.3
+#define IOCON_MOSI1_LOC_PIO1_9                    ((unsigned int) 0x00000001) // Set MOSI1 function to pin 1.9
+#define IOCON_MOSI1_LOC_MASK                      ((unsigned int) 0x00000003)
+
+// LPC1100XL Only
+#define IOCON_CT32B0_CAP0_LOC                     (*(pREG32 (0x400440D0))))))
+#define IOCON_CT32B0_CAP0_LOC_PIO1_5              ((unsigned int) 0x00000000)
+#define IOCON_CT32B0_CAP0_LOC_PIO2_9              ((unsigned int) 0x00000001)
+#define IOCON_CT32B0_CAP0_LOC_MASK                ((unsigned int) 0x00000003)
+
+// LPC1100XL Only
+#define IOCON_RXD_LOC                             (*(pREG32 (0x400440D4))))))
+#define IOCON_RXD_LOC_PIO1_6                      ((unsigned int) 0x00000000)
+#define IOCON_RXD_LOC_PIO2_7                      ((unsigned int) 0x00000001)
+#define IOCON_RXD_LOC_PIO3_1                      ((unsigned int) 0x00000002)
+#define IOCON_RXD_LOC_PIO3_4                      ((unsigned int) 0x00000003)
+#define IOCON_RXD_LOC_MASK                        ((unsigned int) 0x00000003)
 
 /*##############################################################################
 ## Nested Vectored Interrupt Controller
