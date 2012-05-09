@@ -200,7 +200,7 @@ int pwmSetFrequencyInTicks(uint16_t ticks)
   }
 
   /* Set Pulse Width (MR3)*/
-  TMR_TMR16B1MR3 = (pwmPulseWidth = ticks);
+  TMR_TMR16B1MR3 = (pwmPulseWidth = ticks - 1);
 
   /* Adjust Duty Cycle (MR0) */
   TMR_TMR16B1MR0 = (pwmPulseWidth * (100 - pwmDutyCycle)) / 100;
@@ -241,7 +241,7 @@ int pwmSetFrequencyInMicroseconds(uint16_t us)
   }
 
   /* Set Pulse Width (MR3)*/
-  TMR_TMR16B1MR3 = (pwmPulseWidth = ticks);
+  TMR_TMR16B1MR3 = (pwmPulseWidth = ticks - 1);
 
   /* Adjust Duty Cycle (MR0) */
   TMR_TMR16B1MR0 = (pwmPulseWidth * (100 - pwmDutyCycle)) / 100;
