@@ -22,10 +22,6 @@
  </Memory4>
  <Project>
   <ProjectSessionItem path="LPC1114_CodeBase" name="unnamed" />
-  <ProjectSessionItem path="LPC1114_CodeBase;LPC1114_CodeBase" name="unnamed" />
-  <ProjectSessionItem path="LPC1114_CodeBase;LPC1114_CodeBase;Source Files" name="unnamed" />
-  <ProjectSessionItem path="LPC1114_CodeBase;LPC1114_CodeBase;Source Files;core" name="unnamed" />
-  <ProjectSessionItem path="LPC1114_CodeBase;LPC1114_CodeBase;Source Files;core;gpio" name="unnamed" />
  </Project>
  <Register1>
   <RegisterWindow openNodes="CT16B1/TMR16B1PWMC;GPIO2;SysTick" binaryNodes="GPIO1/GPIO1DATA;GPIO2/GPIO2DATA;GPIO2/GPIO2DIR;GPIO3/GPIO3DATA" hiddenNodes="" unsignedNodes="" visibleGroups="GPIO2;CT16B1;GPIO1;GPIO3;SysTick" decimalNodes="SysTick/SysTick_VAL" octalNodes="" asciiNodes="" />
@@ -61,7 +57,7 @@
   <Watches active="0" update="Never" />
  </Watch4>
  <Files>
-  <SessionOpenFile useTextEdit="1" useBinaryEdit="0" codecName="Latin1" x="58" debugPath="C:\Dropbox\microBuilder\Code\LPC1114\LPC1114_CodeBase_GIT\main.c" y="78" path="C:\Dropbox\microBuilder\Code\LPC1114\LPC1114_CodeBase_GIT\main.c" left="0" selected="1" name="unnamed" top="63" />
+  <SessionOpenFile useTextEdit="1" useBinaryEdit="0" codecName="Latin1" x="0" debugPath="C:\Dropbox\microBuilder\Code\LPC1114\LPC1114_CodeBase_GIT\main.c" y="41" path="C:\Dropbox\microBuilder\Code\LPC1114\LPC1114_CodeBase_GIT\main.c" left="0" selected="1" name="unnamed" top="39" />
  </Files>
  <ARMCrossStudioWindow activeProject="LPC1114_CodeBase" autoConnectTarget="SEGGER J-Link" debugSearchFileMap="C:\Users\products\build\crossworks\arm\crossworks_v2\shared\target\libc\arm\__gnu_thumb1_case_shi.s
 

@@ -1,6 +1,9 @@
 v0.8.0 - Ongoing
 ================
 
+- Added LPC1115FBD48/303 multiplexing additions to
+  lpc111x.h (changes marked with LPC1100XL)
+- Bug fixes in lpc111x.h for some IOCON registers
 - Added I2C support for the SSD1306 Driver
 - Updated Crossworks project to LPC1000 lib v1.19
   (Uses CMSIS 3)
