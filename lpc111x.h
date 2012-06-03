@@ -1530,43 +1530,43 @@
 #define IOCON_RI_LOC_RILOC_MASK                   ((unsigned int) 0x00000003)
 
 // LPC1100XL Only
-#define IOCON_SSEL1_LOC                           (*(pREG32 (0x40044018))))
+#define IOCON_SSEL1_LOC                           (*(pREG32 (0x40044018)))
 #define IOCON_SSEL1_LOC_PIO2_2                    ((unsigned int) 0x00000000) // Set SSEL1 function to pin 2.2
 #define IOCON_SSEL1_LOC_PIO2_4                    ((unsigned int) 0x00000001) // Set SSEL1 function to pin 2.4
 #define IOCON_SSEL1_LOC_MASK                      ((unsigned int) 0x00000003)
 
 // LPC1100XL Only
-#define IOCON_CT16B0_CAP0_LOC                     (*(pREG32 (0x400440C0)))))
+#define IOCON_CT16B0_CAP0_LOC                     (*(pREG32 (0x400440C0)))
 #define IOCON_CT16B0_CAP0_LOC_PIO0_2              ((unsigned int) 0x00000000)
 #define IOCON_CT16B0_CAP0_LOC_PIO3_3              ((unsigned int) 0x00000001)
 #define IOCON_CT16B0_CAP0_LOC_MASK                ((unsigned int) 0x00000003)
 
 // LPC1100XL Only
-#define IOCON_SCK1_LOC                            (*(pREG32 (0x400440C4)))))
+#define IOCON_SCK1_LOC                            (*(pREG32 (0x400440C4)))
 #define IOCON_SCK1_LOC_PIO2_1                     ((unsigned int) 0x00000000) // Set SCK1 function to pin 2.1
 #define IOCON_SCK1_LOC_PIO3_2                     ((unsigned int) 0x00000001) // Set SCK1 function to pin 3.2
 #define IOCON_SCK1_LOC_MASK                       ((unsigned int) 0x00000003)
 
 // LPC1100XL Only
-#define IOCON_MISO1_LOC                           (*(pREG32 (0x400440C8))))))
+#define IOCON_MISO1_LOC                           (*(pREG32 (0x400440C8)))
 #define IOCON_MISO1_LOC_PIO2_2                    ((unsigned int) 0x00000000) // Set MISO1 function to pin 2.2
 #define IOCON_MISO1_LOC_PIO1_10                   ((unsigned int) 0x00000001) // Set MISO1 function to pin 1.10
 #define IOCON_MISO1_LOC_MASK                      ((unsigned int) 0x00000003)
 
 // LPC1100XL Only
-#define IOCON_MOSI1_LOC                           (*(pREG32 (0x400440CC))))))
+#define IOCON_MOSI1_LOC                           (*(pREG32 (0x400440CC)))
 #define IOCON_MOSI1_LOC_PIO2_3                    ((unsigned int) 0x00000000) // Set MOSI1 function to pin 2.3
 #define IOCON_MOSI1_LOC_PIO1_9                    ((unsigned int) 0x00000001) // Set MOSI1 function to pin 1.9
 #define IOCON_MOSI1_LOC_MASK                      ((unsigned int) 0x00000003)
 
 // LPC1100XL Only
-#define IOCON_CT32B0_CAP0_LOC                     (*(pREG32 (0x400440D0))))))
+#define IOCON_CT32B0_CAP0_LOC                     (*(pREG32 (0x400440D0)))
 #define IOCON_CT32B0_CAP0_LOC_PIO1_5              ((unsigned int) 0x00000000)
 #define IOCON_CT32B0_CAP0_LOC_PIO2_9              ((unsigned int) 0x00000001)
 #define IOCON_CT32B0_CAP0_LOC_MASK                ((unsigned int) 0x00000003)
 
 // LPC1100XL Only
-#define IOCON_RXD_LOC                             (*(pREG32 (0x400440D4))))))
+#define IOCON_RXD_LOC                             (*(pREG32 (0x400440D4)))
 #define IOCON_RXD_LOC_PIO1_6                      ((unsigned int) 0x00000000)
 #define IOCON_RXD_LOC_PIO2_7                      ((unsigned int) 0x00000001)
 #define IOCON_RXD_LOC_PIO3_1                      ((unsigned int) 0x00000002)
@@ -3226,7 +3226,43 @@ static inline void NVIC_DisableIRQ(IRQn_t IRQn)
     occurs (since there may be a delay since the write to the register and the
 */
 /**************************************************************************/
-static inline void __reset()      { __disable_irq(); SCB_AIRCR = SCB_AIRCR_VECTKEY_VALUE | SCB_AIRCR_SYSRESETREQ; while(1); }
+static inline void __reset()      
+{
+  __disable_irq(); 
+  SCB_AIRCR = SCB_AIRCR_VECTKEY_VALUE | SCB_AIRCR_SYSRESETREQ; 
+  while(1); 
+}
 
+static inline uint32_t __get_PSP(void)
+{
+  uint32_t result=0;
+
+  __asm volatile ("MRS %0, psp\n\t" 
+                  "MOV r0, %0 \n\t"
+                  "BX  lr     \n\t"  : "=r" (result) );
+  return(result);
+}
+
+static inline void __set_PSP(uint32_t topOfProcStack)
+{
+  __asm volatile ("MSR psp, %0\n\t"
+                  "BX  lr     \n\t" : : "r" (topOfProcStack) );
+}
+
+static inline uint32_t __get_MSP(void)
+{
+  uint32_t result=0;
+
+  __asm volatile ("MRS %0, msp\n\t" 
+                  "MOV r0, %0 \n\t"
+                  "BX  lr     \n\t"  : "=r" (result) );
+  return(result);
+}
+
+static inline void __set_MSP(uint32_t topOfMainStack)
+{
+  __asm volatile ("MSR msp, %0\n\t"
+                  "BX  lr     \n\t" : : "r" (topOfMainStack) );
+}
 
 #endif
