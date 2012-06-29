@@ -2415,7 +2415,7 @@ static inline void NVIC_DisableIRQ(IRQn_t IRQn)
 #define TMR_TMR16B0TCR_COUNTERENABLE_DISABLED     ((unsigned int) 0x00000000)
 #define TMR_TMR16B0TCR_COUNTERRESET_MASK          ((unsigned int) 0x00000002)
 #define TMR_TMR16B0TCR_COUNTERRESET_ENABLED       ((unsigned int) 0x00000002)
-#define TMR_TMR16B0TCR_COUNTERRESET_DISABLED      ((unsigned int) 0x00000002)
+#define TMR_TMR16B0TCR_COUNTERRESET_DISABLED      ((unsigned int) 0x00000000)
 
 /*  Timer counter */
 #define TMR_TMR16B0TC                             (*(pREG32 (0x4000C008)))
@@ -2563,7 +2563,7 @@ static inline void NVIC_DisableIRQ(IRQn_t IRQn)
 #define TMR_TMR16B1TCR_COUNTERENABLE_DISABLED     ((unsigned int) 0x00000000)
 #define TMR_TMR16B1TCR_COUNTERRESET_MASK          ((unsigned int) 0x00000002)
 #define TMR_TMR16B1TCR_COUNTERRESET_ENABLED       ((unsigned int) 0x00000002)
-#define TMR_TMR16B1TCR_COUNTERRESET_DISABLED      ((unsigned int) 0x00000002)
+#define TMR_TMR16B1TCR_COUNTERRESET_DISABLED      ((unsigned int) 0x00000000)
 
 /*  Timer counter */
 #define TMR_TMR16B1TC                             (*(pREG32 (0x40010008)))
@@ -2715,7 +2715,7 @@ static inline void NVIC_DisableIRQ(IRQn_t IRQn)
 #define TMR_TMR32B0TCR_COUNTERENABLE_DISABLED     ((unsigned int) 0x00000000)
 #define TMR_TMR32B0TCR_COUNTERRESET_MASK          ((unsigned int) 0x00000002)
 #define TMR_TMR32B0TCR_COUNTERRESET_ENABLED       ((unsigned int) 0x00000002)
-#define TMR_TMR32B0TCR_COUNTERRESET_DISABLED      ((unsigned int) 0x00000002)
+#define TMR_TMR32B0TCR_COUNTERRESET_DISABLED      ((unsigned int) 0x00000000)
 
 /*  Timer counter */
 #define TMR_TMR32B0TC                             (*(pREG32 (0x40014008)))
@@ -2863,7 +2863,7 @@ static inline void NVIC_DisableIRQ(IRQn_t IRQn)
 #define TMR_TMR32B1TCR_COUNTERENABLE_DISABLED     ((unsigned int) 0x00000000)
 #define TMR_TMR32B1TCR_COUNTERRESET_MASK          ((unsigned int) 0x00000002)
 #define TMR_TMR32B1TCR_COUNTERRESET_ENABLED       ((unsigned int) 0x00000002)
-#define TMR_TMR32B1TCR_COUNTERRESET_DISABLED      ((unsigned int) 0x00000002)
+#define TMR_TMR32B1TCR_COUNTERRESET_DISABLED      ((unsigned int) 0x00000000)
 
 /*  Timer counter */
 #define TMR_TMR32B1TC                             (*(pREG32 (0x40018008)))
