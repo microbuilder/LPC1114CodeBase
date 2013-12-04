@@ -618,7 +618,7 @@ U16 chb_get_short_addr()
     int16_t addr;
 
     chb_eeprom_read(CFG_EEPROM_CHIBI_SHORTADDR, (uint8_t*)&addr, 2);
-    return addr;	
+    return addr;    
 }
 /**************************************************************************/
 /*!
@@ -763,7 +763,7 @@ static void chb_radio_init()
                       CHB_EINTPIN,
                       gpioInterruptSense_Edge,        // Edge-sensitive
                       gpioInterruptEdge_Single,       // Single edge
-                      gpioInterruptEvent_ActiveLow);  // High triggers interrupt
+                      gpioInterruptEvent_ActiveHigh); // High triggers interrupt
 
     // enable interrupt
     gpioIntEnable (CHB_EINTPORT,
